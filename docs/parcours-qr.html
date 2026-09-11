@@ -83,7 +83,7 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
   <dl class="spec">
     <div><dt>Cible urgence</dt><dd>3 taps · 10 s</dd></div>
     <div><dt>Cible dépannage</dt><dd>5 taps · 45 s</dd></div>
-    <div><dt>Cible projet</dt><dd>7 taps · 70 s</dd></div>
+    <div><dt>Cible projet</dt><dd>8 taps · 75 s</dd></div>
     <div><dt>Sortie</dt><dd>1 fiche qualifiée</dd></div>
   </dl>
 </header>
@@ -160,16 +160,16 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
         <text class="d-sub" x="227" y="373" text-anchor="middle" fill="var(--pro)">devis / travaux</text>
         <line x1="284" y1="362" x2="302" y2="362" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
         <rect x="306" y="338" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
-        <text class="d-lab" x="361" y="358" text-anchor="middle">Corps de métier</text>
-        <text class="d-sub" x="361" y="373" text-anchor="middle">choix multiple</text>
+        <text class="d-lab" x="361" y="358" text-anchor="middle">Type de projet</text>
+        <text class="d-sub" x="361" y="373" text-anchor="middle">12 cas courants</text>
         <line x1="418" y1="362" x2="436" y2="362" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
         <rect x="440" y="338" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
         <text class="d-lab" x="495" y="358" text-anchor="middle">Où + qui</text>
         <text class="d-sub" x="495" y="373" text-anchor="middle">+ vote en AG ?</text>
         <line x1="552" y1="362" x2="570" y2="362" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
         <rect x="574" y="338" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
-        <text class="d-lab" x="629" y="358" text-anchor="middle">Ampleur</text>
-        <text class="d-sub" x="629" y="373" text-anchor="middle">+ échéance</text>
+        <text class="d-lab" x="629" y="358" text-anchor="middle">Métiers + délai</text>
+        <text class="d-sub" x="629" y="373" text-anchor="middle">+ description libre</text>
         <line x1="686" y1="362" x2="704" y2="362" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
         <rect x="708" y="338" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
         <text class="d-lab" x="763" y="358" text-anchor="middle">Contact</text>
@@ -178,10 +178,10 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
         <rect x="842" y="338" width="134" height="48" rx="4" fill="var(--surface)" stroke="var(--pro)" stroke-width="1.5"/>
         <text class="d-lab" x="909" y="358" text-anchor="middle" fill="var(--pro)">Visite + chiffrage</text>
         <text class="d-sub" x="909" y="373" text-anchor="middle" fill="var(--pro)">sous 8 jours</text>
-        <text class="d-sub" x="22" y="412">7 taps · ~70 s</text>
+        <text class="d-sub" x="22" y="412">8 taps · ~75 s</text>
       </svg>
     </div>
-    <figcaption>Chaque tap supplémentaire coûte des demandes abandonnées. On ne dépense des écrans que là où l'intention est forte : quelqu'un qui prépare un ravalement acceptera sept questions, quelqu'un qui a de l'eau au plafond n'en acceptera pas trois.</figcaption>
+    <figcaption>Sur le parcours projet, le type de travaux choisi coche les corps de métier tout seul : un tap y remplace six cases. Chaque tap supplémentaire coûte des demandes abandonnées. On ne dépense des écrans que là où l'intention est forte : quelqu'un qui prépare un ravalement acceptera sept questions, quelqu'un qui a de l'eau au plafond n'en acceptera pas trois.</figcaption>
   </figure>
 </section>
 
@@ -261,11 +261,13 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
 .opt[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .tile{border-radius:10px;padding:11px 11px;font-size:.84rem;line-height:1.3}
+.tile.wide{grid-column:1/-1}
 .tile[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
 .chip{border-radius:999px;padding:8px 13px;font-size:.82rem}
 .chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
 .fld{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem}
+textarea.fld{min-height:82px;resize:vertical;line-height:1.45}
 .fld::placeholder{color:var(--ink-3)}
 .cta{width:100%;padding:14px;background:var(--accent);color:var(--surface);border:0;border-radius:10px;font-family:var(--display);font-weight:600;font-size:1rem;cursor:pointer;margin-top:18px;display:block;text-align:center;text-decoration:none}
 .cta.urg{background:var(--urg)}
@@ -326,7 +328,7 @@ footer{border-top:1px solid var(--line);padding-block:30px 50px;font-size:.85rem
   <div class="sec-head">
     <p class="eyebrow">Le prototype</p>
     <h2>Essayez-le, le chrono tourne</h2>
-    <p class="prose" style="color:var(--ink-2)">Voici la page telle qu'elle se comporterait sur le téléphone d'un habitant. Le bandeau chrono et compteur de taps sert à vérifier la cible de temps, il n'existe pas sur la page réelle. À droite, la fiche se remplit en direct : c'est exactement ce qui vous arrive, y compris le verdict de routage, que le demandeur ne voit jamais.</p>
+    <p class="prose" style="color:var(--ink-2)">Voici la page telle qu'elle se comporterait sur le téléphone d'un habitant. Le bandeau chrono et compteur de taps sert à vérifier la cible de temps, il n'existe pas sur la page réelle. Sur le parcours projet, essayez « rénovation complète d’un appartement ». À droite, la fiche se remplit en direct : c'est exactement ce qui vous arrive, y compris le verdict de routage, que le demandeur ne voit jamais.</p>
   </div>
   <div class="proto">
     <div class="phone">
@@ -358,7 +360,7 @@ footer{border-top:1px solid var(--line);padding-block:30px 50px;font-size:.85rem
     <div>Urgence, dépannage ou projet</div>
     <div>Le délai que vous promettez, et donc le canal : appel immédiat, rappel dans la journée, visite sous huit jours. C'est aussi le tri de votre boîte le matin.</div>
     <div>Corps de métier</div>
-    <div>Le contact que vous sortez de votre répertoire. En choix multiple sur le parcours projet, parce que deux métiers cochés valent une mission de coordination.</div>
+    <div>Le contact que vous sortez de votre répertoire. Sur le parcours projet il n’est plus saisi à la main : le type de travaux coche les métiers tout seul, et deux métiers cochés valent une mission de coordination.</div>
     <div>Partie privative ou commune</div>
     <div>Qui paie. Un privatif se traite entre vous et l'occupant. Un commun passe par le syndic, parfois par un vote en assemblée générale, et c'est un chantier plus gros.</div>
     <div>Statut du demandeur</div>
@@ -367,8 +369,12 @@ footer{border-top:1px solid var(--line);padding-block:30px 50px;font-size:.85rem
     <div>La zone d'intervention et le temps de route de l'entreprise. Une résidence qui revient trois fois vous dit où poser le prochain QR.</div>
     <div>Photo</div>
     <div>Le devis au téléphone sans déplacement. C'est le champ facultatif qui fait gagner le plus de temps : proposez-le, ne l'imposez jamais.</div>
-    <div>Ampleur et échéance <span style="font-weight:400;color:var(--ink-3)">(projet seulement)</span></div>
-    <div>L'ordre de priorité de vos visites, et la taille probable de l'affaire. Un « je me renseigne » ne mérite pas le même créneau qu'un « dès que possible ».</div>
+    <div>Type de projet <span style="font-weight:400;color:var(--ink-3)">(projet seulement)</span></div>
+    <div>Douze projets courants, de la salle de bains au ravalement. « Rénovation complète d’un appartement » coche à lui seul six corps de métier et bascule la demande en maîtrise d’œuvre, sans que personne ait eu à cocher quoi que ce soit.</div>
+    <div>Description libre <span style="font-weight:400;color:var(--ink-3)">(facultative)</span></div>
+    <div>Ce qu’aucune case ne capte : la surface, l’état réel, l’échéance de mise en location, la contrainte de copropriété. Facultatif, placé en dernier, et dictable au micro du clavier. Il n’empêche jamais l’envoi.</div>
+    <div>Échéance et budget <span style="font-weight:400;color:var(--ink-3)">(projet seulement)</span></div>
+    <div>L’ordre de priorité de vos visites et la taille probable de l’affaire. Un « je me renseigne » ne mérite pas le même créneau qu’un « dès que possible ».</div>
     <div>Téléphone</div>
     <div>Le seul champ vraiment obligatoire. L'e-mail est facultatif : au téléphone vous qualifiez en deux minutes ce qu'un échange de mails met trois jours à établir.</div>
   </div>
@@ -381,7 +387,7 @@ footer{border-top:1px solid var(--line);padding-block:30px 50px;font-size:.85rem
   </div>
   <div class="prose">
     <ul class="nope">
-      <li><b>Le message libre obligatoire.</b> Debout dans un hall, personne ne rédige. Laissez-le, mais facultatif et en dernier, sous la photo.</li>
+      <li><b>Le message libre obligatoire.</b> Debout dans un hall, personne ne rédige. Le champ existe sur le parcours projet, mais facultatif et en dernier écran, jamais comme porte d’entrée.</li>
       <li><b>Le nom du syndic ou le numéro de lot.</b> Un locataire sur deux l'ignore. Vous le retrouverez seul à partir de l'adresse.</li>
       <li><b>« Quel artisan souhaitez-vous ? »</b> Le demandeur ne connaît pas la différence entre un plaquiste et un peintre. Posez la question par le symptôme : « fissure au plafond », pas « plâtrerie ».</li>
       <li><b>La création de compte.</b> Aucune. Un numéro de téléphone suffit à vous rappeler.</li>
@@ -419,6 +425,8 @@ Cage d'escalier A, du RDC au 5<sup>e</sup>
 
 Partie COMMUNE · vote en AG à prévoir
 Échéance 3 à 6 mois · budget 15 à 50 k€
+« peinture écaillée du RDC au 5e, faux plafond
+à reprendre au 2e, minuterie hors service »
 2 photos jointes
 
 <strong>→ MISSION MOE — visite, 3 lots chiffrés, dossier AG</strong></div>
@@ -467,13 +475,27 @@ var STATUTS=[
  {id:"pro",l:"Commerce ou entreprise"}
 ];
 var LIEUX={privatif:"Partie privative",commun:"Parties communes",inconnu:"À préciser sur place"};
-var AMPLEURS={simple:"Une seule prestation",multi:"Plusieurs corps de métier",complete:"Rénovation complète"};
+var PROJETS=[
+ {id:"appart",l:"Rénovation complète d'un appartement",w:1,t:["platrerie","electricite","plomberie","peinture","carrelage","menuiserie"]},
+ {id:"sdb",l:"Salle de bains",t:["plomberie","carrelage","electricite","platrerie"]},
+ {id:"cuisine",l:"Cuisine",t:["plomberie","electricite","menuiserie","carrelage"]},
+ {id:"rafraich",l:"Peinture, sols, rafraîchissement",t:["peinture","platrerie","carrelage"]},
+ {id:"communs",l:"Hall, cage d'escalier",t:["peinture","platrerie","electricite"]},
+ {id:"facade",l:"Façade, ravalement",t:["peinture","couverture"]},
+ {id:"toiture",l:"Toiture, étanchéité",t:["couverture"]},
+ {id:"normes",l:"Mise aux normes électrique",t:["electricite"]},
+ {id:"chauff",l:"Chauffage, chaudière, clim",t:["chauffage","clim"]},
+ {id:"menuis",l:"Fenêtres, volets, portes",t:["menuiserie","serrurerie"]},
+ {id:"exter",l:"Extérieurs, espaces verts",t:["verts"]},
+ {id:"autre",l:"Autre projet, à décrire",t:[]}
+];
+function esc(v){return String(v||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 var DELAIS={asap:"Dès que possible",m3:"1 à 3 mois",m6:"3 à 6 mois",info:"Je me renseigne"};
 var CRENEAUX={asap:"Dès que possible",matin:"Le matin",aprem:"L'après-midi",soir:"En soirée"};
 
 var S,step,t0,tick,taps;
 function init(){
-  S={intent:null,trades:[],lieu:null,statut:null,adresse:"",precision:"",ag:null,ampleur:null,delai:null,budget:null,nom:"",tel:"",photo:false,creneau:null,consent:false};
+  S={intent:null,projet:null,trades:[],lieu:null,statut:null,adresse:"",precision:"",ag:null,delai:null,budget:null,description:"",nom:"",tel:"",photo:false,creneau:null,consent:false};
   step="intent"; taps=0; t0=null;
   if(tick){clearInterval(tick);tick=null}
   document.getElementById("clock").textContent="00:00";
@@ -499,7 +521,7 @@ function dots(){
   return '<div class="dots">'+seq.map(function(_,n){return '<i class="'+(n<=i?"on":"")+'"></i>'}).join("")+'</div>';
 }
 function back(to){return '<button class="back" data-go="'+to+'">← retour</button>'}
-function tiles(list,multi){
+function tiles(list){
   return '<div class="grid">'+list.map(function(t){
     var on=S.trades.indexOf(t.id)>=0;
     return '<button class="tile" data-trade="'+t.id+'" aria-pressed="'+on+'">'+t.l+'</button>';
@@ -521,19 +543,25 @@ function render(){
     h+='<p class="note">Maîtrise d\'œuvre et réseau d\'artisans du secteur. Devis gratuit, interventions assurées.</p>';
   }
   else if(step==="trade"){
-    var urg=S.intent==="urgence", multi=S.intent==="projet";
     h+=dots()+back("intent");
-    h+='<p class="q">'+(urg?"Qu'est-ce qui se passe exactement ?":multi?"Quels corps de métier ?":"Qu'est-ce qui ne va pas ?")+'</p>';
-    h+='<p class="qs">'+(multi?"Cochez tout ce qui vous semble concerné, même approximativement.":"Une seule réponse, même approximative.")+'</p>';
-    h+=tiles(urg?TRADES.filter(function(t){return t.u}):TRADES,multi);
-    if(multi)h+='<button class="cta" data-go="where" '+(S.trades.length?"":"disabled")+'>Continuer</button>';
+    if(S.intent==="projet"){
+      h+='<p class="q">C\'est quoi le projet ?</p><p class="qs">Prenez le plus proche, vous ajusterez à l\'écran suivant.</p>';
+      h+='<div class="grid">'+PROJETS.map(function(pr){
+        return '<button class="tile'+(pr.w?" wide":"")+'" data-projet="'+pr.id+'" aria-pressed="'+(S.projet===pr.id)+'">'+pr.l+'</button>';
+      }).join("")+'</div>';
+    }else{
+      var urg=S.intent==="urgence";
+      h+='<p class="q">'+(urg?"Qu'est-ce qui se passe exactement ?":"Qu'est-ce qui ne va pas ?")+'</p>';
+      h+='<p class="qs">Une seule réponse, même approximative.</p>';
+      h+=tiles(urg?TRADES.filter(function(t){return t.u}):TRADES);
+    }
   }
   else if(step==="call"){
     h+=dots()+back("trade");
     h+='<div class="banner"><b>N\'écrivez rien, appelez.</b><p>Une urgence se règle au téléphone. Coupez l\'eau ou l\'électricité si vous le pouvez sans risque, et composez le numéro.</p></div>';
     h+='<a class="cta urg" href="tel:+33600000000">Appeler le 06 00 00 00 00</a>';
     h+='<p class="qn">Pas de réponse dans la minute ?</p>';
-    h+='<input class="fld" id="u-tel" type="tel" inputmode="tel" placeholder="Votre numéro" value="'+S.tel+'" data-set="tel">';
+    h+='<input class="fld" id="u-tel" type="tel" inputmode="tel" placeholder="Votre numéro" value="'+esc(S.tel)+'" data-set="tel">';
     h+='<button class="cta" data-go="done" '+(S.tel.length>=8?"":"disabled")+'>Je veux être rappelé tout de suite</button>';
     h+='<p class="note">Numéro d\'exemple. À remplacer par votre ligne ou par le renvoi d\'astreinte du soir.</p>';
   }
@@ -554,28 +582,32 @@ function render(){
         +'</div>';
     }
     h+='<p class="qn">Adresse</p>';
-    h+='<div class="col"><input class="fld" id="w-adr" placeholder="Numéro et rue, code postal" value="'+S.adresse+'" data-set="adresse">'
-      +'<input class="fld" id="w-pre" placeholder="Bâtiment, étage, porte" value="'+S.precision+'" data-set="precision"></div>';
+    h+='<div class="col"><input class="fld" id="w-adr" placeholder="Numéro et rue, code postal" value="'+esc(S.adresse)+'" data-set="adresse">'
+      +'<input class="fld" id="w-pre" placeholder="Bâtiment, étage, porte" value="'+esc(S.precision)+'" data-set="precision"></div>';
     h+='<button class="cta" data-go="'+(S.intent==="projet"?"scope":"contact")+'" '+(S.lieu&&S.statut&&S.adresse.length>4?"":"disabled")+'>Continuer</button>';
   }
   else if(step==="scope"){
     h+=dots()+back("where");
-    h+='<p class="q">L\'ampleur du projet</p><p class="qs">Une estimation suffit, on affinera à la visite.</p>';
-    h+='<div class="chips">'+Object.keys(AMPLEURS).map(function(k){
-      return '<button class="chip" data-ampleur="'+k+'" aria-pressed="'+(S.ampleur===k)+'">'+AMPLEURS[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="q">Votre projet en quelques mots</p><p class="qs">Tout est modifiable, on affinera à la visite.</p>';
+    h+='<p class="qn">Ce que le projet touche</p><div class="chips">'+TRADES.map(function(t){
+      return '<button class="chip" data-trade="'+t.id+'" aria-pressed="'+(S.trades.indexOf(t.id)>=0)+'">'+t.l+'</button>'}).join("")+'</div>';
+    h+='<p class="note">Pré-rempli d\'après le type de projet. Décochez ou ajoutez librement.</p>';
     h+='<p class="qn">Pour quand ?</p><div class="chips">'+Object.keys(DELAIS).map(function(k){
       return '<button class="chip" data-delai="'+k+'" aria-pressed="'+(S.delai===k)+'">'+DELAIS[k]+'</button>'}).join("")+'</div>';
     h+='<p class="qn">Budget envisagé <span style="text-transform:none;letter-spacing:0">(facultatif)</span></p><div class="chips">'
-      +["< 5 k€","5 à 15 k€","15 à 50 k€","> 50 k€","Je ne sais pas"].map(function(b){
+      +["moins de 5 k€","5 à 15 k€","15 à 50 k€","plus de 50 k€","Je ne sais pas"].map(function(b){
         return '<button class="chip" data-budget="'+b+'" aria-pressed="'+(S.budget===b)+'">'+b+'</button>'}).join("")+'</div>';
-    h+='<button class="cta" data-go="contact" '+(S.ampleur&&S.delai?"":"disabled")+'>Continuer</button>';
+    h+='<p class="qn">Décrivez-le <span style="text-transform:none;letter-spacing:0">(facultatif)</span></p>';
+    h+='<textarea class="fld" id="s-desc" rows="3" data-set="description" placeholder="Ex : appartement de 65 m2 vide à refaire entièrement avant mise en location, cuisine et salle de bains comprises, sols à changer.">'+esc(S.description)+'</textarea>';
+    h+='<p class="note">Deux lignes suffisent. Le micro de votre clavier marche aussi.</p>';
+    h+='<button class="cta" data-go="contact" '+(S.trades.length&&S.delai?"":"disabled")+'>Continuer</button>';
   }
   else if(step==="contact"){
     h+=dots()+back(S.intent==="projet"?"scope":"where");
     h+='<p class="q">Comment je vous rappelle ?</p><p class="qs">Je réponds moi-même, pas un standard.</p>';
     h+='<div class="col">'
-      +'<input class="fld" id="c-nom" placeholder="Prénom et nom" value="'+S.nom+'" data-set="nom">'
-      +'<input class="fld" id="c-tel" type="tel" inputmode="tel" placeholder="Téléphone" value="'+S.tel+'" data-set="tel">'
+      +'<input class="fld" id="c-nom" placeholder="Prénom et nom" value="'+esc(S.nom)+'" data-set="nom">'
+      +'<input class="fld" id="c-tel" type="tel" inputmode="tel" placeholder="Téléphone" value="'+esc(S.tel)+'" data-set="tel">'
       +'</div>';
     h+='<p class="qn">Une photo vaut dix questions <span style="text-transform:none;letter-spacing:0">(facultatif)</span></p>';
     h+='<button class="opt n" data-photo="1" aria-pressed="'+S.photo+'"><b>'+(S.photo?"Photo jointe ✓":"Prendre une photo")+'</b><span>'+(S.photo?"Touchez pour retirer":"Souvent suffisant pour chiffrer sans déplacement")+'</span></button>';
@@ -597,7 +629,7 @@ function render(){
   paint();
 }
 
-function row(k,v){return '<div class="frow"><dt>'+k+'</dt><dd class="'+(v?"":"empty")+'">'+(v||"—")+'</dd></div>'}
+function row(k,v){return '<div class="frow"><dt>'+k+'</dt><dd class="'+(v?"":"empty")+'">'+(esc(v)||"—")+'</dd></div>'}
 function paint(){
   var intent=S.intent?({urgence:"Urgence",depannage:"Dépannage",projet:"Projet de travaux"})[S.intent]:"";
   var tr=S.trades.map(function(id){return TRADES.filter(function(t){return t.id===id})[0].l}).join(" + ");
@@ -608,7 +640,11 @@ function paint(){
   h+=row("Lieu",S.lieu?LIEUX[S.lieu]:"");
   h+=row("Demandeur",st);
   h+=row("Adresse",[S.adresse,S.precision].filter(Boolean).join(" · "));
-  if(S.intent==="projet")h+=row("Ampleur",[S.ampleur?AMPLEURS[S.ampleur]:"",S.delai?DELAIS[S.delai]:"",S.budget||""].filter(Boolean).join(" · ")+(S.ag?" · AG : "+S.ag:""));
+  if(S.intent==="projet"){
+    h+=row("Projet",S.projet?PROJETS.filter(function(x){return x.id===S.projet})[0].l:"");
+    h+=row("Échéance",[S.delai?DELAIS[S.delai]:"",S.budget||"",S.ag?"AG : "+S.ag:""].filter(Boolean).join(" · "));
+    h+=row("Description",S.description);
+  }
   h+=row("Contact",[S.nom,S.tel].filter(Boolean).join(" — "));
   h+=row("Pièces",(S.photo?"1 photo":"")+(S.creneau?(S.photo?" · ":"")+CRENEAUX[S.creneau]:""));
   document.getElementById("fiche").innerHTML=h;
@@ -619,7 +655,6 @@ function paint(){
   else{
     if(S.trades.length>=2)why.push("Deux corps de métier ou plus : il faut quelqu\'un pour les faire tenir ensemble.");
     if(S.lieu==="commun")why.push("Parties communes : décision et paiement collectifs, souvent un dossier pour l\'assemblée générale.");
-    if(S.intent==="projet"&&S.ampleur!=="simple")why.push("Projet de travaux au-delà d\'une seule prestation.");
     if(["syndic","conseil","bailleur","pro"].indexOf(S.statut)>=0)why.push("Demandeur professionnel ou bailleur : interlocuteur habitué à une mission encadrée.");
     kind=why.length?"m":"e";
     if(!why.length)why.push("Un seul métier, en partie privative, pour un particulier : la mise en relation suffit, vous gardez la main sur le prix.");
@@ -637,7 +672,11 @@ document.getElementById("screen").addEventListener("click",function(e){
   if(b.disabled)return;
   bump();
   var d=b.dataset;
-  if(d.intent){S.intent=d.intent;S.trades=[];step="trade"}
+  if(d.intent){S.intent=d.intent;S.trades=[];S.projet=null;step="trade"}
+  else if(d.projet){
+    var pr=PROJETS.filter(function(x){return x.id===d.projet})[0];
+    S.projet=pr.id;S.trades=pr.t.slice();step="where";
+  }
   else if(d.trade){
     if(S.intent==="projet"){
       var i=S.trades.indexOf(d.trade);
@@ -647,7 +686,6 @@ document.getElementById("screen").addEventListener("click",function(e){
   else if(d.lieu){S.lieu=d.lieu}
   else if(d.statut){S.statut=S.statut===d.statut?null:d.statut}
   else if(d.ag){S.ag=d.ag}
-  else if(d.ampleur){S.ampleur=d.ampleur}
   else if(d.delai){S.delai=d.delai}
   else if(d.budget){S.budget=S.budget===d.budget?null:d.budget}
   else if(d.photo){S.photo=!S.photo}
@@ -662,6 +700,7 @@ document.getElementById("screen").addEventListener("input",function(e){
     if(cta){
       var ok = step==="call" ? S.tel.length>=8
         : step==="where" ? !!(S.lieu&&S.statut&&S.adresse.length>4)
+        : step==="scope" ? !!(S.trades.length&&S.delai)
         : S.tel.length>=8&&S.nom.length>1&&S.consent;
       cta.disabled=!ok;
     }
