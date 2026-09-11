@@ -51,6 +51,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .rail nav b{font-family:var(--mono);font-size:.7rem;background:var(--accent);color:var(--surface);border-radius:999px;padding:1px 7px;font-weight:500}
 .rail nav button[aria-current="true"] b{background:var(--accent-ink)}
 .railfoot{margin-top:auto;font-family:var(--mono);font-size:.65rem;letter-spacing:.06em;color:var(--ink-3);padding:0 8px;line-height:1.5}
+.railfoot button{background:none;border:1px solid var(--line-strong);border-radius:5px;color:var(--ink-2);font:inherit;font-size:.68rem;padding:3px 8px;margin-top:6px;cursor:pointer}
 .dotlive{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pro);margin-right:6px}
 .dotoff{background:var(--urg)}
 main{padding:26px clamp(16px,3vw,34px) 60px;min-width:0}
@@ -230,7 +231,7 @@ function prestaLabels(d){return (d.presta||[]).map(function(k){return k.split("|
 function metiersOf(d){return (d.trades||[]).map(function(t){return MET[t]||t})}
 
 /* ---------- état ---------- */
-var db=null,ready=false;
+var db=null,ready=false,etatCx="attente",cxErr="";
 var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[]};
 var route={v:"demandes",id:null};
 var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note"};
@@ -245,12 +246,25 @@ function coll(name){
     console.warn("db "+name,e&&e.code);
   });
 }
-(async function boot(){
+function attendre(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function boot(){
+  etatCx="attente";cxErr="";db=null;ready=false;paint();
+  /* le moteur de base est injecté par la plateforme, parfois après ce script :
+     on l'attend jusqu'à 12 s au lieu de le tester une seule fois. */
+  var c=null;
+  for(var i=0;i<48;i++){
+    if(window.claude&&typeof window.claude.use==="function"){c=window.claude;break}
+    await attendre(250);
+  }
+  if(!c){etatCx="absent";ready=true;paint();return}
+  try{db=await c.use("db")}catch(e){cxErr=(e&&e.code)||"erreur";db=null}
+  if(!db){etatCx=cxErr?"erreur":"refuse";ready=true;paint();return}
+  etatCx="ok";
+  try{Object.keys(DATA).forEach(coll)}
+  catch(e){etatCx="erreur";cxErr=(e&&e.code)||"abonnement impossible"}
   paint();
-  try{db=window.claude&&window.claude.use?await window.claude.use("db"):null}catch(e){db=null}
-  if(!db){ready=true;paint();return}
-  Object.keys(DATA).forEach(coll);
-})();
+}
+boot();
 
 /* ---------- navigation ---------- */
 function navigate(v,id){route={v:v,id:id||null};if(v!=="bordereau")BD=null;window.scrollTo(0,0);paint()}
@@ -260,9 +274,12 @@ function paintNav(){
     var cur=(route.v===n.id)||(n.id==="demandes"&&(route.v==="demande"||route.v==="bordereau"));
     return '<button data-nav="'+n.id+'" aria-current="'+cur+'">'+n.l+(n.id==="demandes"&&nouvelles?' <b>'+nouvelles+'</b>':"")+'</button>';
   }).join("");
-  document.getElementById("railfoot").innerHTML=db
-    ? '<span class="dotlive"></span>Base connectée<br>'+DATA.demandes.length+' demandes · '+DATA.prestataires.length+' entreprises'
-    : (ready?'<span class="dotlive dotoff"></span>Base indisponible<br>lecture seule':'Connexion…');
+  document.getElementById("railfoot").innerHTML= etatCx==="ok"
+    ? '<span class="dotlive"></span>Base connectée<br>'+DATA.demandes.length+' demandes · '+DATA.prestataires.length+' entreprises<br>'
+      +DATA.clients.length+' clients · '+DATA.interventions.length+' interventions'
+    : etatCx==="attente"
+      ? 'Connexion à la base…'
+      : '<span class="dotlive dotoff"></span>Base injoignable<br>'+E(cxErr||etatCx)+'<br><button data-act="reconnecter">Réessayer</button>';
 }
 
 /* ---------- vue : liste des demandes ---------- */
@@ -304,9 +321,19 @@ function vDemandes(){
   return h;
 }
 function emptyBlock(){
-  return db
-    ? '<div class="empty"><h3>Aucune demande ici</h3><p>Changez de filtre, ou saisissez une demande reçue par téléphone.</p></div>'
-    : '<div class="empty"><h3>Base de données indisponible</h3><p>Cette vue a besoin du stockage de l\'artifact. Ouvrez la page depuis votre compte pour retrouver vos données.</p></div>';
+  if(etatCx==="attente")
+    return '<div class="empty"><h3>Connexion à la base…</h3><p>Quelques secondes. Vos données arrivent dès que la plateforme répond.</p></div>';
+  if(etatCx==="ok"&&!ready)
+    return '<div class="empty"><h3>Chargement…</h3></div>';
+  if(etatCx==="ok")
+    return '<div class="empty"><h3>Rien à afficher ici</h3><p>Changez de filtre, ou créez une fiche avec le bouton en haut à droite.</p></div>';
+  return '<div class="empty"><h3>Base de données injoignable</h3>'
+    +'<p>'+(etatCx==="absent"
+      ? "La plateforme n'a pas répondu. Ouvrez la page depuis votre compte, puis réessayez."
+      : etatCx==="refuse"
+        ? "L'accès au stockage n'a pas été accordé à cette page."
+        : "Le stockage a répondu : "+E(cxErr)+".")+'</p>'
+    +'<div class="actions" style="justify-content:center;margin:16px 0 0"><button class="btn" data-act="reconnecter">Réessayer</button></div></div>';
 }
 
 /* ---------- vue : détail d'une demande ---------- */
@@ -640,12 +667,19 @@ function paint(){
   var el=document.getElementById("view");
   var a=document.activeElement,fid=a&&a.id?a.id:null,pos=null;
   try{pos=a&&a.selectionStart}catch(e){}
-  el.innerHTML= route.v==="demandes"?vDemandes()
-    : route.v==="demande"?vDemande()
-    : route.v==="bordereau"?vBordereau()
-    : route.v==="prestataires"?vPrestataires()
-    : route.v==="clients"?vClients()
-    : vInterventions();
+  try{
+    el.innerHTML= route.v==="demandes"?vDemandes()
+      : route.v==="demande"?vDemande()
+      : route.v==="bordereau"?vBordereau()
+      : route.v==="prestataires"?vPrestataires()
+      : route.v==="clients"?vClients()
+      : vInterventions();
+  }catch(err){
+    el.innerHTML='<div class="empty"><h3>Cette vue n\'a pas pu s\'afficher</h3><p>'+E(err&&err.message||err)
+      +'</p><div class="actions" style="justify-content:center;margin:16px 0 0">'
+      +'<button class="btn" data-nav="demandes">Revenir aux demandes</button></div></div>';
+    console.error(err);
+  }
   if(fid){var n=document.getElementById(fid);if(n&&n.focus){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
 }
 
@@ -800,6 +834,7 @@ document.addEventListener("click",function(ev){
   var d=DATA.demandes.filter(function(x){return x.id===(id||route.id)})[0];
 
   if(act==="dlg-close"){closeDlg();return}
+  if(act==="reconnecter"){boot();return}
 
   if(act==="photo"){
     var p=(d.photos||[])[Number(b.dataset.v)]||{};
