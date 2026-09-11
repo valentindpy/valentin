@@ -1,27 +1,45 @@
-# QR Copropriété — page de destination
+# QR Copropriété
 
-Dispositif : un QR code affiché dans les halls d'immeubles renvoie vers une page
-qui qualifie la demande d'un habitant, d'un syndic ou d'un conseil syndical,
-puis la route soit vers une entreprise du réseau, soit vers une mission de
-maîtrise d'œuvre.
+Deux pièces, qui se parlent : la page publique qui qualifie une demande, et le
+back-office qui la traite.
 
-## Contenu
+## `docs/parcours-qr.html` — la page de destination du QR code
 
-- `docs/parcours-qr.html` — note de conception du parcours : schéma des trois
-  parcours (urgence, dépannage, projet), règle de routage entreprise / maîtrise
-  d'œuvre, prototype cliquable du formulaire avec chronomètre, et décisions à
-  arbitrer avant l'implémentation.
+Note de conception du parcours : schéma des trois parcours (urgence, dépannage,
+projet), règle de routage entreprise / maîtrise d'œuvre, prototype cliquable du
+formulaire avec chronomètre, décisions à arbitrer avant l'implémentation.
 
-Ouvrir le fichier dans un navigateur, ou le consulter en ligne comme artifact.
+| Parcours  | Taps | Durée  | Sortie                  |
+|-----------|------|--------|-------------------------|
+| Urgence   | 3    | ~10 s  | Appel direct, astreinte |
+| Dépannage | 5    | ~45 s  | Rappel puis passage     |
+| Projet    | 12   | ~90 s  | Visite et chiffrage     |
 
-## Cibles de conception
+Quatre données suffisent au routage : l'intention, le ou les corps de métier, la
+nature de la partie concernée et le statut du demandeur.
 
-| Parcours  | Taps | Durée  | Sortie                    |
-|-----------|------|--------|---------------------------|
-| Urgence   | 3    | ~10 s  | Appel direct, astreinte   |
-| Dépannage | 5    | ~45 s  | Rappel puis passage        |
-| Projet    | 7    | ~70 s  | Visite et chiffrage        |
+## `docs/regie-copro.html` — la plateforme
 
-Le formulaire collecte quatre données qui suffisent au routage : l'intention,
-le ou les corps de métier, la nature de la partie concernée (privative ou
-commune) et le statut du demandeur.
+Back-office publié comme artifact, avec base de données persistante (capacité
+`db`). Quatre vues :
+
+- **Demandes** — boîte de réception, filtres par état, fiche détaillée avec
+  photos, suivi, sélection d'entreprises filtrées par métier et par ville,
+  génération du mail de demande de devis.
+- **Prestataires** — répertoire classé par ville et par métier, double notation
+  qualité du travail et réactivité, moyennes recalculées à chaque clôture.
+- **Clients** — professionnels et particuliers ; un syndic porte ses
+  copropriétés avec le nombre de lots et le contact du chargé de copropriété.
+- **Historique** — interventions passées, volume de travaux, part conservée.
+
+Le **bordereau de prix** est accessible depuis chaque demande : les postes sont
+listés, chaque entreprise consultée reçoit une colonne de prix à remplir, le
+moins-disant est retenu automatiquement et le prix client est calculé avec la
+marge. Deux exports : le bordereau vierge pour les entreprises, le devis chiffré
+pour le client.
+
+### Reste à brancher
+
+- L'envoi réel du formulaire vers la base de la plateforme.
+- Le stockage des photos jointes.
+- L'envoi des mails depuis la plateforme, aujourd'hui préparés puis copiés.
