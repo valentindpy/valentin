@@ -1,0 +1,676 @@
+<title>Parcours QR Copropriété</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#E9EBEF; --surface:#FFFFFF; --surface-2:#F2F4F7; --sunk:#DFE3EA;
+  --ink:#131A24; --ink-2:#414B59; --ink-3:#6C7686;
+  --line:#CDD3DC; --line-strong:#A7B0BE;
+  --accent:#2E4E77; --accent-soft:#DCE5F1; --accent-ink:#2E4E77;
+  --urg:#BC2F26; --urg-soft:#F8DFDB;
+  --dep:#8E6206; --dep-soft:#F6E9C9;
+  --pro:#20654A; --pro-soft:#D5E9DF;
+  --shadow:0 1px 2px rgba(19,26,36,.06), 0 8px 24px -12px rgba(19,26,36,.18);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101620; --surface:#18202A; --surface-2:#1F2833; --sunk:#0B1018;
+    --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
+    --line:#2B3541; --line-strong:#414D5C;
+    --accent:#84ABD8; --accent-soft:#1D2E44; --accent-ink:#9CBEE4;
+    --urg:#EE8F84; --urg-soft:#3A1F1C;
+    --dep:#DCB25C; --dep-soft:#332918;
+    --pro:#78C8A0; --pro-soft:#152D23;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101620; --surface:#18202A; --surface-2:#1F2833; --sunk:#0B1018;
+  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
+  --line:#2B3541; --line-strong:#414D5C;
+  --accent:#84ABD8; --accent-soft:#1D2E44; --accent-ink:#9CBEE4;
+  --urg:#EE8F84; --urg-soft:#3A1F1C;
+  --dep:#DCB25C; --dep-soft:#332918;
+  --pro:#78C8A0; --pro-soft:#152D23;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:20px}
+.prose{max-width:66ch}
+h1,h2,h3{font-family:var(--display);font-weight:600;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,5vw,3.1rem);line-height:1.04;letter-spacing:-.022em;font-weight:700}
+h2{font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.15;letter-spacing:-.015em}
+h3{font-size:1.06rem;line-height:1.3;letter-spacing:-.005em}
+p{margin:0}
+a{color:var(--accent-ink)}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0}
+.stack{display:flex;flex-direction:column;gap:14px}
+section{padding-block:clamp(38px,6vw,64px);border-top:1px solid var(--line)}
+.sec-head{display:flex;flex-direction:column;gap:8px;margin-bottom:26px}
+
+/* Header */
+header.hero{padding-block:clamp(40px,7vw,76px) clamp(30px,4vw,44px)}
+.kicker{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);border:1px solid var(--line-strong);border-radius:999px;padding:5px 13px}
+.kicker span.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block}
+.lede{font-size:1.14rem;color:var(--ink-2);max-width:58ch;margin-top:18px}
+.spec{display:flex;flex-wrap:wrap;gap:0;margin-top:32px;border:1px solid var(--line);background:var(--surface);border-radius:4px;overflow:hidden}
+.spec div{flex:1 1 190px;padding:14px 18px;border-right:1px solid var(--line)}
+.spec div:last-child{border-right:0}
+.spec dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.spec dd{margin:3px 0 0;font-family:var(--display);font-weight:600;font-size:1.05rem}
+
+/* Figures */
+figure{margin:0;display:flex;flex-direction:column;gap:12px}
+.figbox{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:20px 16px;overflow-x:auto}
+.figbox svg{display:block;min-width:640px;max-width:100%;height:auto;margin-inline:auto;color:var(--ink-2)}
+figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
+.d-title{font-family:var(--display);font-size:13px;font-weight:600;fill:var(--ink)}
+.d-lab{font-family:var(--body);font-size:12.5px;fill:var(--ink)}
+.d-sub{font-family:var(--mono);font-size:10.5px;fill:var(--ink-3);letter-spacing:.04em}
+.d-edge{font-family:var(--mono);font-size:10.5px;fill:var(--ink-3)}
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <span class="kicker"><span class="dot"></span>Note de conception — page de destination du QR code</span>
+  <h1>Trois portes d'entrée,<br>une seule fiche en sortie.</h1>
+  <p class="lede">Le QR est collé dans un hall d'immeuble. La personne qui le scanne est debout, pressée, souvent agacée. La page doit lui faire dire en moins d'une minute qui elle est, où elle est, et ce qui la dérange — et me dire à moi si j'envoie une entreprise ou si je prends la mission de maîtrise d'œuvre.</p>
+  <dl class="spec">
+    <div><dt>Cible urgence</dt><dd>3 taps · 10 s</dd></div>
+    <div><dt>Cible dépannage</dt><dd>5 taps · 45 s</dd></div>
+    <div><dt>Cible projet</dt><dd>7 taps · 70 s</dd></div>
+    <div><dt>Sortie</dt><dd>1 fiche qualifiée</dd></div>
+  </dl>
+</header>
+
+<section>
+  <div class="sec-head">
+    <p class="eyebrow">Le parcours</p>
+    <h2>Le premier tap décide de la longueur du formulaire</h2>
+    <p class="prose" style="color:var(--ink-2)">L'erreur classique est de poser les mêmes questions à tout le monde. Une fuite qui coule maintenant et un ravalement voté en assemblée générale n'ont pas droit au même nombre d'écrans. L'urgence ne remplit rien : elle appelle.</p>
+  </div>
+  <figure>
+    <div class="figbox">
+      <svg viewBox="0 0 1000 452" role="img" aria-label="Trois parcours partant du scan du QR code : urgence en trois étapes vers un appel direct, dépannage en cinq étapes vers un devis, projet en sept étapes vers une visite.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- scan -->
+        <rect x="22" y="182" width="104" height="88" rx="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text class="d-lab" x="74" y="216" text-anchor="middle" fill="var(--accent-ink)">Scan du</text>
+        <text class="d-lab" x="74" y="233" text-anchor="middle" fill="var(--accent-ink)">QR dans</text>
+        <text class="d-lab" x="74" y="250" text-anchor="middle" fill="var(--accent-ink)">le hall</text>
+
+        <!-- fan -->
+        <path d="M126 226 C 150 226, 146 90, 168 90" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <path d="M126 226 L168 226" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <path d="M126 226 C 150 226, 146 362, 168 362" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+
+        <!-- LANE 1 urgence y=90 -->
+        <rect x="172" y="66" width="110" height="48" rx="4" fill="var(--urg-soft)" stroke="var(--urg)" stroke-width="1.5"/>
+        <text class="d-lab" x="227" y="86" text-anchor="middle" fill="var(--urg)">Urgence</text>
+        <text class="d-sub" x="227" y="101" text-anchor="middle" fill="var(--urg)">ça coule / ça brûle</text>
+        <line x1="284" y1="90" x2="302" y2="90" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="306" y="66" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="361" y="86" text-anchor="middle">Quel métier</text>
+        <text class="d-sub" x="361" y="101" text-anchor="middle">6 tuiles max</text>
+        <line x1="418" y1="90" x2="436" y2="90" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="440" y="66" width="110" height="48" rx="4" fill="var(--urg)" stroke="var(--urg)"/>
+        <text class="d-lab" x="495" y="95" text-anchor="middle" fill="var(--surface)">Appeler</text>
+        <line x1="552" y1="90" x2="838" y2="90" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+        <text class="d-edge" x="695" y="82" text-anchor="middle">aucun formulaire à remplir</text>
+        <rect x="842" y="66" width="134" height="48" rx="4" fill="var(--surface)" stroke="var(--urg)" stroke-width="1.5"/>
+        <text class="d-lab" x="909" y="86" text-anchor="middle" fill="var(--urg)">Astreinte sur site</text>
+        <text class="d-sub" x="909" y="101" text-anchor="middle" fill="var(--urg)">sous 2 h</text>
+        <text class="d-sub" x="22" y="140">3 taps · ~10 s</text>
+
+        <!-- LANE 2 dépannage y=226 -->
+        <rect x="172" y="202" width="110" height="48" rx="4" fill="var(--dep-soft)" stroke="var(--dep)" stroke-width="1.5"/>
+        <text class="d-lab" x="227" y="222" text-anchor="middle" fill="var(--dep)">Dépannage</text>
+        <text class="d-sub" x="227" y="237" text-anchor="middle" fill="var(--dep)">ça marche mal</text>
+        <line x1="284" y1="226" x2="302" y2="226" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="306" y="202" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="361" y="222" text-anchor="middle">Quel métier</text>
+        <text class="d-sub" x="361" y="237" text-anchor="middle">1 seul choix</text>
+        <line x1="418" y1="226" x2="436" y2="226" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="440" y="202" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="495" y="222" text-anchor="middle">Où + qui</text>
+        <text class="d-sub" x="495" y="237" text-anchor="middle">privatif / commun</text>
+        <line x1="552" y1="226" x2="570" y2="226" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="574" y="202" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="629" y="222" text-anchor="middle">Contact</text>
+        <text class="d-sub" x="629" y="237" text-anchor="middle">+ photo</text>
+        <line x1="686" y1="226" x2="838" y2="226" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="842" y="202" width="134" height="48" rx="4" fill="var(--surface)" stroke="var(--dep)" stroke-width="1.5"/>
+        <text class="d-lab" x="909" y="222" text-anchor="middle" fill="var(--dep)">Rappel + passage</text>
+        <text class="d-sub" x="909" y="237" text-anchor="middle" fill="var(--dep)">24 à 72 h</text>
+        <text class="d-sub" x="22" y="276">5 taps + tél · ~45 s</text>
+
+        <!-- LANE 3 projet y=362 -->
+        <rect x="172" y="338" width="110" height="48" rx="4" fill="var(--pro-soft)" stroke="var(--pro)" stroke-width="1.5"/>
+        <text class="d-lab" x="227" y="358" text-anchor="middle" fill="var(--pro)">Projet</text>
+        <text class="d-sub" x="227" y="373" text-anchor="middle" fill="var(--pro)">devis / travaux</text>
+        <line x1="284" y1="362" x2="302" y2="362" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="306" y="338" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="361" y="358" text-anchor="middle">Corps de métier</text>
+        <text class="d-sub" x="361" y="373" text-anchor="middle">choix multiple</text>
+        <line x1="418" y1="362" x2="436" y2="362" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="440" y="338" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="495" y="358" text-anchor="middle">Où + qui</text>
+        <text class="d-sub" x="495" y="373" text-anchor="middle">+ vote en AG ?</text>
+        <line x1="552" y1="362" x2="570" y2="362" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="574" y="338" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="629" y="358" text-anchor="middle">Ampleur</text>
+        <text class="d-sub" x="629" y="373" text-anchor="middle">+ échéance</text>
+        <line x1="686" y1="362" x2="704" y2="362" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="708" y="338" width="110" height="48" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="763" y="358" text-anchor="middle">Contact</text>
+        <text class="d-sub" x="763" y="373" text-anchor="middle">+ photo</text>
+        <line x1="820" y1="362" x2="838" y2="362" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <rect x="842" y="338" width="134" height="48" rx="4" fill="var(--surface)" stroke="var(--pro)" stroke-width="1.5"/>
+        <text class="d-lab" x="909" y="358" text-anchor="middle" fill="var(--pro)">Visite + chiffrage</text>
+        <text class="d-sub" x="909" y="373" text-anchor="middle" fill="var(--pro)">sous 8 jours</text>
+        <text class="d-sub" x="22" y="412">7 taps · ~70 s</text>
+      </svg>
+    </div>
+    <figcaption>Chaque tap supplémentaire coûte des demandes abandonnées. On ne dépense des écrans que là où l'intention est forte : quelqu'un qui prépare un ravalement acceptera sept questions, quelqu'un qui a de l'eau au plafond n'en acceptera pas trois.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="sec-head">
+    <p class="eyebrow">La règle</p>
+    <h2>Deux réponses suffisent à décider qui intervient</h2>
+    <p class="prose" style="color:var(--ink-2)">La question « voulez-vous un artisan ou un maître d'œuvre ? » ne se pose jamais au demandeur : il n'en sait rien, et le mot maîtrise d'œuvre ne lui parle pas. La réponse se déduit du nombre de corps de métier touchés et de la nature de la partie concernée.</p>
+  </div>
+  <figure>
+    <div class="figbox">
+      <svg viewBox="0 0 940 326" role="img" aria-label="Quatre données collectées alimentent une règle de routage qui envoie soit vers un envoi direct d'entreprise, soit vers une mission de maîtrise d'œuvre.">
+        <rect x="20" y="34" width="212" height="42" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="36" y="60">Intention (urgence / dép. / projet)</text>
+        <rect x="20" y="90" width="212" height="42" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="36" y="116">Corps de métier : 1 ou plusieurs</text>
+        <rect x="20" y="146" width="212" height="42" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="36" y="172">Partie privative ou commune</text>
+        <rect x="20" y="202" width="212" height="42" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"/>
+        <text class="d-lab" x="36" y="228">Statut du demandeur</text>
+        <text class="d-sub" x="20" y="24">CE QUE LA PAGE A DÉJÀ COLLECTÉ</text>
+
+        <path d="M232 55 C 280 55, 286 139, 330 139" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <path d="M232 111 C 280 111, 290 139, 330 139" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <path d="M232 167 C 280 167, 290 139, 330 139" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <path d="M232 223 C 280 223, 286 139, 330 139" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+
+        <rect x="334" y="106" width="150" height="66" rx="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text class="d-title" x="409" y="133" text-anchor="middle" fill="var(--accent-ink)">Règle de routage</text>
+        <text class="d-sub" x="409" y="151" text-anchor="middle" fill="var(--accent-ink)">appliquée à l'envoi</text>
+
+        <path d="M484 128 C 540 128, 560 64, 614 64" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <text class="d-edge" x="552" y="80" text-anchor="middle">1 métier · privatif</text>
+        <path d="M484 150 C 540 150, 560 226, 614 226" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
+        <text class="d-edge" x="556" y="200" text-anchor="middle">2 métiers et + · ou commun</text>
+
+        <rect x="618" y="34" width="302" height="62" rx="4" fill="var(--surface)" stroke="var(--dep)" stroke-width="1.5"/>
+        <text class="d-title" x="638" y="60" fill="var(--dep)">J'envoie l'entreprise</text>
+        <text class="d-sub" x="638" y="79" fill="var(--dep)">mise en relation, je garde la main sur le prix</text>
+
+        <rect x="618" y="196" width="302" height="62" rx="4" fill="var(--surface)" stroke="var(--pro)" stroke-width="1.5"/>
+        <text class="d-title" x="638" y="222" fill="var(--pro)">Je prends la mission de maîtrise d'œuvre</text>
+        <text class="d-sub" x="638" y="241" fill="var(--pro)">visite, lots chiffrés, planning, suivi de chantier</text>
+
+        <path d="M769 96 L769 196" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+        <text class="d-edge" x="781" y="152">le chantier déborde sur d'autres lots</text>
+      </svg>
+    </div>
+    <figcaption>Le routage n'est pas figé : une demande partie en envoi direct remonte en mission de maîtrise d'œuvre dès qu'un deuxième corps de métier entre en jeu. C'est le cas le plus rentable et c'est celui que la page doit savoir détecter toute seule.</figcaption>
+  </figure>
+</section>
+
+<style>
+.proto{display:grid;grid-template-columns:auto minmax(0,1fr);gap:34px;align-items:start}
+@media (max-width:900px){.proto{grid-template-columns:1fr}}
+.phone{width:min(360px,100%);background:var(--surface);border:1px solid var(--line-strong);border-radius:24px;padding:10px;box-shadow:var(--shadow);justify-self:center}
+.instr{display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--ink-3);padding:4px 10px 9px}
+.instr b{color:var(--ink);font-weight:500}
+.instr button{background:none;border:0;color:var(--ink-3);font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.screen{background:var(--surface-2);border:1px solid var(--line);border-radius:16px;padding:18px 16px 22px;height:592px;overflow-y:auto}
+.dots{display:flex;gap:5px;margin-bottom:16px}
+.dots i{height:3px;flex:1;background:var(--line-strong);border-radius:2px}
+.dots i.on{background:var(--accent)}
+.q{font-family:var(--display);font-size:1.12rem;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.qs{font-size:.83rem;color:var(--ink-3);margin:5px 0 14px}
+.qn{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:20px 0 8px}
+.col{display:flex;flex-direction:column;gap:8px}
+.opt,.tile,.chip{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);cursor:pointer;text-align:left}
+.opt{border-radius:10px;padding:14px 14px 14px 15px;border-left-width:4px;border-left-style:solid}
+.opt b{display:block;font-family:var(--display);font-weight:600;font-size:1rem}
+.opt span{display:block;font-size:.8rem;color:var(--ink-3);margin-top:2px;line-height:1.35}
+.opt.u{border-left-color:var(--urg)} .opt.u b{color:var(--urg)}
+.opt.d{border-left-color:var(--dep)} .opt.d b{color:var(--dep)}
+.opt.p{border-left-color:var(--pro)} .opt.p b{color:var(--pro)}
+.opt.n{border-left-color:var(--line-strong);padding:12px 14px}
+.opt.n b{font-size:.95rem}
+.opt[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{border-radius:10px;padding:11px 11px;font-size:.84rem;line-height:1.3}
+.tile[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border-radius:999px;padding:8px 13px;font-size:.82rem}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.fld{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem}
+.fld::placeholder{color:var(--ink-3)}
+.cta{width:100%;padding:14px;background:var(--accent);color:var(--surface);border:0;border-radius:10px;font-family:var(--display);font-weight:600;font-size:1rem;cursor:pointer;margin-top:18px;display:block;text-align:center;text-decoration:none}
+.cta.urg{background:var(--urg)}
+.cta[disabled]{opacity:.45;cursor:not-allowed}
+.back{background:none;border:0;color:var(--ink-3);font:inherit;font-size:.8rem;cursor:pointer;padding:0 0 12px;display:block}
+.note{font-size:.76rem;color:var(--ink-3);line-height:1.45;margin-top:12px}
+.cbx{display:flex;gap:9px;align-items:flex-start;font-size:.8rem;color:var(--ink-2);line-height:1.4;margin-top:14px;cursor:pointer}
+.cbx input{margin-top:2px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.banner{border-radius:12px;padding:16px;background:var(--urg-soft);border:1px solid var(--urg)}
+.banner b{font-family:var(--display);font-size:1.05rem;color:var(--urg);display:block}
+.banner p{font-size:.84rem;color:var(--urg);margin-top:5px;line-height:1.4}
+.ok{text-align:center;padding-top:26px}
+.ok .mark{width:52px;height:52px;border-radius:50%;background:var(--pro-soft);border:1px solid var(--pro);color:var(--pro);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem}
+.ref{font-family:var(--mono);font-size:.82rem;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px;margin-top:14px;display:block}
+*:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.side{display:flex;flex-direction:column;gap:18px}
+.fiche{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:20px 22px}
+.fiche h3{margin-bottom:4px}
+.fiche .sub{font-size:.82rem;color:var(--ink-3)}
+.frow{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;padding:9px 0;border-top:1px solid var(--line);font-size:.91rem}
+.frow:first-of-type{margin-top:14px}
+.frow dt{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding-top:3px}
+.frow dd{margin:0;overflow-wrap:anywhere}
+.frow dd.empty{color:var(--ink-3)}
+.verdict{border:1px solid var(--line-strong);border-radius:4px;padding:18px 20px;background:var(--surface)}
+.verdict .tag{font-family:var(--display);font-weight:700;font-size:1.12rem;letter-spacing:-.01em}
+.verdict ul{margin:12px 0 0;padding-left:18px;font-size:.86rem;color:var(--ink-2);line-height:1.5}
+.verdict li{margin-top:4px}
+.verdict.e{border-color:var(--dep)} .verdict.e .tag{color:var(--dep)}
+.verdict.m{border-color:var(--pro)} .verdict.m .tag{color:var(--pro)}
+.verdict.w{border-color:var(--line)} .verdict.w .tag{color:var(--ink-3)}
+
+.pairs{display:grid;grid-template-columns:minmax(200px,260px) minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
+.pairs>div{padding:15px 20px;border-top:1px solid var(--line)}
+.pairs>div:nth-child(-n+2){border-top:0}
+.pairs>div:nth-child(odd){background:var(--surface-2);font-family:var(--display);font-weight:600;font-size:.96rem}
+.pairs>div:nth-child(even){color:var(--ink-2);font-size:.93rem}
+@media (max-width:640px){.pairs{grid-template-columns:1fr}.pairs>div:nth-child(even){border-top:0;padding-top:0}}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.lead{background:var(--surface);border:1px solid var(--line);border-left-width:4px;border-radius:4px;padding:18px 20px;font-family:var(--mono);font-size:.82rem;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}
+.lead.e{border-left-color:var(--dep)} .lead.m{border-left-color:var(--pro)}
+.lead strong{font-weight:500;color:var(--ink)}
+.nope{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.nope li{padding-left:26px;position:relative;color:var(--ink-2);font-size:.95rem}
+.nope li::before{content:"✕";position:absolute;left:0;top:0;color:var(--urg);font-size:.85rem}
+.nope li b{color:var(--ink);font-weight:600}
+.todo{counter-reset:t;list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;background:var(--line);border:1px solid var(--line);border-radius:4px}
+.todo li{counter-increment:t;background:var(--surface);padding:18px 20px}
+.todo li::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:.7rem;color:var(--accent-ink);letter-spacing:.1em;display:block;margin-bottom:7px}
+.todo b{display:block;font-family:var(--display);font-size:1rem;margin-bottom:4px}
+.todo span{font-size:.9rem;color:var(--ink-2);line-height:1.5}
+footer{border-top:1px solid var(--line);padding-block:30px 50px;font-size:.85rem;color:var(--ink-3)}
+</style>
+
+<section>
+  <div class="sec-head">
+    <p class="eyebrow">Le prototype</p>
+    <h2>Essayez-le, le chrono tourne</h2>
+    <p class="prose" style="color:var(--ink-2)">Voici la page telle qu'elle se comporterait sur le téléphone d'un habitant. Le bandeau chrono et compteur de taps sert à vérifier la cible de temps, il n'existe pas sur la page réelle. À droite, la fiche se remplit en direct : c'est exactement ce qui vous arrive, y compris le verdict de routage, que le demandeur ne voit jamais.</p>
+  </div>
+  <div class="proto">
+    <div class="phone">
+      <div class="instr">
+        <span>⏱ <b id="clock">00:00</b></span>
+        <span>taps <b id="taps">0</b></span>
+        <button type="button" id="reset">recommencer</button>
+      </div>
+      <div class="screen" id="screen"></div>
+    </div>
+    <div class="side">
+      <div class="fiche">
+        <h3>Fiche reçue côté maîtrise d'œuvre</h3>
+        <p class="sub">Mise à jour à chaque tap dans le téléphone.</p>
+        <dl id="fiche"></dl>
+      </div>
+      <div class="verdict w" id="verdict"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <p class="eyebrow">Question par question</p>
+    <h2>Ce que chaque écran achète</h2>
+    <p class="prose" style="color:var(--ink-2)">Une question n'a le droit d'exister que si sa réponse change quelque chose pour vous : qui vous appelez, qui paie, sous combien de temps vous y allez.</p>
+  </div>
+  <div class="pairs">
+    <div>Urgence, dépannage ou projet</div>
+    <div>Le délai que vous promettez, et donc le canal : appel immédiat, rappel dans la journée, visite sous huit jours. C'est aussi le tri de votre boîte le matin.</div>
+    <div>Corps de métier</div>
+    <div>Le contact que vous sortez de votre répertoire. En choix multiple sur le parcours projet, parce que deux métiers cochés valent une mission de coordination.</div>
+    <div>Partie privative ou commune</div>
+    <div>Qui paie. Un privatif se traite entre vous et l'occupant. Un commun passe par le syndic, parfois par un vote en assemblée générale, et c'est un chantier plus gros.</div>
+    <div>Statut du demandeur</div>
+    <div>Qui décide. Un locataire ne peut engager ni les communs ni, souvent, les gros travaux de son logement. Un syndic ou un conseil syndical est un compte à cultiver, pas une demande isolée.</div>
+    <div>Adresse, bâtiment, étage</div>
+    <div>La zone d'intervention et le temps de route de l'entreprise. Une résidence qui revient trois fois vous dit où poser le prochain QR.</div>
+    <div>Photo</div>
+    <div>Le devis au téléphone sans déplacement. C'est le champ facultatif qui fait gagner le plus de temps : proposez-le, ne l'imposez jamais.</div>
+    <div>Ampleur et échéance <span style="font-weight:400;color:var(--ink-3)">(projet seulement)</span></div>
+    <div>L'ordre de priorité de vos visites, et la taille probable de l'affaire. Un « je me renseigne » ne mérite pas le même créneau qu'un « dès que possible ».</div>
+    <div>Téléphone</div>
+    <div>Le seul champ vraiment obligatoire. L'e-mail est facultatif : au téléphone vous qualifiez en deux minutes ce qu'un échange de mails met trois jours à établir.</div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <p class="eyebrow">Ce qu'on enlève</p>
+    <h2>Les champs qui tuent le formulaire</h2>
+  </div>
+  <div class="prose">
+    <ul class="nope">
+      <li><b>Le message libre obligatoire.</b> Debout dans un hall, personne ne rédige. Laissez-le, mais facultatif et en dernier, sous la photo.</li>
+      <li><b>Le nom du syndic ou le numéro de lot.</b> Un locataire sur deux l'ignore. Vous le retrouverez seul à partir de l'adresse.</li>
+      <li><b>« Quel artisan souhaitez-vous ? »</b> Le demandeur ne connaît pas la différence entre un plaquiste et un peintre. Posez la question par le symptôme : « fissure au plafond », pas « plâtrerie ».</li>
+      <li><b>La création de compte.</b> Aucune. Un numéro de téléphone suffit à vous rappeler.</li>
+      <li><b>Le budget obligatoire.</b> Il fait fuir sur le parcours dépannage. Gardez-le en fourchettes facultatives, uniquement sur le parcours projet.</li>
+      <li><b>Les dix corps de métier en liste déroulante.</b> Une liste déroulante sur mobile coûte trois gestes. Des tuiles en coûtent un.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <p class="eyebrow">La sortie</p>
+    <h2>Ce qui tombe sur votre téléphone</h2>
+    <p class="prose" style="color:var(--ink-2)">Même gabarit pour les deux, seul l'en-tête change. Lisible en entier sur l'écran de verrouillage, sans ouvrir l'application.</p>
+  </div>
+  <div class="cards">
+    <div class="lead e"><strong>DÉPANNAGE · Plomberie</strong>
+réf. VD-260912-A7 · reçu 08 h 14
+
+Mme Sellier — 06 12 34 56 78
+14 rue des Peupliers, 93100 Montreuil
+Bât. B · 3<sup>e</sup> étage · porte 12
+
+Partie PRIVATIVE · Locataire
+« fuite sous l'évier, je coupe l'eau en partant »
+Photo jointe · rappel souhaité le matin
+
+<strong>→ ENVOI DIRECT — plombier secteur est</strong></div>
+    <div class="lead m"><strong>PROJET · Peinture + plâtrerie + électricité</strong>
+réf. VD-260912-B2 · reçu 19 h 47
+
+M. Aguilar — conseil syndical — 06 98 76 54 32
+22 avenue Gambetta, 93170 Bagnolet
+Cage d'escalier A, du RDC au 5<sup>e</sup>
+
+Partie COMMUNE · vote en AG à prévoir
+Échéance 3 à 6 mois · budget 15 à 50 k€
+2 photos jointes
+
+<strong>→ MISSION MOE — visite, 3 lots chiffrés, dossier AG</strong></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <p class="eyebrow">Avant de coder</p>
+    <h2>Six décisions à prendre</h2>
+  </div>
+  <ol class="todo">
+    <li><b>Un QR par résidence</b><span>Le même site, mais une adresse par immeuble : la page pré-remplit l'adresse et le syndic, et vous savez quel hall vous rapporte des demandes. Deux questions en moins et une donnée commerciale en plus.</span></li>
+    <li><b>Le numéro d'urgence</b><span>Le parcours urgence ne vaut que si quelqu'un décroche. Votre ligne, un renvoi le soir, ou le numéro d'astreinte d'un partenaire : à trancher avant d'imprimer le QR.</span></li>
+    <li><b>Les délais affichés</b><span>« Sous 2 h », « sous 72 h », « visite sous 8 jours » sont des promesses opposables. Affichez ce que vous tenez réellement, quitte à annoncer plus large.</span></li>
+    <li><b>Où arrive la demande</b><span>SMS et e-mail suffisent pour démarrer. Prévoyez dès maintenant que chaque fiche parte aussi dans un tableau : sans historique, vous ne saurez jamais quel immeuble convertit.</span></li>
+    <li><b>Le double discours habitant / syndic</b><span>Un habitant cherche un dépanneur, un syndic cherche un coordinateur assuré. Même QR, mais une entrée « je suis syndic ou gestionnaire » qui mène à vos références et à votre attestation décennale.</span></li>
+    <li><b>Les mentions obligatoires</b><span>Consentement au rappel, durée de conservation, identité du responsable de traitement, assurance et qualifications. Une ligne en pied de page, mais elle doit exister avant la première demande.</span></li>
+  </ol>
+</section>
+
+<footer class="wrap" style="padding-inline:0">Note de conception du parcours de la page de destination du QR code copropriété. Les numéros, références et exemples de fiches sont fictifs.</footer>
+</div>
+
+<script>
+var TRADES=[
+ {id:"plomberie",l:"Eau, fuite, WC",u:1},
+ {id:"electricite",l:"Électricité, panne",u:1},
+ {id:"chauffage",l:"Chauffage, chaudière",u:1},
+ {id:"clim",l:"Clim, VMC",u:0},
+ {id:"serrurerie",l:"Serrure, porte, volet",u:1},
+ {id:"couverture",l:"Toiture, infiltration",u:1},
+ {id:"peinture",l:"Peinture, murs",u:0},
+ {id:"platrerie",l:"Cloison, plafond",u:0},
+ {id:"carrelage",l:"Carrelage, sol",u:0},
+ {id:"menuiserie",l:"Fenêtres, menuiserie",u:0},
+ {id:"verts",l:"Espaces verts",u:0},
+ {id:"autre",l:"Autre, je ne sais pas",u:1}
+];
+var STATUTS=[
+ {id:"occupant",l:"Propriétaire occupant"},
+ {id:"locataire",l:"Locataire"},
+ {id:"bailleur",l:"Propriétaire bailleur"},
+ {id:"syndic",l:"Syndic ou gestionnaire"},
+ {id:"conseil",l:"Conseil syndical"},
+ {id:"pro",l:"Commerce ou entreprise"}
+];
+var LIEUX={privatif:"Partie privative",commun:"Parties communes",inconnu:"À préciser sur place"};
+var AMPLEURS={simple:"Une seule prestation",multi:"Plusieurs corps de métier",complete:"Rénovation complète"};
+var DELAIS={asap:"Dès que possible",m3:"1 à 3 mois",m6:"3 à 6 mois",info:"Je me renseigne"};
+var CRENEAUX={asap:"Dès que possible",matin:"Le matin",aprem:"L'après-midi",soir:"En soirée"};
+
+var S,step,t0,tick,taps;
+function init(){
+  S={intent:null,trades:[],lieu:null,statut:null,adresse:"",precision:"",ag:null,ampleur:null,delai:null,budget:null,nom:"",tel:"",photo:false,creneau:null,consent:false};
+  step="intent"; taps=0; t0=null;
+  if(tick){clearInterval(tick);tick=null}
+  document.getElementById("clock").textContent="00:00";
+  document.getElementById("taps").textContent="0";
+  render();
+}
+function startClock(){
+  if(t0)return;
+  t0=Date.now();
+  tick=setInterval(function(){
+    var s=Math.floor((Date.now()-t0)/1000);
+    document.getElementById("clock").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+  },500);
+}
+function stopClock(){if(tick){clearInterval(tick);tick=null}}
+function bump(){taps++;document.getElementById("taps").textContent=taps;startClock()}
+
+function dots(){
+  var seq = S.intent==="urgence" ? ["intent","trade","call"]
+          : S.intent==="projet" ? ["intent","trade","where","scope","contact","done"]
+          : ["intent","trade","where","contact","done"];
+  var i=seq.indexOf(step);
+  return '<div class="dots">'+seq.map(function(_,n){return '<i class="'+(n<=i?"on":"")+'"></i>'}).join("")+'</div>';
+}
+function back(to){return '<button class="back" data-go="'+to+'">← retour</button>'}
+function tiles(list,multi){
+  return '<div class="grid">'+list.map(function(t){
+    var on=S.trades.indexOf(t.id)>=0;
+    return '<button class="tile" data-trade="'+t.id+'" aria-pressed="'+on+'">'+t.l+'</button>';
+  }).join("")+'</div>';
+}
+
+function render(){
+  var h="",sc=document.getElementById("screen");
+  if(step==="intent"){
+    h+=dots();
+    h+='<p class="q">Que se passe-t-il ?</p><p class="qs">Une seule réponse. Si c\'est grave, vous n\'aurez rien à remplir.</p>';
+    h+='<div class="col">'
+      +'<button class="opt u" data-intent="urgence"><b>C\'est une urgence</b><span>Fuite qui coule, plus d\'électricité, porte bloquée, dégât en cours</span></button>'
+      +'<button class="opt d" data-intent="depannage"><b>J\'ai besoin d\'un dépannage</b><span>Ça fonctionne mal, ça peut attendre demain ou après-demain</span></button>'
+      +'<button class="opt p" data-intent="projet"><b>J\'ai un projet de travaux</b><span>Rénovation, mise aux normes, embellissement, devis à comparer</span></button>'
+      +'</div>';
+    h+='<p class="qn">Vous gérez l\'immeuble ?</p>'
+      +'<button class="chip" data-statut="syndic" aria-pressed="'+(S.statut==="syndic")+'">Je suis syndic ou gestionnaire</button>';
+    h+='<p class="note">Maîtrise d\'œuvre et réseau d\'artisans du secteur. Devis gratuit, interventions assurées.</p>';
+  }
+  else if(step==="trade"){
+    var urg=S.intent==="urgence", multi=S.intent==="projet";
+    h+=dots()+back("intent");
+    h+='<p class="q">'+(urg?"Qu'est-ce qui se passe exactement ?":multi?"Quels corps de métier ?":"Qu'est-ce qui ne va pas ?")+'</p>';
+    h+='<p class="qs">'+(multi?"Cochez tout ce qui vous semble concerné, même approximativement.":"Une seule réponse, même approximative.")+'</p>';
+    h+=tiles(urg?TRADES.filter(function(t){return t.u}):TRADES,multi);
+    if(multi)h+='<button class="cta" data-go="where" '+(S.trades.length?"":"disabled")+'>Continuer</button>';
+  }
+  else if(step==="call"){
+    h+=dots()+back("trade");
+    h+='<div class="banner"><b>N\'écrivez rien, appelez.</b><p>Une urgence se règle au téléphone. Coupez l\'eau ou l\'électricité si vous le pouvez sans risque, et composez le numéro.</p></div>';
+    h+='<a class="cta urg" href="tel:+33600000000">Appeler le 06 00 00 00 00</a>';
+    h+='<p class="qn">Pas de réponse dans la minute ?</p>';
+    h+='<input class="fld" id="u-tel" type="tel" inputmode="tel" placeholder="Votre numéro" value="'+S.tel+'" data-set="tel">';
+    h+='<button class="cta" data-go="done" '+(S.tel.length>=8?"":"disabled")+'>Je veux être rappelé tout de suite</button>';
+    h+='<p class="note">Numéro d\'exemple. À remplacer par votre ligne ou par le renvoi d\'astreinte du soir.</p>';
+  }
+  else if(step==="where"){
+    h+=dots()+back("trade");
+    h+='<p class="q">Où est le problème ?</p><p class="qs">C\'est ce qui détermine qui prend les travaux en charge.</p>';
+    h+='<div class="col">'
+      +'<button class="opt n" data-lieu="privatif" aria-pressed="'+(S.lieu==="privatif")+'"><b>Dans mon logement</b><span>Cuisine, salle de bains, pièces, mes fenêtres</span></button>'
+      +'<button class="opt n" data-lieu="commun" aria-pressed="'+(S.lieu==="commun")+'"><b>Dans les parties communes</b><span>Hall, escalier, parking, toiture, façade, local poubelle</span></button>'
+      +'<button class="opt n" data-lieu="inconnu" aria-pressed="'+(S.lieu==="inconnu")+'"><b>Je ne sais pas</b><span>On le déterminera sur place</span></button>'
+      +'</div>';
+    h+='<p class="qn">Vous êtes</p><div class="chips">'+STATUTS.map(function(s){
+      return '<button class="chip" data-statut="'+s.id+'" aria-pressed="'+(S.statut===s.id)+'">'+s.l+'</button>';
+    }).join("")+'</div>';
+    if(S.lieu==="commun"&&S.intent==="projet"){
+      h+='<p class="qn">Un vote en assemblée générale est-il prévu ?</p><div class="chips">'
+        +['oui','non','je ne sais pas'].map(function(v){return '<button class="chip" data-ag="'+v+'" aria-pressed="'+(S.ag===v)+'">'+v+'</button>'}).join("")
+        +'</div>';
+    }
+    h+='<p class="qn">Adresse</p>';
+    h+='<div class="col"><input class="fld" id="w-adr" placeholder="Numéro et rue, code postal" value="'+S.adresse+'" data-set="adresse">'
+      +'<input class="fld" id="w-pre" placeholder="Bâtiment, étage, porte" value="'+S.precision+'" data-set="precision"></div>';
+    h+='<button class="cta" data-go="'+(S.intent==="projet"?"scope":"contact")+'" '+(S.lieu&&S.statut&&S.adresse.length>4?"":"disabled")+'>Continuer</button>';
+  }
+  else if(step==="scope"){
+    h+=dots()+back("where");
+    h+='<p class="q">L\'ampleur du projet</p><p class="qs">Une estimation suffit, on affinera à la visite.</p>';
+    h+='<div class="chips">'+Object.keys(AMPLEURS).map(function(k){
+      return '<button class="chip" data-ampleur="'+k+'" aria-pressed="'+(S.ampleur===k)+'">'+AMPLEURS[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Pour quand ?</p><div class="chips">'+Object.keys(DELAIS).map(function(k){
+      return '<button class="chip" data-delai="'+k+'" aria-pressed="'+(S.delai===k)+'">'+DELAIS[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Budget envisagé <span style="text-transform:none;letter-spacing:0">(facultatif)</span></p><div class="chips">'
+      +["< 5 k€","5 à 15 k€","15 à 50 k€","> 50 k€","Je ne sais pas"].map(function(b){
+        return '<button class="chip" data-budget="'+b+'" aria-pressed="'+(S.budget===b)+'">'+b+'</button>'}).join("")+'</div>';
+    h+='<button class="cta" data-go="contact" '+(S.ampleur&&S.delai?"":"disabled")+'>Continuer</button>';
+  }
+  else if(step==="contact"){
+    h+=dots()+back(S.intent==="projet"?"scope":"where");
+    h+='<p class="q">Comment je vous rappelle ?</p><p class="qs">Je réponds moi-même, pas un standard.</p>';
+    h+='<div class="col">'
+      +'<input class="fld" id="c-nom" placeholder="Prénom et nom" value="'+S.nom+'" data-set="nom">'
+      +'<input class="fld" id="c-tel" type="tel" inputmode="tel" placeholder="Téléphone" value="'+S.tel+'" data-set="tel">'
+      +'</div>';
+    h+='<p class="qn">Une photo vaut dix questions <span style="text-transform:none;letter-spacing:0">(facultatif)</span></p>';
+    h+='<button class="opt n" data-photo="1" aria-pressed="'+S.photo+'"><b>'+(S.photo?"Photo jointe ✓":"Prendre une photo")+'</b><span>'+(S.photo?"Touchez pour retirer":"Souvent suffisant pour chiffrer sans déplacement")+'</span></button>';
+    h+='<p class="qn">Quand vous rappeler ?</p><div class="chips">'+Object.keys(CRENEAUX).map(function(k){
+      return '<button class="chip" data-creneau="'+k+'" aria-pressed="'+(S.creneau===k)+'">'+CRENEAUX[k]+'</button>'}).join("")+'</div>';
+    h+='<label class="cbx"><input type="checkbox" id="c-ok" data-consent="1" '+(S.consent?"checked":"")+'><span>J\'accepte d\'être recontacté au sujet de ma demande. Mes coordonnées ne servent qu\'à cela.</span></label>';
+    h+='<button class="cta" data-go="done" '+(S.tel.length>=8&&S.nom.length>1&&S.consent?"":"disabled")+'>Envoyer ma demande</button>';
+  }
+  else if(step==="done"){
+    stopClock();
+    var d=S.intent==="urgence"?"Je vous rappelle dans les minutes qui viennent.":S.intent==="depannage"?"Je vous rappelle aujourd'hui, intervention sous 72 h.":"Je vous rappelle sous 48 h pour convenir d'une visite.";
+    h+='<div class="ok"><div class="mark">✓</div><p class="q">Demande enregistrée</p><p class="qs">'+d+'</p>'
+      +'<span class="ref">réf. VD-260912-'+(S.intent==="urgence"?"U":S.intent==="projet"?"P":"D")+String(taps*7%90+10)+'</span>'
+      +'<a class="cta" href="#" data-noop="1">Enregistrer mon numéro</a>'
+      +'<p class="note">Gardez le contact : le même numéro sert pour toute la copropriété, en urgence comme en projet.</p></div>';
+  }
+  sc.innerHTML=h;
+  sc.scrollTop=0;
+  paint();
+}
+
+function row(k,v){return '<div class="frow"><dt>'+k+'</dt><dd class="'+(v?"":"empty")+'">'+(v||"—")+'</dd></div>'}
+function paint(){
+  var intent=S.intent?({urgence:"Urgence",depannage:"Dépannage",projet:"Projet de travaux"})[S.intent]:"";
+  var tr=S.trades.map(function(id){return TRADES.filter(function(t){return t.id===id})[0].l}).join(" + ");
+  var st=S.statut?STATUTS.filter(function(s){return s.id===S.statut})[0].l:"";
+  var h="";
+  h+=row("Demande",intent);
+  h+=row("Métiers",tr);
+  h+=row("Lieu",S.lieu?LIEUX[S.lieu]:"");
+  h+=row("Demandeur",st);
+  h+=row("Adresse",[S.adresse,S.precision].filter(Boolean).join(" · "));
+  if(S.intent==="projet")h+=row("Ampleur",[S.ampleur?AMPLEURS[S.ampleur]:"",S.delai?DELAIS[S.delai]:"",S.budget||""].filter(Boolean).join(" · ")+(S.ag?" · AG : "+S.ag:""));
+  h+=row("Contact",[S.nom,S.tel].filter(Boolean).join(" — "));
+  h+=row("Pièces",(S.photo?"1 photo":"")+(S.creneau?(S.photo?" · ":"")+CRENEAUX[S.creneau]:""));
+  document.getElementById("fiche").innerHTML=h;
+
+  var v=document.getElementById("verdict"),why=[],kind;
+  if(!S.intent){kind="w"}
+  else if(S.intent==="urgence"){kind="e";why.push("Urgence déclarée : l\'astreinte part la première, la coordination vient après si le sinistre touche les communs.")}
+  else{
+    if(S.trades.length>=2)why.push("Deux corps de métier ou plus : il faut quelqu\'un pour les faire tenir ensemble.");
+    if(S.lieu==="commun")why.push("Parties communes : décision et paiement collectifs, souvent un dossier pour l\'assemblée générale.");
+    if(S.intent==="projet"&&S.ampleur!=="simple")why.push("Projet de travaux au-delà d\'une seule prestation.");
+    if(["syndic","conseil","bailleur","pro"].indexOf(S.statut)>=0)why.push("Demandeur professionnel ou bailleur : interlocuteur habitué à une mission encadrée.");
+    kind=why.length?"m":"e";
+    if(!why.length)why.push("Un seul métier, en partie privative, pour un particulier : la mise en relation suffit, vous gardez la main sur le prix.");
+  }
+  v.className="verdict "+kind;
+  v.innerHTML='<span class="tag">'+(kind==="w"?"En attente du premier tap":kind==="m"?"→ Mission de maîtrise d\'œuvre":"→ Envoi direct de l\'entreprise")+'</span>'
+    +(kind==="w"?'<ul><li>Le verdict se calcule tout seul à partir des réponses. Le demandeur ne le voit jamais.</li></ul>':'<ul>'+why.map(function(w){return "<li>"+w+"</li>"}).join("")+'</ul>');
+}
+
+document.getElementById("screen").addEventListener("click",function(e){
+  var b=e.target.closest("button, a");
+  if(!b)return;
+  if(b.dataset.noop!==undefined){e.preventDefault();return}
+  if(b.tagName==="A"){bump();return}
+  if(b.disabled)return;
+  bump();
+  var d=b.dataset;
+  if(d.intent){S.intent=d.intent;S.trades=[];step="trade"}
+  else if(d.trade){
+    if(S.intent==="projet"){
+      var i=S.trades.indexOf(d.trade);
+      if(i>=0)S.trades.splice(i,1);else S.trades.push(d.trade);
+    }else{S.trades=[d.trade];step=S.intent==="urgence"?"call":"where"}
+  }
+  else if(d.lieu){S.lieu=d.lieu}
+  else if(d.statut){S.statut=S.statut===d.statut?null:d.statut}
+  else if(d.ag){S.ag=d.ag}
+  else if(d.ampleur){S.ampleur=d.ampleur}
+  else if(d.delai){S.delai=d.delai}
+  else if(d.budget){S.budget=S.budget===d.budget?null:d.budget}
+  else if(d.photo){S.photo=!S.photo}
+  else if(d.creneau){S.creneau=d.creneau}
+  else if(d.go){step=d.go}
+  render();
+});
+document.getElementById("screen").addEventListener("input",function(e){
+  var t=e.target;
+  if(t.dataset.set){S[t.dataset.set]=t.value;startClock();paint();
+    var cta=document.querySelector("#screen .cta[data-go]");
+    if(cta){
+      var ok = step==="call" ? S.tel.length>=8
+        : step==="where" ? !!(S.lieu&&S.statut&&S.adresse.length>4)
+        : S.tel.length>=8&&S.nom.length>1&&S.consent;
+      cta.disabled=!ok;
+    }
+  }
+  if(t.dataset.consent){S.consent=t.checked;bump();
+    var c=document.querySelector("#screen .cta[data-go]");
+    if(c)c.disabled=!(S.tel.length>=8&&S.nom.length>1&&S.consent);
+  }
+});
+document.getElementById("reset").addEventListener("click",init);
+init();
+</script>
