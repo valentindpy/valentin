@@ -238,7 +238,7 @@ var BD=null,bdTimer=null,qTimer=null;
 
 function coll(name){
   return db.collection(name).onSnapshot(function(snap){
-    DATA[name]=snap.docs.map(function(doc){var o=doc.data()||{};o.id=doc.id;return o});
+    DATA[name]=snap.docs.map(function(doc){var o=Object.assign({},doc.data()||{});o.id=doc.id;return o});
     ready=true;paint();
   },function(e){
     ready=true;DATA[name]=[];paint();
