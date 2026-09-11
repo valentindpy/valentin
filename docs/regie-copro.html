@@ -118,8 +118,21 @@ select.sel{background:var(--surface);border:1px solid var(--line);border-radius:
 .journal li:first-child{border-top:0}
 .journal time{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);padding-top:2px}
 .pick{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
-.pick label{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:11px;align-items:center;background:var(--surface);padding:10px 13px;cursor:pointer}
-.pick label:hover{background:var(--surface-2)}
+.pick .r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;background:var(--surface);padding:10px 13px}
+.pick .r:hover{background:var(--surface-2)}
+.pick .r.loin{background:var(--surface-2)}
+.pick label{display:grid;grid-template-columns:20px minmax(0,1fr);gap:11px;align-items:center;cursor:pointer;min-width:0}
+.pick .sep{background:var(--surface-2);padding:7px 13px;font-family:var(--mono);font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+@media (max-width:520px){.pick .r{grid-template-columns:minmax(0,1fr) auto}.pick .rate{display:none}}
+.nav-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.nav-tile{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:15px 16px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nav-tile:hover{border-color:var(--accent);background:var(--accent-soft)}
+.nav-tile b{font-family:var(--display);font-weight:600;font-size:.96rem}
+.nav-tile i{font-family:var(--mono);font-style:normal;font-size:.74rem;color:var(--ink-3)}
+.crumb{display:flex;flex-wrap:wrap;gap:7px;align-items:center;font-size:.85rem;color:var(--ink-3);margin-bottom:14px}
+.crumb button{background:none;border:0;color:var(--accent-ink);cursor:pointer;font-size:.85rem;padding:0;text-decoration:underline;text-underline-offset:3px}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:16px}
+.tag.ex{color:var(--ink-3);border-color:var(--line-strong);background:var(--surface-2);text-transform:none;letter-spacing:.04em}
 .pick input{width:16px;height:16px;accent-color:var(--accent);margin:0}
 .pick .nm{font-weight:600;font-family:var(--display);font-size:.92rem}
 .pick .ct{font-size:.78rem;color:var(--ink-3);margin-top:1px;overflow-wrap:anywhere}
@@ -285,7 +298,7 @@ function vDemandes(){
       +'</span><span class="end">'
       +'<span class="tag '+it.c+'">'+it.l+'</span>'
       +'<span class="tag '+(r==="moe"?"p":"n")+'">'+(r==="moe"?"Maîtrise d\'œuvre":"Envoi direct")+'</span>'
-      +'<span class="tag '+et.c+'">'+et.l+'</span>'
+      +'<span class="tag '+et.c+'">'+et.l+'</span>'+(d.exemple?'<span class="tag ex">exemple</span>':"")
       +'</span></button>';
   }).join("")+'</div>';
   return h;
@@ -301,94 +314,95 @@ function vDemande(){
   var d=DATA.demandes.filter(function(x){return x.id===route.id})[0];
   if(!d)return '<button class="back" data-nav="demandes">← Demandes</button>'+emptyBlock();
   var it=INTENT[d.intent]||{l:"?",c:"n"},r=routage(d);
-  var cand=candidats(d);
+  var cand=candidats(d),locaux=cand.filter(function(p){return p.local}),loin=cand.filter(function(p){return !p.local});
   var bd=DATA.bordereaux.filter(function(b){return b.id===d.id})[0];
   var h='<button class="back" data-nav="demandes">← Toutes les demandes</button>';
   h+='<div class="head"><div><p class="eyebrow">'+E(d.ref)+' · reçue le '+dt(d.recu)+'</p>'
     +'<h1>'+E(prestaLabels(d).slice(0,2).join(" · ")||metiersOf(d).join(" · ")||"Demande")+'</h1>'
     +'<p><span class="tag '+it.c+'">'+it.l+'</span> <span class="tag '+(r==="moe"?"p":"n")+'">'
-    +(r==="moe"?"Maîtrise d\'œuvre conseillée":"Envoi direct possible")+'</span></p></div>'
-    +'<div class="chips"><select class="sel" id="etat" data-act="etat" data-id="'+E(d.id)+'">'
+    +(r==="moe"?"Maîtrise d\'œuvre conseillée":"Envoi direct possible")+'</span>'
+    +(d.exemple?' <span class="tag ex">exemple</span>':"")+'</p></div>'
+    +'<select class="sel" id="etat" data-act="etat" data-id="'+E(d.id)+'">'
     +Object.keys(ETATS).map(function(k){return '<option value="'+k+'"'+(d.etat===k?" selected":"")+'>'+ETATS[k].l+'</option>'}).join("")
-    +'</select></div></div>';
+    +'</select></div>';
 
   h+='<div class="split"><div>';
-  /* ce qui est demandé */
-  h+='<div class="card"><h3>Ce qui est demandé</h3><p class="sub">Tel que le demandeur l\'a coché sur la page du QR code.</p>';
+  h+='<div class="card"><h3>Ce qui est demandé</h3><p class="sub">Tel que le demandeur l\'a rempli sur la page du QR code.</p>';
   h+='<div class="chips">'+(prestaLabels(d).map(function(l){return '<span class="chip on">'+E(l)+'</span>'}).join("")
-     ||'<span class="chip">Rien de coché</span>')+'</div>';
+     ||'<span class="chip">Rien de coché, voir la description</span>')+'</div>';
   if(d.description)h+='<dl class="kv" style="margin-top:14px"><dt>Sa description</dt><dd>« '+E(d.description)+' »</dd></dl>';
   h+='<dl style="margin-top:6px">'
     +kv("Corps de métier",metiersOf(d).join(" · ")||"—")
     +kv("Situation",d.lieu==="commun"?"Parties communes":d.lieu==="privatif"?"Partie privative":"À déterminer sur place")
     +(d.delai?kv("Échéance",[d.delai,d.budget,d.ag?"vote AG : "+d.ag:""].filter(Boolean).join(" · ")):"")
     +'</dl></div>';
-  /* photos */
   h+='<div class="card"><h3>Photos du demandeur</h3><p class="sub">'+((d.photos||[]).length||"Aucune")+' pièce(s) jointe(s).</p>';
   h+=(d.photos||[]).length?'<div class="photos">'+(d.photos||[]).map(function(p,i){
       return '<button class="photo" data-act="photo" data-id="'+E(d.id)+'" data-v="'+i+'">'
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8.5A1.5 1.5 0 014.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0121 8.5v9A1.5 1.5 0 0119.5 19h-15A1.5 1.5 0 013 17.5z"/><circle cx="12" cy="13" r="3.2"/></svg>'
       +E(p.nom)+'<span>'+E(p.h||"")+'</span></button>';
-    }).join("")+'</div>':'<p class="note">Le demandeur n\'a rien joint. Demandez-lui une photo par SMS avant de déranger une entreprise.</p>';
-  h+='</div>';
-  /* journal */
-  h+='<div class="card"><h3>Suivi</h3><p class="sub">Tout ce qui a été fait sur cette demande.</p><ul class="journal">'
+    }).join("")+'</div>':'<p class="note">Rien de joint. Demandez une photo par SMS avant de déranger une entreprise.</p>';
+  h+='</div></div><div>';
+  h+='<div class="card"><h3>'+E(d.nom||"Demandeur")+'</h3><p class="sub">'+E(STATUTS[d.statutDemandeur]||"")+'</p><dl>'
+    +kv("Téléphone",d.tel?'<a href="tel:'+E(tel(d.tel))+'">'+E(d.tel)+'</a>':"—")
+    +(d.email?kv("E-mail",E(d.email)):"")
+    +kv("Adresse",[d.residence,d.adresse,d.cp?d.cp+" "+d.ville:d.ville,d.precision].filter(Boolean).map(E).join("<br>"))
+    +(d.coproNom?kv("Copropriété",E(d.coproNom)):"")
+    +'</dl></div>';
+  h+='<div class="card"><h3>Suivi</h3><ul class="journal">'
     +((d.journal||[]).slice().reverse().map(function(j){
       return '<li><time>'+E(jour(j.t))+'</time><span>'+E(j.texte)+'</span></li>'}).join("")
       ||'<li><time>'+E(jour(d.recu))+'</time><span>Demande reçue par le QR code.</span></li>')
     +'</ul></div>';
-  h+='</div><div>';
+  h+='</div></div>';
 
-  /* demandeur */
-  h+='<div class="card"><h3>'+E(d.nom||"Demandeur")+'</h3><p class="sub">'+E(STATUTS[d.statutDemandeur]||"")+'</p><dl>'
-    +kv("Téléphone",d.tel?'<a href="tel:'+E((d.tel||"").replace(/\s/g,""))+'">'+E(d.tel)+'</a>':"—")
-    +(d.email?kv("E-mail",E(d.email)):"")
-    +kv("Adresse",[d.residence,d.adresse,d.cp?d.cp+" "+d.ville:d.ville,d.precision].filter(Boolean).map(E).join("<br>"))
-    +(d.coproNom?kv("Copropriété",E(d.coproNom)):"")
-    +'</dl>';
-  h+='<div class="chips" style="margin-top:14px">'
-    +(d.tel?'<a class="btn sm" href="tel:'+E((d.tel||"").replace(/\s/g,""))+'">Appeler</a>':"")
-    +'<button class="btn sm ghost" data-act="note" data-id="'+E(d.id)+'">Ajouter une note</button></div></div>';
-
-  /* sélection d'entreprises */
-  h+='<div class="card"><h3>Envoyer une demande de devis</h3>'
-    +'<p class="sub">'+cand.length+' entreprise(s) du répertoire pour '+E(metiersOf(d).join(", ")||"ce métier")+' à '+E(d.ville||"proximité")+'.</p>';
-  if(!cand.length)h+='<p class="note">Aucune entreprise ne couvre ce métier dans cette ville. Élargissez, ou ajoutez un contact au répertoire.</p>';
+  /* ---- bloc d'action, en bas de toutes les informations ---- */
+  h+='<div class="card" style="margin-top:22px;border-color:var(--line-strong)">';
+  h+='<h3>Traiter la demande</h3><p class="sub">Appelez, ou consultez les entreprises du secteur. Rien ne part sans que vous le déclenchiez.</p>';
+  h+='<div class="actions">'
+    +(d.tel?'<a class="btn" href="tel:'+E(tel(d.tel))+'">Appeler '+E(d.nom||"le demandeur")+'</a>':"")
+    +'<button class="btn ghost" data-act="note" data-id="'+E(d.id)+'">Ajouter une note</button>'
+    +'<button class="btn ghost" data-act="bordereau" data-id="'+E(d.id)+'">'+(bd?"Ouvrir le bordereau de prix":"Créer un bordereau de prix")+'</button>'
+    +'<button class="btn ghost" data-act="cloturer" data-id="'+E(d.id)+'">Clôturer l\'intervention</button>'
+    +'</div>';
+  h+='<p class="eyebrow" style="margin:22px 0 9px">Entreprises concernées dans le secteur</p>';
+  if(!cand.length)h+='<p class="note">Aucune entreprise du répertoire ne fait '+E(metiersOf(d).join(", ")||"ce métier")+'. Ajoutez un contact depuis l\'onglet Prestataires.</p>';
   else{
-    h+='<div class="pick">'+cand.map(function(p){
-      var on=(d.assignes||[]).indexOf(p.id)>=0;
-      return '<label><input type="checkbox" data-pick="'+E(p.id)+'"'+(on?" checked":"")+'>'
-        +'<span><span class="nm">'+E(p.nom)+'</span><span class="ct">'+E((p.metiers||[]).map(function(m){return MET[m]||m}).join(", "))
-        +' · '+E((p.villes||[]).join(", "))+'</span></span>'
-        +'<span class="rate">'+stars(moy(p))+'</span></label>';
-    }).join("")+'</div>';
-    h+='<div class="chips" style="margin-top:14px">'
-      +'<button class="btn sm" data-act="mail" data-id="'+E(d.id)+'">Préparer le mail</button>'
-      +'<button class="btn sm ghost" data-act="save-pick" data-id="'+E(d.id)+'">Enregistrer la sélection</button></div>';
+    h+='<p class="sub">'+cand.length+' entreprise(s) pour '+E(metiersOf(d).join(", "))
+      +(locaux.length?' · '+locaux.length+' sur '+E(d.ville):"")+'. Cochez celles à consulter, ou appelez directement.</p>';
+    h+='<div class="pick">';
+    if(locaux.length)h+='<div class="sep">Sur '+E(d.ville||"la commune")+'</div>'+locaux.map(function(p){return pickRow(p,d,false)}).join("");
+    if(loin.length)h+='<div class="sep">Ailleurs dans le secteur</div>'+loin.map(function(p){return pickRow(p,d,true)}).join("");
+    h+='</div>';
+    h+='<div class="actions" style="margin-top:16px;margin-bottom:0">'
+      +'<button class="btn" data-act="mail" data-id="'+E(d.id)+'">Envoyer la demande de devis par mail</button>'
+      +'<button class="btn ghost" data-act="save-pick" data-id="'+E(d.id)+'">Enregistrer la sélection</button>'
+      +'<button class="btn ghost" data-act="appels" data-id="'+E(d.id)+'">Liste d\'appels</button>'
+      +'</div>';
   }
   h+='</div>';
-
-  /* bordereau */
-  h+='<div class="card"><h3>Bordereau de prix</h3>'
-    +'<p class="sub">'+(bd?(bd.lignes||[]).length+' ligne(s) · '+(bd.envoye?"envoyé aux entreprises":"brouillon"):"Pour les chantiers que vous chiffrez vous-même.")+'</p>';
-  h+='<p class="note">Vous listez les postes, les entreprises remplissent les prix en face, et vous seul décidez du prix affiché au client.</p>';
-  h+='<div class="chips" style="margin-top:14px"><button class="btn sm'+(bd?" ghost":"")+'" data-act="bordereau" data-id="'+E(d.id)+'">'
-    +(bd?"Ouvrir le bordereau":"Créer le bordereau")+'</button></div></div>';
-
-  /* clôture */
-  h+='<div class="card"><h3>Clôturer</h3><p class="sub">Verse la demande à l\'historique et note l\'entreprise.</p>'
-    +'<button class="btn sm ghost" data-act="cloturer" data-id="'+E(d.id)+'">Enregistrer l\'intervention</button></div>';
-  h+='</div></div>';
   return h;
 }
+function pickRow(p,d,loin){
+  var on=(d.assignes||[]).indexOf(p.id)>=0;
+  return '<div class="r'+(loin?" loin":"")+'">'
+    +'<label><input type="checkbox" data-pick="'+E(p.id)+'"'+(on?" checked":"")+'>'
+    +'<span><span class="nm">'+E(p.nom)+(p.exemple?' <span class="tag ex">exemple</span>':"")+'</span>'
+    +'<span class="ct">'+E((p.metiers||[]).map(function(m){return MET[m]||m}).join(", "))+' · '+E((p.villes||[]).join(", "))+'</span></span></label>'
+    +'<span class="rate">'+stars(moy(p))+'</span>'
+    +(p.tel?'<a class="btn sm ghost" href="tel:'+E(tel(p.tel))+'">Appeler</a>':'<span class="note">pas de n°</span>')
+    +'</div>';
+}
+function tel(t){return String(t||"").replace(/[^0-9+]/g,"")}
 function kv(k,v){return '<div class="kv"><dt>'+k+'</dt><dd>'+v+'</dd></div>'}
 function candidats(d){
   var mets=d.trades||[],ville=(d.ville||"").toLowerCase();
   return DATA.prestataires.filter(function(p){
-    var m=(p.metiers||[]).some(function(x){return mets.indexOf(x)>=0});
-    var v=!ville||(p.villes||[]).some(function(x){return x.toLowerCase().indexOf(ville)>=0||ville.indexOf(x.toLowerCase())>=0});
-    return m&&v;
-  }).sort(function(a,b){return moy(b)-moy(a)});
+    return (p.metiers||[]).some(function(x){return mets.indexOf(x)>=0});
+  }).map(function(p){
+    p.local=!!ville&&(p.villes||[]).some(function(x){return x.toLowerCase().indexOf(ville)>=0||ville.indexOf(x.toLowerCase())>=0});
+    return p;
+  }).sort(function(a,b){return (b.local?1:0)-(a.local?1:0)||moy(b)-moy(a)});
 }
 
 /* ---------- vue : bordereau de prix ---------- */
@@ -471,48 +485,88 @@ function bdSave(){
   db.doc("bordereaux/"+BD.id).set(b).catch(function(e){toast("Enregistrement impossible : "+(e&&e.code||"erreur"))});
 }
 
-/* ---------- vue : prestataires ---------- */
+/* ---------- vue : prestataires (domaine → ville → entreprises) ---------- */
+function carte(p){
+  var nb=DATA.interventions.filter(function(i){return i.prestataireId===p.id}).length;
+  return '<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
+    +'<div><h3>'+E(p.nom)+(p.exemple?' <span class="tag ex">exemple</span>':"")+'</h3>'
+    +'<p class="sub">'+E((p.villes||[]).join(" · "))+'</p></div>'
+    +'<button class="btn sm ghost" data-act="presta-edit" data-id="'+E(p.id)+'">Modifier</button></div>'
+    +'<div class="chips">'+(p.metiers||[]).map(function(m){return '<span class="chip">'+E(MET[m]||m)+'</span>'}).join("")+'</div>'
+    +'<dl style="margin-top:12px">'
+    +kv("Contact",E(p.contact||"—")+(p.tel?' · <a href="tel:'+E(tel(p.tel))+'">'+E(p.tel)+'</a>':""))
+    +(p.email?kv("E-mail",E(p.email)):"")
+    +kv("Qualité",stars(p.qualite||0,"note-q",p.id))
+    +kv("Réactivité",stars(p.reactivite||0,"note-r",p.id))
+    +kv("Interventions",nb+(p.assurance?" · décennale "+E(p.assurance):""))
+    +(p.remarques?kv("Remarques",E(p.remarques)):"")
+    +'</dl>'
+    +(p.tel?'<div class="actions" style="margin:14px 0 0"><a class="btn sm" href="tel:'+E(tel(p.tel))+'">Appeler</a>'
+      +(p.email?'<a class="btn sm ghost" href="mailto:'+E(p.email)+'">Écrire</a>':"")+'</div>':"")
+    +'</div>';
+}
 function vPrestataires(){
-  var villes={},metiers={};
-  DATA.prestataires.forEach(function(p){(p.villes||[]).forEach(function(v){villes[v]=1});(p.metiers||[]).forEach(function(m){metiers[m]=1})});
-  var list=DATA.prestataires.slice();
-  if(flt.metier)list=list.filter(function(p){return (p.metiers||[]).indexOf(flt.metier)>=0});
-  if(flt.ville)list=list.filter(function(p){return (p.villes||[]).indexOf(flt.ville)>=0});
-  if(flt.q){var q=flt.q.toLowerCase();list=list.filter(function(p){return (p.nom+" "+(p.villes||[]).join(" ")).toLowerCase().indexOf(q)>=0})}
-  list.sort(function(a,b){
-    if(flt.tri==="reactivite")return (b.reactivite||0)-(a.reactivite||0);
-    if(flt.tri==="qualite")return (b.qualite||0)-(a.qualite||0);
-    if(flt.tri==="nom")return String(a.nom).localeCompare(String(b.nom));
-    return moy(b)-moy(a);
-  });
+  var all=DATA.prestataires;
   var h='<div class="head"><div><p class="eyebrow">Répertoire</p><h1>Prestataires</h1>'
-    +'<p>'+DATA.prestataires.length+' entreprises · classées par ville et par métier, notées sur la qualité du travail et sur la réactivité.</p></div>'
-    +'<button class="btn" data-act="presta-new">+ Ajouter une entreprise</button></div>';
-  h+='<div class="bar"><select class="sel" data-flt="metier"><option value="">Tous les métiers</option>'
-    +Object.keys(metiers).sort().map(function(m){return '<option value="'+E(m)+'"'+(flt.metier===m?" selected":"")+'>'+E(MET[m]||m)+'</option>'}).join("")+'</select>'
-    +'<select class="sel" data-flt="ville"><option value="">Toutes les villes</option>'
-    +Object.keys(villes).sort().map(function(v){return '<option value="'+E(v)+'"'+(flt.ville===v?" selected":"")+'>'+E(v)+'</option>'}).join("")+'</select>'
-    +'<select class="sel" data-flt="tri">'
+    +'<p>'+all.length+' entreprises du secteur, de Fréjus à Nice. Choisissez un domaine, puis une ville.</p></div>'
+    +'<div class="actions" style="margin:0"><button class="btn ghost" data-act="purge">Vider les exemples</button>'
+    +'<button class="btn" data-act="presta-new">+ Ajouter une entreprise</button></div></div>';
+  h+='<div class="bar"><input class="search" id="q" placeholder="Chercher une entreprise, une ville…" value="'+E(flt.q)+'"></div>';
+
+  if(flt.q){
+    var q=flt.q.toLowerCase();
+    var res=all.filter(function(p){
+      return (p.nom+" "+(p.villes||[]).join(" ")+" "+(p.metiers||[]).map(function(m){return MET[m]||m}).join(" ")).toLowerCase().indexOf(q)>=0;
+    }).sort(function(a,b){return moy(b)-moy(a)});
+    h+='<p class="eyebrow" style="margin-bottom:10px">'+res.length+' résultat(s)</p>';
+    return h+(res.length?'<div class="grid2">'+res.map(carte).join("")+'</div>':emptyBlock());
+  }
+
+  /* étape 1 : les domaines */
+  if(!flt.metier){
+    var parMetier={};
+    all.forEach(function(p){(p.metiers||[]).forEach(function(m){parMetier[m]=(parMetier[m]||0)+1})});
+    var keys=Object.keys(MET).filter(function(m){return parMetier[m]});
+    h+='<p class="eyebrow" style="margin-bottom:10px">Domaines</p><div class="nav-tiles">'
+      +keys.map(function(m){
+        return '<button class="nav-tile" data-flt="metier" data-v="'+E(m)+'"><b>'+E(MET[m])+'</b><i>'+parMetier[m]+'</i></button>';
+      }).join("")+'</div>';
+    var sans=Object.keys(MET).filter(function(m){return !parMetier[m]&&m!=="autre"});
+    if(sans.length)h+='<p class="note" style="margin-top:16px">Aucun contact pour : '+E(sans.map(function(m){return MET[m]}).join(", "))+'.</p>';
+    return h;
+  }
+
+  var dom=all.filter(function(p){return (p.metiers||[]).indexOf(flt.metier)>=0});
+  h+='<div class="crumb"><button data-flt="metier" data-v="">Tous les domaines</button><span>›</span>'
+    +'<strong>'+E(MET[flt.metier]||flt.metier)+'</strong>'
+    +(flt.ville?'<span>›</span><button data-flt="ville" data-v="">Toutes les villes</button><span>›</span><strong>'
+      +E(flt.ville==="*"?"Tout le secteur":flt.ville)+'</strong>':"")+'</div>';
+
+  /* étape 2 : les villes */
+  if(!flt.ville){
+    var parVille={};
+    dom.forEach(function(p){(p.villes||[]).forEach(function(v){parVille[v]=(parVille[v]||0)+1})});
+    h+='<p class="eyebrow" style="margin-bottom:10px">Villes couvertes</p><div class="nav-tiles">'
+      +'<button class="nav-tile" data-flt="ville" data-v="*"><b>Tout le secteur</b><i>'+dom.length+'</i></button>'
+      +Object.keys(parVille).sort().map(function(v){
+        return '<button class="nav-tile" data-flt="ville" data-v="'+E(v)+'"><b>'+E(v)+'</b><i>'+parVille[v]+'</i></button>';
+      }).join("")+'</div>';
+    return h;
+  }
+
+  /* étape 3 : les entreprises */
+  var list=(flt.ville==="*"?dom:dom.filter(function(p){return (p.villes||[]).indexOf(flt.ville)>=0}))
+    .sort(function(a,b){
+      if(flt.tri==="reactivite")return (b.reactivite||0)-(a.reactivite||0);
+      if(flt.tri==="qualite")return (b.qualite||0)-(a.qualite||0);
+      if(flt.tri==="nom")return String(a.nom).localeCompare(String(b.nom));
+      return moy(b)-moy(a);
+    });
+  h+='<div class="bar"><select class="sel" data-flt="tri">'
     +[["note","Note globale"],["qualite","Qualité du travail"],["reactivite","Réactivité"],["nom","Nom"]].map(function(t){
-      return '<option value="'+t[0]+'"'+(flt.tri===t[0]?" selected":"")+'>Trier : '+t[1]+'</option>'}).join("")+'</select>'
-    +'<input class="search" id="q" placeholder="Chercher une entreprise…" value="'+E(flt.q)+'"></div>';
-  if(!list.length)return h+emptyBlock();
-  h+='<div class="grid2">'+list.map(function(p){
-    var nb=DATA.interventions.filter(function(i){return i.prestataireId===p.id}).length;
-    return '<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
-      +'<div><h3>'+E(p.nom)+'</h3><p class="sub">'+E((p.villes||[]).join(" · "))+'</p></div>'
-      +'<button class="btn sm ghost" data-act="presta-edit" data-id="'+E(p.id)+'">Modifier</button></div>'
-      +'<div class="chips">'+(p.metiers||[]).map(function(m){return '<span class="chip">'+E(MET[m]||m)+'</span>'}).join("")+'</div>'
-      +'<dl style="margin-top:12px">'
-      +kv("Contact",E(p.contact||"—")+(p.tel?' · <a href="tel:'+E(p.tel.replace(/\s/g,""))+'">'+E(p.tel)+'</a>':""))
-      +(p.email?kv("E-mail",E(p.email)):"")
-      +kv("Qualité",stars(p.qualite||0,"note-q",p.id))
-      +kv("Réactivité",stars(p.reactivite||0,"note-r",p.id))
-      +kv("Interventions",nb+(p.assurance?" · décennale "+E(p.assurance):""))
-      +(p.remarques?kv("Remarques",E(p.remarques)):"")
-      +'</dl></div>';
-  }).join("")+'</div>';
-  return h;
+      return '<option value="'+t[0]+'"'+(flt.tri===t[0]?" selected":"")+'>Trier : '+t[1]+'</option>'}).join("")
+    +'</select><span class="note">'+list.length+' entreprise(s)</span></div>';
+  return h+(list.length?'<div class="grid2">'+list.map(carte).join("")+'</div>':emptyBlock());
 }
 
 /* ---------- vue : clients ---------- */
@@ -523,10 +577,11 @@ function vClients(){
   var h='<div class="head"><div><p class="eyebrow">Portefeuille</p><h1>Clients</h1>'
     +'<p>'+pros.length+' comptes professionnels · '+pros.reduce(function(s,c){return s+(c.copros||[]).length},0)
     +' copropriétés · '+lots+' lots · '+parts.length+' particuliers</p></div>'
-    +'<button class="btn" data-act="client-new">+ Ajouter un client</button></div>';
+    +'<div class="actions" style="margin:0"><button class="btn ghost" data-act="purge">Vider les exemples</button>'
+    +'<button class="btn" data-act="client-new">+ Ajouter un client</button></div></div>';
   h+='<p class="eyebrow" style="margin-bottom:10px">Professionnels</p><div class="grid2">'+(pros.map(function(c){
     return '<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
-      +'<div><h3>'+E(c.nom)+'</h3><p class="sub">'+E(STATUTS[c.role]||c.role||"")+' · '+E(c.ville||"")+'</p></div>'
+      +'<div><h3>'+E(c.nom)+(c.exemple?' <span class="tag ex">exemple</span>':"")+'</h3><p class="sub">'+E(STATUTS[c.role]||c.role||"")+' · '+E(c.ville||"")+'</p></div>'
       +'<button class="btn sm ghost" data-act="client-edit" data-id="'+E(c.id)+'">Modifier</button></div>'
       +'<dl>'+kv("Interlocuteur",E(c.contactNom||"—")+(c.tel?" · "+E(c.tel):""))+(c.email?kv("E-mail",E(c.email)):"")+'</dl>'
       +(c.copros||[]).map(function(k,i){
@@ -542,7 +597,7 @@ function vClients(){
   h+='<p class="eyebrow" style="margin:26px 0 10px">Particuliers</p><div class="grid2">'+(parts.map(function(c){
     var nb=DATA.demandes.filter(function(d){return d.clientId===c.id}).length;
     return '<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
-      +'<div><h3>'+E(c.nom)+'</h3><p class="sub">'+E(STATUTS[c.role]||"")+' · '+E(c.ville||"")+'</p></div>'
+      +'<div><h3>'+E(c.nom)+(c.exemple?' <span class="tag ex">exemple</span>':"")+'</h3><p class="sub">'+E(STATUTS[c.role]||"")+' · '+E(c.ville||"")+'</p></div>'
       +'<button class="btn sm ghost" data-act="client-edit" data-id="'+E(c.id)+'">Modifier</button></div>'
       +'<dl>'+kv("Téléphone",E(c.tel||"—"))+(c.email?kv("E-mail",E(c.email)):"")
       +kv("Demandes",nb)+(c.notes?kv("Notes",E(c.notes)):"")+'</dl></div>';
@@ -658,7 +713,7 @@ function texteMail(d,ents){
   L.push("");
   L.push("Cordialement,");
   L.push("Valentin Dupuy — Maîtrise d'œuvre");
-  L.push("Régie Copro");
+  L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
   return L.join("\n");
 }
 function texteBordereau(d,avecPrix){
@@ -679,7 +734,7 @@ function texteBordereau(d,avecPrix){
   if(avecPrix){
     L.push("TOTAL HT : "+eur(totClient()));
     L.push("");
-    L.push("Devis établi par Valentin Dupuy, maître d'œuvre. Validité 30 jours.");
+    L.push("Devis établi par Valentin Dupuy, maître d'œuvre, Mandelieu-la-Napoule. Validité 30 jours.");
   }else{
     L.push("Merci de compléter la colonne prix unitaire et de me retourner le document.");
     L.push("Les quantités sont indicatives, à vérifier sur place.");
@@ -737,7 +792,11 @@ document.addEventListener("click",function(ev){
   var id=b.dataset.id,act=b.dataset.act;
   if(b.dataset.nav){navigate(b.dataset.nav,b.dataset.id);return}
   if(b.dataset.open){navigate("demande",b.dataset.open);return}
-  if(b.dataset.flt&&b.tagName==="BUTTON"){flt[b.dataset.flt]=b.dataset.v;paint();return}
+  if(b.dataset.flt&&b.tagName==="BUTTON"){
+    flt[b.dataset.flt]=b.dataset.v;
+    if(b.dataset.flt==="metier")flt.ville="";
+    paint();return;
+  }
   var d=DATA.demandes.filter(function(x){return x.id===(id||route.id)})[0];
 
   if(act==="dlg-close"){closeDlg();return}
@@ -793,6 +852,43 @@ document.addEventListener("click",function(ev){
     var noms=(d.assignes||[]).map(function(pid){var p=DATA.prestataires.filter(function(x){return x.id===pid})[0];return p?p.nom:pid});
     maj(d.id,{etat:"devis",journal:journalise(d,"Demande de devis envoyée à "+noms.join(", ")+".")});
     closeDlg();toast("Demande de devis enregistrée");return;
+  }
+  if(act==="appels"){
+    var sel=[].slice.call(document.querySelectorAll("[data-pick]")).filter(function(i){return i.checked}).map(function(i){return i.dataset.pick});
+    var ents=(sel.length?sel:(d.assignes||[])).map(function(pid){return DATA.prestataires.filter(function(x){return x.id===pid})[0]}).filter(Boolean);
+    if(!ents.length){toast("Cochez au moins une entreprise");return}
+    openDlg("Liste d'appels",E(d.ref)+" · "+E([d.residence,d.ville].filter(Boolean).join(", ")),
+      '<div class="pick">'+ents.map(function(p){
+        return '<div class="r"><span><span class="nm">'+E(p.nom)+'</span><span class="ct">'+E(p.contact||"")
+          +' · réactivité '+(p.reactivite||0)+'/5 · qualité '+(p.qualite||0)+'/5</span></span>'
+          +'<span class="rate">'+stars(moy(p))+'</span>'
+          +(p.tel?'<a class="btn sm" href="tel:'+E(tel(p.tel))+'">'+E(p.tel)+'</a>':'<span class="note">pas de n°</span>')+'</div>';
+      }).join("")+'</div>'
+      +'<p class="note" style="margin-top:12px">Classées par réactivité si vous les avez notées. Appelez dans l\'ordre, la première qui décroche prend le créneau.</p>',
+      '<button class="btn ghost" data-act="dlg-close">Fermer</button>'
+      +'<button class="btn" data-act="appels-log" data-id="'+E(d.id)+'">Noter que j\'ai appelé</button>');
+    return;
+  }
+  if(act==="appels-log"){
+    var noms=(d.assignes||[]).map(function(pid){var x=DATA.prestataires.filter(function(y){return y.id===pid})[0];return x?x.nom:pid});
+    maj(d.id,{etat:"devis",journal:journalise(d,"Appel passé à "+(noms.join(", ")||"une entreprise")+".")});
+    closeDlg();toast("Appel enregistré dans le suivi");return;
+  }
+  if(act==="purge"){
+    openDlg("Vider les exemples","Supprime uniquement les fiches marquées « exemple ». Ce que vous avez saisi vous-même est conservé.",
+      '<p class="warn">'+["prestataires","clients","demandes","interventions"].map(function(c){
+        return DATA[c].filter(function(x){return x.exemple}).length+" "+c}).join(" · ")+' seront supprimés.</p>',
+      '<button class="btn ghost" data-act="dlg-close">Annuler</button><button class="btn" data-act="purge-go">Supprimer</button>');
+    return;
+  }
+  if(act==="purge-go"){
+    if(!db){toast("Base indisponible");return}
+    var jobs=[];
+    ["prestataires","clients","demandes","interventions","bordereaux"].forEach(function(c){
+      DATA[c].filter(function(x){return x.exemple}).forEach(function(x){jobs.push(db.doc(c+"/"+x.id).delete())});
+    });
+    Promise.all(jobs).then(function(){closeDlg();toast("Exemples supprimés")},function(){toast("Suppression partielle")});
+    return;
   }
   if(act==="bd-add"){BD.lignes.push({d:"",u:"ens.",q:1});paint();return}
   if(act==="bd-del"){BD.lignes.splice(Number(b.dataset.i),1);
