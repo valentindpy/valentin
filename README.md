@@ -1,6 +1,6 @@
 # VD SERVICES — QR Copropriété
 
-Consultation · Négociation · Pilotage · Maîtrise d'œuvre
+Consultation · Pilotage · Maîtrise d'œuvre
 Mandelieu-la-Napoule, secteur Fréjus / Nice
 
 Deux pièces, qui se parlent : la page publique qui qualifie une demande, et le

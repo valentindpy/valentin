@@ -207,7 +207,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 
 <div class="shell">
   <aside class="rail">
-    <div class="brand">VD SERVICES<span>Consultation · Négociation<br>Pilotage · Maîtrise d'œuvre</span></div>
+    <div class="brand">VD SERVICES<span>Consultation · Pilotage<br>Maîtrise d'œuvre</span></div>
     <nav id="nav"></nav>
     <div class="railfoot" id="railfoot"></div>
   </aside>
@@ -496,7 +496,7 @@ function texteFacture(pid){
   L.push("Période : "+moisLong(flt.mois));
   L.push("");
   L.push("Émetteur : VD SERVICES — Valentin Dupuy");
-  L.push("Consultation, négociation, pilotage, maîtrise d'œuvre");
+  L.push("Consultation, pilotage, maîtrise d'œuvre");
   L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
   L.push("Destinataire : "+p.nom+(p.contact?" — "+p.contact:""));
   L.push("");
@@ -1071,7 +1071,7 @@ function texteMail(d,ents){
   L.push("");
   L.push("Cordialement,");
   L.push("Valentin Dupuy");
-  L.push("VD SERVICES — consultation, négociation, pilotage, maîtrise d'œuvre");
+  L.push("VD SERVICES — consultation, pilotage, maîtrise d'œuvre");
   L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
   return L.join("\n");
 }
