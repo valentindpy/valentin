@@ -77,7 +77,7 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
 
 <div class="wrap">
 <header class="hero">
-  <span class="kicker"><span class="dot"></span>Note de conception — page de destination du QR code</span>
+  <span class="kicker"><span class="dot"></span>VD Services — note de conception de la page du QR code</span>
   <h1>Trois portes d'entrée,<br>une seule fiche en sortie.</h1>
   <p class="lede">Le QR est collé dans un hall d'immeuble. La personne qui le scanne est debout, pressée, souvent agacée. La page doit lui faire dire en moins d'une minute qui elle est, où elle est, et ce qui la dérange — et me dire à moi si j'envoie une entreprise ou si je prends la mission de maîtrise d'œuvre.</p>
   <dl class="spec">
@@ -341,7 +341,7 @@ footer{border-top:1px solid var(--line);padding-block:30px 50px;font-size:.85rem
     </div>
     <div class="side">
       <div class="fiche">
-        <h3>Fiche reçue côté maîtrise d'œuvre</h3>
+        <h3>Fiche reçue chez VD Services</h3>
         <p class="sub">Mise à jour à chaque tap dans le téléphone.</p>
         <dl id="fiche"></dl>
       </div>
@@ -450,7 +450,7 @@ Partie COMMUNE · vote en AG à prévoir
   </ol>
 </section>
 
-<footer class="wrap" style="padding-inline:0">Note de conception du parcours de la page de destination du QR code copropriété. Les numéros, références et exemples de fiches sont fictifs.</footer>
+<footer class="wrap" style="padding-inline:0">VD SERVICES — consultation, négociation, pilotage, maîtrise d'œuvre. Note de conception du parcours de la page de destination du QR code copropriété. Les numéros, références et exemples de fiches sont fictifs.</footer>
 </div>
 
 <script>
@@ -564,7 +564,7 @@ function render(){
       +'</div>';
     h+='<p class="qn">Vous gérez l\'immeuble ?</p>'
       +'<button class="chip" data-statut="syndic" aria-pressed="'+(S.statut==="syndic")+'">Je suis syndic ou gestionnaire</button>';
-    h+='<p class="note">Maîtrise d\'œuvre et réseau d\'artisans du secteur. Devis gratuit, interventions assurées.</p>';
+    h+='<p class="note"><strong>VD SERVICES</strong> — consultation, négociation, pilotage, maîtrise d\'œuvre. Réseau d\'artisans du secteur, devis gratuit, interventions assurées.</p>';
   }
   else if(step==="trade"){
     h+=dots()+back("intent");
@@ -655,7 +655,7 @@ function render(){
     h+='<div class="ok"><div class="mark">✓</div><p class="q">Demande enregistrée</p><p class="qs">'+d+'</p>'
       +'<span class="ref">réf. VD-260912-'+(S.intent==="urgence"?"U":S.intent==="projet"?"P":"D")+String(taps*7%90+10)+'</span>'
       +'<a class="cta" href="#" data-noop="1">Enregistrer mon numéro</a>'
-      +'<p class="note">Gardez le contact : le même numéro sert pour toute la copropriété, en urgence comme en projet.</p></div>';
+      +'<p class="note"><strong>VD SERVICES</strong> — le même contact pour toute la copropriété, en urgence comme en projet.</p></div>';
   }
   sc.innerHTML=h;
   sc.scrollTop=keep;

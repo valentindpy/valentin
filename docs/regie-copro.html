@@ -1,4 +1,4 @@
-<title>Régie Copro</title>
+<title>VD Services</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -43,7 +43,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .shell{display:grid;grid-template-columns:224px minmax(0,1fr);min-height:100vh}
 .rail{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:22px;padding:20px 14px;position:sticky;top:0;height:100vh}
 .brand{font-family:var(--display);font-weight:700;font-size:1.12rem;letter-spacing:-.02em;padding:0 8px}
-.brand span{display:block;font-family:var(--mono);font-size:.62rem;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-top:3px}
+.brand span{display:block;font-family:var(--mono);font-size:.58rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:5px;line-height:1.7}
 .rail nav{display:flex;flex-direction:column;gap:2px}
 .rail nav button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;background:none;border:0;border-radius:7px;padding:9px 10px;cursor:pointer;color:var(--ink-2);font-size:.93rem}
 .rail nav button:hover{background:var(--surface-2)}
@@ -207,7 +207,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 
 <div class="shell">
   <aside class="rail">
-    <div class="brand">Régie Copro<span>maîtrise d'œuvre</span></div>
+    <div class="brand">VD SERVICES<span>Consultation · Négociation<br>Pilotage · Maîtrise d'œuvre</span></div>
     <nav id="nav"></nav>
     <div class="railfoot" id="railfoot"></div>
   </aside>
@@ -492,10 +492,12 @@ function texteFacture(pid){
   var lignes=DATA.interventions.filter(function(i){return i.prestataireId===pid&&moisDe(i.date)===flt.mois})
     .sort(function(a,b){return (a.date||"").localeCompare(b.date||"")});
   var L=[],tot=0;
-  L.push("FACTURE DE COMMISSIONS D'APPORT D'AFFAIRES");
+  L.push("VD SERVICES — FACTURE DE COMMISSIONS D'APPORT D'AFFAIRES");
   L.push("Période : "+moisLong(flt.mois));
   L.push("");
-  L.push("Émetteur : Valentin Dupuy — maîtrise d'œuvre — Mandelieu-la-Napoule");
+  L.push("Émetteur : VD SERVICES — Valentin Dupuy");
+  L.push("Consultation, négociation, pilotage, maîtrise d'œuvre");
+  L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
   L.push("Destinataire : "+p.nom+(p.contact?" — "+p.contact:""));
   L.push("");
   L.push("Date | Référence | Client | Travaux HT | Base | Commission HT");
@@ -1068,7 +1070,8 @@ function texteMail(d,ents){
   L.push("Merci de joindre votre attestation de responsabilité décennale à jour.");
   L.push("");
   L.push("Cordialement,");
-  L.push("Valentin Dupuy — Maîtrise d'œuvre");
+  L.push("Valentin Dupuy");
+  L.push("VD SERVICES — consultation, négociation, pilotage, maîtrise d'œuvre");
   L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
   return L.join("\n");
 }
@@ -1090,7 +1093,8 @@ function texteBordereau(d,avecPrix){
   if(avecPrix){
     L.push("TOTAL HT : "+eur(totClient()));
     L.push("");
-    L.push("Devis établi par Valentin Dupuy, maître d'œuvre, Mandelieu-la-Napoule. Validité 30 jours.");
+    L.push("Devis établi par VD SERVICES, Valentin Dupuy, maître d'œuvre, Mandelieu-la-Napoule.");
+    L.push("Validité 30 jours.");
   }else{
     L.push("Merci de compléter la colonne prix unitaire et de me retourner le document.");
     L.push("Les quantités sont indicatives, à vérifier sur place.");

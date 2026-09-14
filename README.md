@@ -1,4 +1,7 @@
-# QR Copropriété
+# VD SERVICES — QR Copropriété
+
+Consultation · Négociation · Pilotage · Maîtrise d'œuvre
+Mandelieu-la-Napoule, secteur Fréjus / Nice
 
 Deux pièces, qui se parlent : la page publique qui qualifie une demande, et le
 back-office qui la traite.
@@ -18,7 +21,7 @@ formulaire avec chronomètre, décisions à arbitrer avant l'implémentation.
 Quatre données suffisent au routage : l'intention, le ou les corps de métier, la
 nature de la partie concernée et le statut du demandeur.
 
-## `docs/regie-copro.html` — la plateforme
+## `docs/regie-copro.html` — la plateforme VD Services
 
 Back-office publié comme artifact, avec base de données persistante (capacité
 `db`). Six vues :
