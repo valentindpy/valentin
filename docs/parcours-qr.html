@@ -607,7 +607,7 @@ function render(){
       +'<button class="opt u" data-intent="urgence"><b>C\'est une urgence</b><span>Fuite qui coule, plus d\'électricité, porte bloquée, dégât en cours</span></button>'
       +'<button class="opt d" data-intent="depannage"><b>J\'ai besoin d\'un dépannage</b><span>Ça fonctionne mal, ça peut attendre demain ou après-demain</span></button>'
       +'<button class="opt p" data-intent="projet"><b>J\'ai un projet de travaux</b><span>Rénovation, mise aux normes, embellissement, devis à comparer</span></button>'
-      +'<button class="opt e" data-intent="energie"><b>Je veux réduire mes factures d\'énergie</b><span>Pompe à chaleur, isolation, fenêtres, solaire. Aides mobilisables à étudier.</span></button>'
+      +'<button class="opt e" data-intent="energie"><b>Travaux aidés</b><span>Pompe à chaleur, isolation, fenêtres, solaire. On calcule vos aides avant de chiffrer.</span></button>'
       +'</div>';
     h+='<p class="qn">Vous gérez l\'immeuble ?</p>'
       +'<button class="chip" data-statut="syndic" aria-pressed="'+(S.statut==="syndic")+'">Je suis syndic ou gestionnaire</button>';
@@ -616,7 +616,7 @@ function render(){
   else if(step==="trade"){
     h+=dots()+back("intent");
     if(S.intent==="energie"){
-      h+='<p class="q">Qu\'est-ce qui vous intéresse ?</p><p class="qs">Cochez tout ce qui vous tente, même sans être sûr. On vérifiera ensemble ce qui ouvre droit à une aide.</p>';
+      h+='<p class="q">Travaux aidés</p><p class="qs">Cochez ce qui vous tente, même sans être sûr. On vérifie ensuite ce qui ouvre droit à une aide, et ce que ça vous laisse à payer.</p>';
       h+='<div class="grid">'+GESTES.map(function(g){
         return '<button class="tile'+(g.w?" wide":"")+'" data-geste="'+g.id+'" aria-pressed="'+(S.gestes.indexOf(g.id)>=0)+'">'+g.l+'</button>';
       }).join("")+'</div>';
@@ -757,7 +757,7 @@ function render(){
 
 function row(k,v){return '<div class="frow"><dt>'+k+'</dt><dd class="'+(v?"":"empty")+'">'+(esc(v)||"—")+'</dd></div>'}
 function paint(){
-  var intent=S.intent?({urgence:"Urgence",depannage:"Dépannage",projet:"Projet de travaux",energie:"Travaux énergétiques"})[S.intent]:"";
+  var intent=S.intent?({urgence:"Urgence",depannage:"Dépannage",projet:"Projet de travaux",energie:"Travaux aidés"})[S.intent]:"";
   var tr=S.trades.map(function(id){return TRADES.filter(function(t){return t.id===id})[0].l}).join(" + ");
   var st=S.statut?STATUTS.filter(function(s){return s.id===S.statut})[0].l:"";
   var h="";

@@ -238,7 +238,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 <script>
 /* ---------- constantes ---------- */
 var MET={plomberie:"Plomberie",electricite:"Électricité",chauffage:"Chauffage",clim:"Climatisation, VMC",serrurerie:"Serrurerie",couverture:"Couverture, étanchéité",peinture:"Peinture",platrerie:"Plâtrerie",carrelage:"Carrelage, sols",menuiserie:"Menuiserie",verts:"Espaces verts",autre:"Autre"};
-var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"},energie:{l:"Énergie",c:"e"}};
+var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"},energie:{l:"Travaux aidés",c:"e"}};
 var ETATS={nouvelle:{l:"Nouvelle",c:"a"},devis:{l:"Devis demandé",c:"d"},chiffre:{l:"Chiffrée",c:"d"},planifiee:{l:"Planifiée",c:"p"},close:{l:"Clôturée",c:"n"}};
 var STATUTS={occupant:"Propriétaire occupant",locataire:"Locataire",bailleur:"Propriétaire bailleur",syndic:"Syndic ou gestionnaire",conseil:"Conseil syndical",pro:"Commerce ou entreprise"};
 var NAV=[{id:"dashboard",l:"Tableau de bord"},{id:"demandes",l:"Demandes"},{id:"prestataires",l:"Prestataires"},{id:"clients",l:"Clients"},{id:"interventions",l:"Historique"},{id:"facturation",l:"Facturation"}];
@@ -763,7 +763,7 @@ function vDemande(){
         CH={fioul:"Fioul",gaz:"Gaz",elec:"Électrique",bois:"Bois ou granulés",pac:"Pompe à chaleur",inconnu:"Inconnu"},
         DP={ab:"A ou B",cd:"C ou D",e:"E",fg:"F ou G",inconnu:"Inconnue"},
         RV={r1:"moins de 22 000 €",r2:"22 000 à 30 000 €",r3:"30 000 à 45 000 €",r4:"45 000 à 65 000 €",r5:"plus de 65 000 €",np:"non communiqué"};
-    h+='<div class="card" style="border-color:var(--ene)"><h3>Situation énergétique</h3>'
+    h+='<div class="card" style="border-color:var(--ene)"><h3>Travaux aidés</h3>'
       +'<p class="sub">Ce qui détermine les aides, avant tout chiffrage.</p><dl>'
       +kv("Gestes visés",E((d.gestes||[]).map(function(x){return GL[x]||x}).join(" · ")||"—"))
       +kv("Logement",E([LG[d.logement],AN[d.anciennete],US[d.usage]].filter(Boolean).join(" · ")||"—"))
