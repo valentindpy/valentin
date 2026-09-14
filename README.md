@@ -38,6 +38,14 @@ vérifiés à la visite.
 Quatre données suffisent au routage : l'intention, le ou les corps de métier, la
 nature de la partie concernée et le statut du demandeur.
 
+## `docs/affiche-qr.html` — la signalétique
+
+Générateur des supports imprimés, avec un vrai QR code régénéré à chaque
+changement d'adresse ou de code résidence. Quatre formats à l'échelle réelle :
+autocollant de hall 100 × 100 mm, affiche A5 pour le panneau d'affichage,
+bandeau vertical 60 × 200 mm et carte de poche 85 × 55 mm. Impression directe
+en PDF, et export du code seul en PNG pour l'imprimeur.
+
 ## `docs/regie-copro.html` — la plateforme VD Services
 
 Back-office publié comme artifact, avec base de données persistante (capacité

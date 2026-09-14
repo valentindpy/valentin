@@ -1,0 +1,304 @@
+<title>Affiche QR VD Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<style>
+:root{
+  --ground:#E9EBEF; --surface:#FFFFFF; --surface-2:#F2F4F7;
+  --ink:#131A24; --ink-2:#414B59; --ink-3:#6C7686;
+  --line:#CDD3DC; --line-strong:#A7B0BE;
+  --accent:#2E4E77; --accent-soft:#DCE5F1; --accent-ink:#2E4E77;
+  --shadow:0 1px 2px rgba(19,26,36,.06), 0 12px 34px -18px rgba(19,26,36,.3);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  /* encres d'impression, jamais dépendantes du thème */
+  --p-bg:#FFFFFF; --p-ink:#131A24; --p-ink2:#5A6472; --p-line:#D7DCE3; --p-accent:#2E4E77;
+  --p-urg:#BC2F26; --p-dep:#8E6206; --p-pro:#20654A; --p-ene:#1D6A82;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630;
+  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
+  --line:#28313D; --line-strong:#3E4A59;
+  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 14px 36px -20px rgba(0,0,0,.85);
+}}
+:root[data-theme="dark"]{
+  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630;
+  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
+  --line:#28313D; --line-strong:#3E4A59;
+  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 14px 36px -20px rgba(0,0,0,.85);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;letter-spacing:-.015em;text-wrap:balance}
+p{margin:0}
+button,input,select{font:inherit;color:inherit}
+*:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:20px;padding-block:clamp(28px,5vw,52px) 70px}
+.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.06;font-weight:700;margin-top:8px}
+.lede{color:var(--ink-2);max-width:60ch;margin-top:14px}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px 22px;margin-top:28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.field input,.field select{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:10px 12px;font-size:.92rem;width:100%}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px;align-items:center}
+.btn{background:var(--accent);color:var(--surface);border:0;border-radius:8px;padding:10px 16px;font-family:var(--display);font-weight:600;font-size:.92rem;cursor:pointer}
+.btn.ghost{background:none;color:var(--ink-2);border:1px solid var(--line-strong)}
+.btn.ghost:hover{background:var(--surface-2)}
+.note{font-size:.82rem;color:var(--ink-3);line-height:1.5}
+
+.boards{display:flex;flex-wrap:wrap;gap:34px;margin-top:34px;align-items:flex-start}
+.holder{display:flex;flex-direction:column;gap:10px}
+.holder .cap{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.scrollx{overflow-x:auto;max-width:100%}
+
+/* ----- les supports imprimés ----- */
+.board{background:var(--p-bg);color:var(--p-ink);box-shadow:var(--shadow);flex:none;
+  display:flex;flex-direction:column;font-family:var(--body);position:relative;overflow:hidden}
+.board .rule{height:4mm;background:var(--p-accent);flex:none;display:flex}
+.board .rule i{flex:1;display:block}
+.board .rule i:nth-child(1){background:var(--p-urg)}
+.board .rule i:nth-child(2){background:var(--p-dep)}
+.board .rule i:nth-child(3){background:var(--p-pro)}
+.board .rule i:nth-child(4){background:var(--p-ene)}
+.board .body{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+.board .kicker{font-family:var(--mono);text-transform:uppercase;color:var(--p-ink2)}
+.board h2{font-family:var(--display);font-weight:800;color:var(--p-ink);line-height:1.02;letter-spacing:-.02em}
+.board .sub{color:var(--p-ink2);line-height:1.35}
+.board canvas{display:block;background:#fff}
+.board .qbox{background:#fff;border:1px solid var(--p-line);border-radius:2mm;display:flex;align-items:center;justify-content:center}
+.board .menu{display:flex;flex-wrap:wrap;justify-content:center}
+.board .menu span{display:inline-flex;align-items:center;gap:1.2mm;color:var(--p-ink);white-space:nowrap}
+.board .menu b{width:2.2mm;height:2.2mm;border-radius:50%;display:block;flex:none}
+.board .menu span:nth-child(1) b{background:var(--p-urg)}
+.board .menu span:nth-child(2) b{background:var(--p-dep)}
+.board .menu span:nth-child(3) b{background:var(--p-pro)}
+.board .menu span:nth-child(4) b{background:var(--p-ene)}
+.board .foot{border-top:.3mm solid var(--p-line);width:100%;display:flex;justify-content:space-between;align-items:center;gap:2mm;color:var(--p-ink2)}
+.board .brand{font-family:var(--display);font-weight:700;letter-spacing:-.01em;color:var(--p-accent)}
+.board .tag{font-family:var(--mono);color:var(--p-ink2);letter-spacing:.04em}
+
+/* autocollant 100 x 100 */
+.sticker{width:100mm;height:100mm}
+.sticker .body{padding:5mm 6mm 4mm;gap:2.5mm}
+.sticker .kicker{font-size:2.5mm;letter-spacing:.9mm}
+.sticker h2{font-size:6.6mm;margin-top:.5mm}
+.sticker .sub{font-size:3mm}
+.sticker .qbox{padding:2mm;margin-top:1mm}
+.sticker .menu{gap:1.4mm 3mm;font-size:2.7mm;margin-top:1mm}
+.sticker .foot{margin-top:auto;padding-top:2mm;font-size:2.5mm}
+.sticker .brand{font-size:3.6mm}
+
+/* affiche A5 */
+.a5{width:148mm;height:210mm}
+.a5 .body{padding:12mm 12mm 9mm;gap:5mm}
+.a5 .kicker{font-size:3.2mm;letter-spacing:1.2mm}
+.a5 h2{font-size:13mm;margin-top:1mm}
+.a5 .sub{font-size:4.4mm;max-width:110mm}
+.a5 .qbox{padding:4mm;margin-top:2mm}
+.a5 .menu{gap:3mm 6mm;font-size:4mm;margin-top:2mm}
+.a5 .menu b{width:3.4mm;height:3.4mm}
+.a5 .foot{margin-top:auto;padding-top:4mm;font-size:3.4mm}
+.a5 .brand{font-size:6mm}
+.a5 .why{font-size:3.4mm;color:var(--p-ink2);line-height:1.5;max-width:112mm}
+
+/* bandeau vertical 60 x 200 */
+.strip{width:60mm;height:200mm}
+.strip .body{padding:6mm 5mm 5mm;gap:3mm}
+.strip .kicker{font-size:2.4mm;letter-spacing:.7mm}
+.strip h2{font-size:6.2mm}
+.strip .sub{font-size:2.9mm}
+.strip .qbox{padding:2.5mm}
+.strip .menu{flex-direction:column;align-items:flex-start;gap:2mm;font-size:3mm;width:100%;padding-left:3mm}
+.strip .foot{margin-top:auto;padding-top:3mm;font-size:2.5mm;flex-direction:column;align-items:center;gap:1mm;text-align:center}
+.strip .brand{font-size:4mm}
+
+/* carte de poche 85 x 55 */
+.card{width:85mm;height:55mm}
+.card .body{padding:4mm 5mm;gap:1.5mm;flex-direction:row;align-items:center;text-align:left}
+.card .left{flex:1;display:flex;flex-direction:column;gap:1.2mm;min-width:0}
+.card .kicker{font-size:2.1mm;letter-spacing:.6mm}
+.card h2{font-size:5mm}
+.card .sub{font-size:2.5mm}
+.card .menu{justify-content:flex-start;gap:1mm 2.4mm;font-size:2.3mm}
+.card .menu b{width:1.8mm;height:1.8mm}
+.card .brand{font-size:3.2mm;margin-top:.5mm}
+.card .qbox{padding:1.5mm}
+
+@media print{
+  body{background:#fff}
+  .chrome{display:none!important}
+  .boards{display:block;margin:0;gap:0}
+  .holder{gap:0}
+  .holder .cap{display:none}
+  .scrollx{overflow:visible}
+  .board{box-shadow:none;outline:.2mm dashed #bbb;break-after:page;page-break-after:always;margin:0 auto 6mm}
+  .board:last-child{break-after:auto;page-break-after:auto}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="chrome">
+    <p class="eyebrow">VD Services · signalétique</p>
+    <h1>Le QR code dans le hall</h1>
+    <p class="lede">Quatre supports prêts à imprimer, avec un vrai code scannable. Changez l'adresse et le nom de la résidence, le code se régénère aussitôt. Un code par immeuble vous dit lequel vous rapporte des demandes.</p>
+
+    <div class="panel">
+      <div class="grid">
+        <div class="field"><label for="url">Adresse du formulaire</label>
+          <input id="url" value="" placeholder="https://vdservices.fr/copro"></div>
+        <div class="field"><label for="res">Nom de la résidence</label>
+          <input id="res" value="Résidence Les Mimosas" placeholder="Le Palm Beach"></div>
+        <div class="field"><label for="code">Code résidence dans le lien</label>
+          <input id="code" value="mimosas" placeholder="mimosas"></div>
+        <div class="field"><label for="tel">Numéro affiché</label>
+          <input id="tel" value="04 00 00 00 00" placeholder="04 00 00 00 00"></div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="imprimer">Imprimer ou enregistrer en PDF</button>
+        <button class="btn ghost" id="png">Enregistrer le QR en PNG</button>
+        <span class="note" id="lien"></span>
+      </div>
+      <p class="note" style="margin-top:14px">Le lien encodé apparaît ci-dessus. Scannez-le avec votre téléphone pour vérifier avant d'imprimer. Marge blanche obligatoire autour du code : ne la rognez pas, c'est elle qui rend la lecture fiable.</p>
+    </div>
+  </div>
+
+  <div class="boards" id="boards"></div>
+
+  <div class="chrome panel" style="margin-top:36px">
+    <h3 style="font-size:1.05rem">Pour l'imprimeur</h3>
+    <div class="grid" style="margin-top:14px">
+      <div><p class="eyebrow">Autocollant hall</p><p class="note">100 × 100 mm, vinyle mat adhésif permanent, pelliculage anti-UV. Collé à hauteur d'œil près des boîtes aux lettres.</p></div>
+      <div><p class="eyebrow">Affiche panneau</p><p class="note">A5, 148 × 210 mm, papier 250 g mat. Pour le panneau d'affichage vitré de la copropriété.</p></div>
+      <div><p class="eyebrow">Bandeau porte</p><p class="note">60 × 200 mm, vinyle. Pour un montant de porte, une cage d'ascenseur ou un local technique.</p></div>
+      <div><p class="eyebrow">Carte de poche</p><p class="note">85 × 55 mm, 350 g. À laisser au gardien, au conseil syndical et au chargé de copropriété.</p></div>
+    </div>
+    <p class="note" style="margin-top:16px">Taille minimale d'un QR lisible à un mètre : 25 mm de côté. Ceux-ci sont largement au-dessus. Gardez toujours du noir sur fond blanc, jamais l'inverse, et laissez la zone calme autour du carré.</p>
+  </div>
+</div>
+
+<script>
+var LIEN_DEFAUT="https://claude.ai/code/artifact/ca8daf71-a72c-489e-a233-d2ce0fdeb712";
+var E=function(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+var champs=["url","res","code","tel"];
+try{
+  var sauve=JSON.parse(localStorage.getItem("vd-affiche")||"{}");
+  champs.forEach(function(k){if(sauve[k])document.getElementById(k).value=sauve[k]});
+}catch(e){}
+if(!document.getElementById("url").value)document.getElementById("url").value=LIEN_DEFAUT;
+
+function lien(){
+  var u=document.getElementById("url").value.trim()||LIEN_DEFAUT;
+  var c=document.getElementById("code").value.trim();
+  if(!c)return u;
+  return u+(u.indexOf("?")>=0?"&":"?")+"res="+encodeURIComponent(c);
+}
+function qr(taille){
+  var c=document.createElement("canvas");
+  new QRious({element:c,value:lien(),size:taille,level:"M",background:"#ffffff",foreground:"#131A24",padding:0});
+  return c;
+}
+var MENU='<div class="menu">'
+  +'<span><b></b>Urgence</span><span><b></b>Dépannage</span>'
+  +'<span><b></b>Projet de travaux</span><span><b></b>Travaux aidés</span></div>';
+var SIGN='Consultation · Pilotage · Maîtrise d\'œuvre';
+
+function planche(cls, html){
+  var d=document.createElement("div");
+  d.className="board "+cls;
+  d.innerHTML='<div class="rule"><i></i><i></i><i></i><i></i></div><div class="body">'+html+'</div>';
+  return d;
+}
+function rendre(){
+  var res=E(document.getElementById("res").value.trim()||"Votre résidence");
+  var tel=E(document.getElementById("tel").value.trim());
+  var b=document.getElementById("boards");
+  b.innerHTML="";
+  document.getElementById("lien").textContent=lien();
+
+  var supports=[
+    {cap:"Autocollant hall · 100 × 100 mm",cls:"sticker",taille:340,html:function(q){
+      return '<p class="kicker">Un souci dans l\'immeuble ?</p>'
+        +'<h2>Scannez.<br>On s\'occupe<br>du reste.</h2>'
+        +'<p class="sub">30 secondes, sans créer de compte.</p>'
+        +'<div class="qbox">'+q+'</div>'+MENU
+        +'<div class="foot"><span class="brand">VD SERVICES</span><span class="tag">'+res+'</span></div>';
+    }},
+    {cap:"Affiche panneau · A5",cls:"a5",taille:520,html:function(q){
+      return '<p class="kicker">'+res+'</p>'
+        +'<h2>Un souci<br>dans l\'immeuble ?</h2>'
+        +'<p class="sub">Scannez le code. Vous décrivez le problème en trente secondes, je m\'occupe de trouver la bonne entreprise et de suivre l\'intervention.</p>'
+        +'<div class="qbox">'+q+'</div>'+MENU
+        +'<p class="why">Fuite, panne, serrure bloquée, projet de travaux ou économies d\'énergie. Parties privatives comme parties communes. Entreprises assurées et vérifiées, devis gratuit.</p>'
+        +'<div class="foot"><span><span class="brand">VD SERVICES</span><br><span class="tag">'+SIGN+'</span></span><span class="tag">'+(tel||"")+'</span></div>';
+    }},
+    {cap:"Bandeau porte · 60 × 200 mm",cls:"strip",taille:300,html:function(q){
+      return '<p class="kicker">'+res+'</p>'
+        +'<h2>Un souci ?<br>Scannez.</h2>'
+        +'<p class="sub">30 secondes</p>'
+        +'<div class="qbox">'+q+'</div>'+MENU
+        +'<div class="foot"><span class="brand">VD SERVICES</span><span class="tag">'+SIGN.replace(/ · /g,"<br>")+'</span>'
+        +(tel?'<span class="tag">'+tel+'</span>':"")+'</div>';
+    }},
+    {cap:"Carte de poche · 85 × 55 mm",cls:"card",taille:240,html:function(q){
+      return '<div class="left"><p class="kicker">Copropriétés</p>'
+        +'<h2>Un souci ?<br>Scannez.</h2>'
+        +'<p class="sub">Urgence, dépannage, travaux.<br>Réponse le jour même.</p>'
+        +MENU
+        +'<p class="brand">VD SERVICES</p>'
+        +'<p class="sub">'+(tel||SIGN)+'</p></div>'
+        +'<div class="qbox">'+q+'</div>';
+    }}
+  ];
+
+  supports.forEach(function(s){
+    var holder=document.createElement("div");
+    holder.className="holder";
+    var cap=document.createElement("p");
+    cap.className="cap chrome";cap.textContent=s.cap;
+    var sc=document.createElement("div");sc.className="scrollx";
+    var pl=planche(s.cls,s.html("<canvas></canvas>"));
+    sc.appendChild(pl);
+    holder.appendChild(cap);holder.appendChild(sc);
+    b.appendChild(holder);
+    var cible=pl.querySelector("canvas"),vrai=qr(s.taille);
+    vrai.style.width=(s.cls==="sticker"?34:s.cls==="a5"?52:s.cls==="strip"?30:24)+"mm";
+    vrai.style.height=vrai.style.width;
+    cible.parentNode.replaceChild(vrai,cible);
+  });
+
+  try{
+    var o={};champs.forEach(function(k){o[k]=document.getElementById(k).value});
+    localStorage.setItem("vd-affiche",JSON.stringify(o));
+  }catch(e){}
+}
+champs.forEach(function(k){document.getElementById(k).addEventListener("input",rendre)});
+document.getElementById("imprimer").addEventListener("click",function(){window.print()});
+document.getElementById("png").addEventListener("click",async function(){
+  var c=qr(1200),dl=null;
+  try{dl=window.claude&&window.claude.use?await window.claude.use("downloads"):null}catch(e){dl=null}
+  c.toBlob(async function(blob){
+    if(!blob)return;
+    if(dl){
+      try{
+        await dl.save({filename:"qr-vdservices-"+(document.getElementById("code").value.trim()||"copro")+".png",data:blob});
+        return;
+      }catch(e){}
+    }
+    var w=window.open("","_blank");
+    if(w){
+      var r=new FileReader();
+      r.onload=function(){w.document.write('<img src="'+r.result+'" style="max-width:100%">');w.document.close()};
+      r.readAsDataURL(blob);
+    }
+  },"image/png");
+});
+rendre();
+</script>
