@@ -78,6 +78,11 @@ Back-office publié comme artifact, avec base de données persistante (capacité
 - **Clients** — professionnels et particuliers ; un syndic porte ses
   copropriétés avec le nombre de lots et le contact du chargé de copropriété.
 - **Historique** — interventions passées, volume de travaux, commissions.
+- **QR codes** — un code de référence vers le formulaire nu, et un code par
+  résidence portant son paramètre d'identification. Import des copropriétés
+  des clients en un bouton, impression de l'autocollant de hall et de
+  l'affiche A5, export PNG et copie du lien. Le nombre de demandes reçues
+  s'affiche en face de chaque résidence.
 - **Facturation** — une facture de commissions par entreprise et par mois,
   ligne par intervention, calculée sur la grille d'apport d'affaires.
 
