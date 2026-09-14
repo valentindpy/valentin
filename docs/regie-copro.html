@@ -83,7 +83,7 @@ select.sel{background:var(--surface);border:1px solid var(--line);border-radius:
 .row{display:grid;grid-template-columns:5px minmax(0,1fr) auto;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0;cursor:pointer;text-align:left;width:100%;overflow:hidden}
 .row:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
 .row .stripe{background:var(--line-strong)}
-.row.u .stripe{background:var(--urg)} .row.d .stripe{background:var(--dep)} .row.p .stripe{background:var(--pro)} .row.e .stripe{background:var(--ene)}
+.row.u .stripe{background:var(--urg)} .row.d .stripe{background:var(--dep)} .row.p .stripe{background:var(--pro)} .row.e .stripe{background:var(--ene)} .row.a .stripe{background:var(--accent)}
 .row .mid{padding:13px 0;min-width:0}
 .row .end{padding:13px 16px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;justify-content:center}
 .row .t{display:block;font-family:var(--display);font-weight:600;font-size:.98rem;letter-spacing:-.01em}
@@ -238,7 +238,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 <script>
 /* ---------- constantes ---------- */
 var MET={plomberie:"Plomberie",electricite:"Électricité",chauffage:"Chauffage",clim:"Climatisation, VMC",serrurerie:"Serrurerie",couverture:"Couverture, étanchéité",peinture:"Peinture",platrerie:"Plâtrerie",carrelage:"Carrelage, sols",menuiserie:"Menuiserie",verts:"Espaces verts",autre:"Autre"};
-var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"},energie:{l:"Travaux aidés",c:"e"}};
+var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"},energie:{l:"Travaux aidés",c:"e"},public:{l:"Consultation publique",c:"a"}};
 var ETATS={nouvelle:{l:"Nouvelle",c:"a"},devis:{l:"Devis demandé",c:"d"},chiffre:{l:"Chiffrée",c:"d"},planifiee:{l:"Planifiée",c:"p"},close:{l:"Clôturée",c:"n"}};
 var STATUTS={occupant:"Propriétaire occupant",locataire:"Locataire",bailleur:"Propriétaire bailleur",syndic:"Syndic ou gestionnaire",conseil:"Conseil syndical",pro:"Commerce ou entreprise"};
 var NAV=[{id:"dashboard",l:"Tableau de bord"},{id:"demandes",l:"Demandes"},{id:"prestataires",l:"Prestataires"},{id:"clients",l:"Clients"},{id:"interventions",l:"Historique"},{id:"facturation",l:"Facturation"}];
@@ -411,7 +411,15 @@ function aides(d){
   r.push("Aides locales région, département, commune : à vérifier au cas par cas.");
   return r;
 }
+var ENTITES={commune:"Commune, mairie",epci:"Intercommunalité, EPCI",departement:"Département",region:"Région",
+  ccas:"CCAS, action sociale",bailleur:"Bailleur social, OPH",scolaire:"Établissement scolaire",
+  sante:"Établissement de santé ou EHPAD",syndicat:"Syndicat mixte",autre:"Autre organisme public"};
+var NATURES={depannage:"Dépannage urgent",entretien:"Entretien courant",travaux:"Travaux",contrat:"Contrat récurrent"};
+var MONTANTS={m5:"moins de 5 000 € HT",m40:"5 000 à 40 000 € HT",m100:"40 000 à 100 000 € HT",
+  mplus:"plus de 100 000 € HT",inconnu:"à déterminer"};
+function nbDevisAttendu(d){var m=String(d.nbDevis||"").match(/\d+/);return m?Number(m[0]):0}
 function routage(d){
+  if(d.intent==="public")return "moe";
   if(d.intent==="energie")return "moe";
   if(d.intent==="urgence")return "direct";
   if((d.trades||[]).length>=2)return "moe";
@@ -751,6 +759,23 @@ function vDemande(){
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8.5A1.5 1.5 0 014.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0121 8.5v9A1.5 1.5 0 0119.5 19h-15A1.5 1.5 0 013 17.5z"/><circle cx="12" cy="13" r="3.2"/></svg>'
       +E(p.nom)+'<span>'+E(p.h||"")+'</span></button>';
     }).join("")+'</div>':'<p class="note">Rien de joint. Demandez une photo par SMS avant de déranger une entreprise.</p>';
+  if(d.intent==="public"){
+    var att=nbDevisAttendu(d),ret=(d.assignes||[]).length;
+    h+='<div class="card" style="border-color:var(--accent)"><h3>Consultation publique</h3>'
+      +'<p class="sub">Mise en concurrence à organiser. Les offres doivent être comparables entre elles.</p><dl>'
+      +kv("Organisme",E([ENTITES[d.entite],d.organisme,d.service].filter(Boolean).join(" · ")||"—"))
+      +kv("Interlocuteur",E([d.nom,d.fonction].filter(Boolean).join(", ")||"—"))
+      +kv("Nature",E(NATURES[d.nature]||"—"))
+      +kv("Site",E([d.site,d.adresse,d.ville].filter(Boolean).join(", ")||"—"))
+      +kv("Devis demandés",E(d.nbDevis||"—")+(att?' <span class="tag '+(ret>=att?"p":"d")+'">'+ret+' sur '+att+' sélectionnée(s)</span>':""))
+      +kv("Montant estimé",E(MONTANTS[d.montant]||"—"))
+      +kv("Remise des offres",E(d.dateLimite?jour(d.dateLimite):"—"))
+      +kv("Pièces exigées",E((d.pieces||[]).join(" · ")||"—"))
+      +kv("Référence",E(d.refInterne||"—"))
+      +'</dl>';
+    h+='<p class="note" style="margin-top:12px">Un bordereau identique par lot, envoyé le même jour à toutes les entreprises retenues. Le donneur d\'ordre reste maître de l\'attribution : vous fournissez des offres complètes, vous ne choisissez pas à sa place.</p>';
+    h+='</div>';
+  }
   if(d.intent==="energie"){
     var GL={pac_ae:"Pompe à chaleur air/eau",pac_aa:"Clim réversible air/air",cet:"Chauffe-eau thermodynamique",
       granules:"Poêle ou chaudière à granulés",combles:"Isolation des combles",murs_int:"Isolation des murs par l'intérieur",
@@ -1533,7 +1558,20 @@ function texteMail(d,ents){
   L.push("");
   L.push("Bonjour,");
   L.push("");
-  L.push("Je vous consulte pour une intervention en copropriété.");
+  L.push(d.intent==="public"
+    ? "Je vous consulte dans le cadre d'une mise en concurrence pour un donneur d'ordre public."
+    : "Je vous consulte pour une intervention en copropriété.");
+  if(d.intent==="public"){
+    L.push("");
+    L.push("Donneur d'ordre : "+[ENTITES[d.entite],d.organisme].filter(Boolean).join(" — "));
+    if(d.refInterne)L.push("Référence de la consultation : "+d.refInterne);
+    if(d.nbDevis)L.push("Nombre d'offres consultées : "+d.nbDevis+". Votre prix ne sera pas communiqué aux autres entreprises.");
+    if(d.dateLimite)L.push("Date limite de remise des offres : "+jour(d.dateLimite)+". Une offre hors délai est écartée.");
+    if((d.pieces||[]).length){
+      L.push("Pièces à joindre impérativement au devis :");
+      (d.pieces||[]).forEach(function(x){L.push("  - "+x)});
+    }
+  }
   L.push("");
   L.push("Lieu : "+lieu+(d.precision?" ("+d.precision+")":""));
   L.push("Situation : "+(d.lieu==="commun"?"parties communes":d.lieu==="privatif"?"partie privative":"à déterminer sur place"));

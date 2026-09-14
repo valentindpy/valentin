@@ -18,6 +18,15 @@ formulaire avec chronomètre, décisions à arbitrer avant l'implémentation.
 | Dépannage | 5    | ~45 s  | Rappel puis passage     |
 | Projet    | 12   | ~90 s  | Visite et chiffrage     |
 | Énergie   | 18   | ~2 min | Étude des aides         |
+| Public    | 16   | ~2 min | Consultation à n devis  |
+
+Le parcours entité publique est une entrée séparée, sous celle des syndics. Il
+recueille le type d'organisme, le service et la fonction de l'interlocuteur, la
+nature du besoin, les corps de métier, le site, puis les paramètres de la mise
+en concurrence : nombre de devis attendus, montant estimé, date limite de remise
+des offres, pièces exigées avec chaque devis, et référence interne de la
+consultation. Le mail envoyé aux entreprises devient une lettre de consultation
+portant ces éléments.
 
 Le parcours énergie qualifie l'éligibilité aux aides : gestes visés, type et âge
 du logement, statut d'occupation, usage du bien, composition et revenus du
