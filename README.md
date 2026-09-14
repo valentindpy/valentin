@@ -17,6 +17,14 @@ formulaire avec chronomètre, décisions à arbitrer avant l'implémentation.
 | Urgence   | 3    | ~10 s  | Appel direct, astreinte |
 | Dépannage | 5    | ~45 s  | Rappel puis passage     |
 | Projet    | 12   | ~90 s  | Visite et chiffrage     |
+| Énergie   | 18   | ~2 min | Étude des aides         |
+
+Le parcours énergie qualifie l'éligibilité aux aides : gestes visés, type et âge
+du logement, statut d'occupation, usage du bien, composition et revenus du
+foyer, énergie de chauffage actuelle, étiquette du DPE, et surtout si un devis
+a déjà été signé. La plateforme en déduit un profil d'aides mobilisables,
+nommées et jamais chiffrées : les barèmes changent chaque année et doivent être
+vérifiés à la visite.
 
 Quatre données suffisent au routage : l'intention, le ou les corps de métier, la
 nature de la partie concernée et le statut du demandeur.

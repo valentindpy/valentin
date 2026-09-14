@@ -11,6 +11,7 @@
   --urg:#BC2F26; --urg-soft:#F8DFDB;
   --dep:#8E6206; --dep-soft:#F6E9C9;
   --pro:#20654A; --pro-soft:#D5E9DF;
+  --ene:#1D6A82; --ene-soft:#D2E7ED;
   --shadow:0 1px 2px rgba(19,26,36,.06), 0 10px 30px -16px rgba(19,26,36,.28);
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
@@ -21,7 +22,7 @@
   --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
   --line:#28313D; --line-strong:#3E4A59;
   --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
-  --urg:#EE8F84; --urg-soft:#37201D; --dep:#DCB25C; --dep-soft:#312818; --pro:#78C8A0; --pro-soft:#142B21;
+  --urg:#EE8F84; --urg-soft:#37201D; --dep:#DCB25C; --dep-soft:#312818; --pro:#78C8A0; --pro-soft:#142B21; --ene:#74BCD4; --ene-soft:#122A33;
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px -18px rgba(0,0,0,.8);
 }}
 :root[data-theme="dark"]{
@@ -29,7 +30,7 @@
   --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
   --line:#28313D; --line-strong:#3E4A59;
   --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
-  --urg:#EE8F84; --urg-soft:#37201D; --dep:#DCB25C; --dep-soft:#312818; --pro:#78C8A0; --pro-soft:#142B21;
+  --urg:#EE8F84; --urg-soft:#37201D; --dep:#DCB25C; --dep-soft:#312818; --pro:#78C8A0; --pro-soft:#142B21; --ene:#74BCD4; --ene-soft:#122A33;
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px -18px rgba(0,0,0,.8);
 }
 *{box-sizing:border-box}
@@ -82,7 +83,7 @@ select.sel{background:var(--surface);border:1px solid var(--line);border-radius:
 .row{display:grid;grid-template-columns:5px minmax(0,1fr) auto;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0;cursor:pointer;text-align:left;width:100%;overflow:hidden}
 .row:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
 .row .stripe{background:var(--line-strong)}
-.row.u .stripe{background:var(--urg)} .row.d .stripe{background:var(--dep)} .row.p .stripe{background:var(--pro)}
+.row.u .stripe{background:var(--urg)} .row.d .stripe{background:var(--dep)} .row.p .stripe{background:var(--pro)} .row.e .stripe{background:var(--ene)}
 .row .mid{padding:13px 0;min-width:0}
 .row .end{padding:13px 16px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;justify-content:center}
 .row .t{display:block;font-family:var(--display);font-weight:600;font-size:.98rem;letter-spacing:-.01em}
@@ -94,6 +95,8 @@ select.sel{background:var(--surface);border:1px solid var(--line);border-radius:
 .tag.p{color:var(--pro);border-color:var(--pro);background:var(--pro-soft)}
 .tag.n{color:var(--ink-3);border-color:var(--line-strong);background:var(--surface-2)}
 .tag.a{color:var(--accent-ink);border-color:var(--accent);background:var(--accent-soft)}
+.tag.e{color:var(--ene);border-color:var(--ene);background:var(--ene-soft)}
+.bar .bf.e{background:var(--ene)}
 
 .split{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,.95fr);gap:20px;align-items:start}
 @media (max-width:900px){.split{grid-template-columns:1fr}}
@@ -235,7 +238,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 <script>
 /* ---------- constantes ---------- */
 var MET={plomberie:"Plomberie",electricite:"Électricité",chauffage:"Chauffage",clim:"Climatisation, VMC",serrurerie:"Serrurerie",couverture:"Couverture, étanchéité",peinture:"Peinture",platrerie:"Plâtrerie",carrelage:"Carrelage, sols",menuiserie:"Menuiserie",verts:"Espaces verts",autre:"Autre"};
-var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"}};
+var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"},energie:{l:"Énergie",c:"e"}};
 var ETATS={nouvelle:{l:"Nouvelle",c:"a"},devis:{l:"Devis demandé",c:"d"},chiffre:{l:"Chiffrée",c:"d"},planifiee:{l:"Planifiée",c:"p"},close:{l:"Clôturée",c:"n"}};
 var STATUTS={occupant:"Propriétaire occupant",locataire:"Locataire",bailleur:"Propriétaire bailleur",syndic:"Syndic ou gestionnaire",conseil:"Conseil syndical",pro:"Commerce ou entreprise"};
 var NAV=[{id:"dashboard",l:"Tableau de bord"},{id:"demandes",l:"Demandes"},{id:"prestataires",l:"Prestataires"},{id:"clients",l:"Clients"},{id:"interventions",l:"Historique"},{id:"facturation",l:"Facturation"}];
@@ -389,7 +392,27 @@ function toast(m){
   var t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);
   setTimeout(function(){t.remove()},2600);
 }
+function aides(d){
+  var r=[],proprio=(d.occupation==="occupant"||d.occupation==="bailleur"),
+      vieux=(d.anciennete==="plus15"||d.anciennete==="entre"),g=d.gestes||[];
+  if(d.devisSigne==="Oui")r.push("Devis déjà signé : la plupart des aides se demandent avant. Point bloquant à traiter en premier.");
+  if(d.occupation==="locataire")r.push("Locataire : le dossier doit passer par le propriétaire.");
+  if(d.occupation==="syndicat")r.push("Parties communes : dossier au nom du syndicat, vote en assemblée générale, dispositif propre aux copropriétés.");
+  if(d.anciennete==="moins2")r.push("Logement de moins de deux ans : principales aides à la rénovation non applicables.");
+  if(d.usage==="secondaire")r.push("Résidence secondaire : aide principale de l'État exclue, restent les certificats d'économies d'énergie.");
+  if(proprio&&vieux&&d.usage!=="secondaire")r.push("Profil éligible à l'aide principale de l'État, sous réserve des barèmes et d'une entreprise RGE.");
+  if(vieux)r.push("Certificats d'économies d'énergie : cumulables, tous revenus.");
+  if((d.chauffage==="fioul"||d.chauffage==="gaz")&&(g.indexOf("pac_ae")>=0||g.indexOf("granules")>=0))
+    r.push("Sortie d'énergie fossile vers pompe à chaleur ou granulés : cas le mieux aidé, primes majorées.");
+  if(d.revenus==="r1"||d.revenus==="r2")r.push("Revenus modestes : taux majorés et avance de frais possible.");
+  if(g.length>=2||g.indexOf("ampleur")>=0||d.dpe==="fg")
+    r.push("Rénovation d'ampleur : audit et accompagnateur obligatoires, mission de maîtrise d'œuvre complète.");
+  if(vieux)r.push("TVA réduite, et prêt à taux zéro en résidence principale.");
+  r.push("Aides locales région, département, commune : à vérifier au cas par cas.");
+  return r;
+}
 function routage(d){
+  if(d.intent==="energie")return "moe";
   if(d.intent==="urgence")return "direct";
   if((d.trades||[]).length>=2)return "moe";
   if(d.lieu==="commun")return "moe";
@@ -484,7 +507,7 @@ function vDashboard(){
 
   h+='<div class="split"><div>';
   /* nature */
-  var nat=[["urgence","u"],["depannage","d"],["projet","p"]].map(function(x){
+  var nat=[["urgence","u"],["depannage","d"],["projet","p"],["energie","e"]].map(function(x){
     var v=dem.filter(function(d){return d.intent===x[0]}).length;
     return {l:INTENT[x[0]].l,v:v,c:x[1],d:v+(dem.length?"  ("+Math.round(v/dem.length*100)+" %)":"")};
   });
@@ -728,6 +751,32 @@ function vDemande(){
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8.5A1.5 1.5 0 014.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0121 8.5v9A1.5 1.5 0 0119.5 19h-15A1.5 1.5 0 013 17.5z"/><circle cx="12" cy="13" r="3.2"/></svg>'
       +E(p.nom)+'<span>'+E(p.h||"")+'</span></button>';
     }).join("")+'</div>':'<p class="note">Rien de joint. Demandez une photo par SMS avant de déranger une entreprise.</p>';
+  if(d.intent==="energie"){
+    var GL={pac_ae:"Pompe à chaleur air/eau",pac_aa:"Clim réversible air/air",cet:"Chauffe-eau thermodynamique",
+      granules:"Poêle ou chaudière à granulés",combles:"Isolation des combles",murs_int:"Isolation des murs par l'intérieur",
+      ite:"Isolation par l'extérieur",plancher:"Isolation du plancher bas",fenetres:"Fenêtres et menuiseries",
+      vmc:"VMC double flux",solaire:"Panneaux solaires",audit:"Audit énergétique",ampleur:"Rénovation globale"};
+    var LG={maison:"Maison individuelle",appart:"Appartement",copro:"Parties communes"},
+        AN={plus15:"Plus de 15 ans",entre:"2 à 15 ans",moins2:"Moins de 2 ans"},
+        OC={occupant:"Propriétaire occupant",bailleur:"Propriétaire bailleur",locataire:"Locataire",syndicat:"Syndicat de copropriétaires"},
+        US={principale:"Résidence principale",secondaire:"Résidence secondaire",locatif:"Mis en location"},
+        CH={fioul:"Fioul",gaz:"Gaz",elec:"Électrique",bois:"Bois ou granulés",pac:"Pompe à chaleur",inconnu:"Inconnu"},
+        DP={ab:"A ou B",cd:"C ou D",e:"E",fg:"F ou G",inconnu:"Inconnue"},
+        RV={r1:"moins de 22 000 €",r2:"22 000 à 30 000 €",r3:"30 000 à 45 000 €",r4:"45 000 à 65 000 €",r5:"plus de 65 000 €",np:"non communiqué"};
+    h+='<div class="card" style="border-color:var(--ene)"><h3>Situation énergétique</h3>'
+      +'<p class="sub">Ce qui détermine les aides, avant tout chiffrage.</p><dl>'
+      +kv("Gestes visés",E((d.gestes||[]).map(function(x){return GL[x]||x}).join(" · ")||"—"))
+      +kv("Logement",E([LG[d.logement],AN[d.anciennete],US[d.usage]].filter(Boolean).join(" · ")||"—"))
+      +kv("Demandeur",E(OC[d.occupation]||"—"))
+      +kv("Foyer",E([d.personnes?d.personnes+" personne(s)":"",RV[d.revenus]].filter(Boolean).join(" · ")||"—"))
+      +kv("Chauffage",E([CH[d.chauffage],d.dpe?"DPE "+DP[d.dpe]:""].filter(Boolean).join(" · ")||"—"))
+      +kv("Devis signé",E(d.devisSigne||"—"))
+      +'</dl>';
+    h+='<p class="eyebrow" style="margin:16px 0 9px">Aides mobilisables</p><ul class="journal">'
+      +aides(d).map(function(a){return '<li style="grid-template-columns:1fr"><span>'+E(a)+'</span></li>'}).join("")+'</ul>';
+    h+='<p class="note" style="margin-top:12px">Montants et conditions à confirmer : les barèmes changent chaque année. N\'annoncez aucun chiffre avant vérification, et n\'envoyez que des entreprises RGE.</p>';
+    h+='</div>';
+  }
   var iv=interDe(d);
   if(d.etat==="close"){
     var pe=iv?DATA.prestataires.filter(function(x){return x.id===iv.prestataireId})[0]:null;

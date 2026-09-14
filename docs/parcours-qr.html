@@ -11,6 +11,7 @@
   --urg:#BC2F26; --urg-soft:#F8DFDB;
   --dep:#8E6206; --dep-soft:#F6E9C9;
   --pro:#20654A; --pro-soft:#D5E9DF;
+  --ene:#1D6A82; --ene-soft:#D2E7ED;
   --shadow:0 1px 2px rgba(19,26,36,.06), 0 8px 24px -12px rgba(19,26,36,.18);
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
@@ -25,6 +26,7 @@
     --urg:#EE8F84; --urg-soft:#3A1F1C;
     --dep:#DCB25C; --dep-soft:#332918;
     --pro:#78C8A0; --pro-soft:#152D23;
+  --ene:#74BCD4; --ene-soft:#122A33;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
   }
 }
@@ -36,6 +38,7 @@
   --urg:#EE8F84; --urg-soft:#3A1F1C;
   --dep:#DCB25C; --dep-soft:#332918;
   --pro:#78C8A0; --pro-soft:#152D23;
+  --ene:#74BCD4; --ene-soft:#122A33;
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
 }
 *{box-sizing:border-box}
@@ -256,6 +259,7 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
 .opt.u{border-left-color:var(--urg)} .opt.u b{color:var(--urg)}
 .opt.d{border-left-color:var(--dep)} .opt.d b{color:var(--dep)}
 .opt.p{border-left-color:var(--pro)} .opt.p b{color:var(--pro)}
+.opt.e{border-left-color:var(--ene)} .opt.e b{color:var(--ene)}
 .opt.n{border-left-color:var(--line-strong);padding:12px 14px}
 .opt.n b{font-size:.95rem}
 .opt[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
@@ -482,6 +486,28 @@ var PRESTA={
  verts:["Entretien des espaces verts","Élagage, abattage","Création de massifs","Clôture, portail","Arrosage automatique"],
  autre:["Je préfère le décrire plus bas"]
 };
+var GESTES=[
+ {id:"pac_ae",l:"Pompe à chaleur air/eau",t:["chauffage"]},
+ {id:"pac_aa",l:"Clim réversible, air/air",t:["clim"]},
+ {id:"cet",l:"Chauffe-eau thermodynamique",t:["plomberie"]},
+ {id:"granules",l:"Poêle ou chaudière à granulés",t:["chauffage"]},
+ {id:"combles",l:"Isolation des combles",t:["platrerie"]},
+ {id:"murs_int",l:"Isolation des murs par l'intérieur",t:["platrerie"]},
+ {id:"ite",l:"Isolation par l'extérieur",t:["peinture","platrerie"]},
+ {id:"plancher",l:"Isolation du plancher bas",t:["platrerie"]},
+ {id:"fenetres",l:"Fenêtres et menuiseries",t:["menuiserie"]},
+ {id:"vmc",l:"VMC double flux",t:["clim"]},
+ {id:"solaire",l:"Panneaux solaires",t:["electricite"]},
+ {id:"audit",l:"Audit énergétique",t:["autre"]},
+ {id:"ampleur",l:"Rénovation globale, je ne sais pas par où commencer",w:1,t:["platrerie","chauffage","menuiserie"]}
+];
+var LOGEMENTS={maison:"Maison individuelle",appart:"Appartement",copro:"Parties communes de la copropriété"};
+var ANCIENS={plus15:"Plus de 15 ans",entre:"Entre 2 et 15 ans",moins2:"Moins de 2 ans"};
+var OCCUPS={occupant:"Propriétaire occupant",bailleur:"Propriétaire bailleur",locataire:"Locataire",syndicat:"Syndicat de copropriétaires"};
+var USAGES={principale:"Résidence principale",secondaire:"Résidence secondaire",locatif:"Bien mis en location"};
+var CHAUFFAGES={fioul:"Fioul",gaz:"Gaz",elec:"Électrique",bois:"Bois ou granulés",pac:"Pompe à chaleur",inconnu:"Je ne sais pas"};
+var DPES={ab:"A ou B",cd:"C ou D",e:"E",fg:"F ou G, passoire",inconnu:"Je ne sais pas"};
+var REVENUS={r1:"moins de 22 000 €",r2:"22 000 à 30 000 €",r3:"30 000 à 45 000 €",r4:"45 000 à 65 000 €",r5:"plus de 65 000 €",np:"Je préfère ne pas répondre"};
 var STATUTS=[
  {id:"occupant",l:"Propriétaire occupant"},
  {id:"locataire",l:"Locataire"},
@@ -511,7 +537,7 @@ var CRENEAUX={asap:"Dès que possible",matin:"Le matin",aprem:"L'après-midi",so
 
 var S,step,t0,tick,taps;
 function init(){
-  S={intent:null,projet:null,trades:[],presta:[],lieu:null,statut:null,residence:"",adresse:"",precision:"",ag:null,delai:null,budget:null,description:"",nom:"",tel:"",photo:false,creneau:null,consent:false};
+  S={intent:null,projet:null,trades:[],presta:[],gestes:[],logement:null,anciennete:null,occupation:null,usage:null,personnes:null,revenus:null,chauffage:null,dpe:null,devisSigne:null,lieu:null,statut:null,residence:"",adresse:"",precision:"",ag:null,delai:null,budget:null,description:"",nom:"",tel:"",photo:false,creneau:null,consent:false};
   step="intent"; taps=0; t0=null;
   if(tick){clearInterval(tick);tick=null}
   document.getElementById("clock").textContent="00:00";
@@ -532,11 +558,31 @@ function bump(){taps++;document.getElementById("taps").textContent=taps;startClo
 function dots(){
   var seq = S.intent==="urgence" ? ["intent","trade","call"]
           : S.intent==="projet" ? ["intent","trade","where","scope","contact","done"]
+          : S.intent==="energie" ? ["intent","trade","logement","foyer","contact","done"]
           : ["intent","trade","where","contact","done"];
   var i=seq.indexOf(step);
   return '<div class="dots">'+seq.map(function(_,n){return '<i class="'+(n<=i?"on":"")+'"></i>'}).join("")+'</div>';
 }
 function back(to){return '<button class="back" data-go="'+to+'">← retour</button>'}
+function aides(S){
+  var r=[],proprio=(S.occupation==="occupant"||S.occupation==="bailleur"),vieux=(S.anciennete==="plus15"||S.anciennete==="entre");
+  if(S.devisSigne==="Oui")r.push("Devis déjà signé : la plupart des aides doivent être demandées avant. À vérifier en priorité, c'est le point bloquant.");
+  if(S.occupation==="locataire")r.push("Locataire : les aides se demandent par le propriétaire. Il faut le mettre dans la boucle avant tout chiffrage.");
+  if(S.occupation==="syndicat")r.push("Parties communes : dossier au nom du syndicat de copropriétaires, vote en assemblée générale, et dispositif propre aux copropriétés.");
+  if(S.anciennete==="moins2")r.push("Logement de moins de deux ans : les principales aides à la rénovation ne s'appliquent pas.");
+  if(S.usage==="secondaire")r.push("Résidence secondaire : l'aide principale de l'État est réservée aux résidences principales. Restent les certificats d'économies d'énergie.");
+  if(proprio&&vieux&&S.usage!=="secondaire")r.push("Profil éligible à l'aide principale de l'État à la rénovation, sous réserve des barèmes en vigueur et d'une entreprise qualifiée RGE.");
+  if(vieux)r.push("Certificats d'économies d'énergie, financés par les fournisseurs d'énergie : cumulables et ouverts à tous les revenus.");
+  if((S.chauffage==="fioul"||S.chauffage==="gaz")&&(S.gestes.indexOf("pac_ae")>=0||S.gestes.indexOf("granules")>=0))
+    r.push("Sortie d'une énergie fossile vers une pompe à chaleur ou des granulés : c'est le cas le mieux aidé, avec primes majorées.");
+  if(S.revenus==="r1"||S.revenus==="r2")r.push("Revenus modestes : taux d'aide majorés et avance de frais possible selon les dispositifs.");
+  if(S.gestes.length>=2||S.gestes.indexOf("ampleur")>=0||S.dpe==="fg")
+    r.push("Plusieurs gestes ou passoire énergétique : parcours de rénovation d'ampleur, avec audit et accompagnateur obligatoire. Mission de maîtrise d'œuvre complète.");
+  if(vieux)r.push("TVA réduite sur les travaux d'amélioration énergétique, et prêt à taux zéro en résidence principale.");
+  r.push("Aides locales de la région, du département et de la commune : à vérifier au cas par cas, elles se cumulent souvent.");
+  r.push("Montants et conditions à confirmer à la visite. Les barèmes changent chaque année : aucun chiffre ne doit être annoncé avant vérification.");
+  return r;
+}
 function grp(titre,list,tid){
   return '<p class="qn">'+titre+'</p><div class="chips">'+list.map(function(l){
     var k=tid+"|"+l;
@@ -561,6 +607,7 @@ function render(){
       +'<button class="opt u" data-intent="urgence"><b>C\'est une urgence</b><span>Fuite qui coule, plus d\'électricité, porte bloquée, dégât en cours</span></button>'
       +'<button class="opt d" data-intent="depannage"><b>J\'ai besoin d\'un dépannage</b><span>Ça fonctionne mal, ça peut attendre demain ou après-demain</span></button>'
       +'<button class="opt p" data-intent="projet"><b>J\'ai un projet de travaux</b><span>Rénovation, mise aux normes, embellissement, devis à comparer</span></button>'
+      +'<button class="opt e" data-intent="energie"><b>Je veux réduire mes factures d\'énergie</b><span>Pompe à chaleur, isolation, fenêtres, solaire. Aides mobilisables à étudier.</span></button>'
       +'</div>';
     h+='<p class="qn">Vous gérez l\'immeuble ?</p>'
       +'<button class="chip" data-statut="syndic" aria-pressed="'+(S.statut==="syndic")+'">Je suis syndic ou gestionnaire</button>';
@@ -568,7 +615,14 @@ function render(){
   }
   else if(step==="trade"){
     h+=dots()+back("intent");
-    if(S.intent==="projet"){
+    if(S.intent==="energie"){
+      h+='<p class="q">Qu\'est-ce qui vous intéresse ?</p><p class="qs">Cochez tout ce qui vous tente, même sans être sûr. On vérifiera ensemble ce qui ouvre droit à une aide.</p>';
+      h+='<div class="grid">'+GESTES.map(function(g){
+        return '<button class="tile'+(g.w?" wide":"")+'" data-geste="'+g.id+'" aria-pressed="'+(S.gestes.indexOf(g.id)>=0)+'">'+g.l+'</button>';
+      }).join("")+'</div>';
+      h+='<p class="note" style="margin-top:12px">Les aides publiques dépendent du logement et des revenus du foyer. Deux écrans suffisent à savoir où vous en êtes.</p>';
+      h+='<button class="cta" data-go="logement" '+(S.gestes.length?"":"disabled")+'>Continuer</button>';
+    }else if(S.intent==="projet"){
       h+='<p class="q">C\'est quoi le projet ?</p><p class="qs">Prenez le plus proche, vous ajusterez à l\'écran suivant.</p>';
       h+='<div class="grid">'+PROJETS.map(function(pr){
         return '<button class="tile'+(pr.w?" wide":"")+'" data-projet="'+pr.id+'" aria-pressed="'+(S.projet===pr.id)+'">'+pr.l+'</button>';
@@ -635,8 +689,43 @@ function render(){
     h+='<p class="note">Deux lignes suffisent. Le micro de votre clavier marche aussi.</p>';
     h+='<button class="cta" data-go="contact" '+(S.delai&&(S.presta.length||S.description.length>5)?"":"disabled")+'>Continuer</button>';
   }
+  else if(step==="logement"){
+    h+=dots()+back("trade");
+    h+='<p class="q">Le logement</p><p class="qs">C\'est lui qui décide de l\'éligibilité, avant même les revenus.</p>';
+    h+='<p class="qn">De quoi s\'agit-il ?</p><div class="chips">'+Object.keys(LOGEMENTS).map(function(k){
+      return '<button class="chip" data-logement="'+k+'" aria-pressed="'+(S.logement===k)+'">'+LOGEMENTS[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Âge du logement</p><div class="chips">'+Object.keys(ANCIENS).map(function(k){
+      return '<button class="chip" data-anciennete="'+k+'" aria-pressed="'+(S.anciennete===k)+'">'+ANCIENS[k]+'</button>'}).join("")+'</div>';
+    if(S.anciennete==="moins2")h+='<p class="note">Un logement de moins de deux ans n\'ouvre pas droit aux principales aides à la rénovation. On regardera ce qui reste possible.</p>';
+    h+='<p class="qn">Vous êtes</p><div class="chips">'+Object.keys(OCCUPS).map(function(k){
+      return '<button class="chip" data-occupation="'+k+'" aria-pressed="'+(S.occupation===k)+'">'+OCCUPS[k]+'</button>'}).join("")+'</div>';
+    if(S.occupation==="locataire")h+='<p class="note">En tant que locataire vous ne pouvez pas demander les aides vous-même. On peut monter le dossier avec votre propriétaire.</p>';
+    h+='<p class="qn">Usage du bien</p><div class="chips">'+Object.keys(USAGES).map(function(k){
+      return '<button class="chip" data-usage="'+k+'" aria-pressed="'+(S.usage===k)+'">'+USAGES[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Où</p>';
+    h+='<div class="col"><input class="fld" id="e-res" placeholder="Nom de la résidence (facultatif)" value="'+esc(S.residence)+'" data-set="residence">'
+      +'<input class="fld" id="e-adr" placeholder="Numéro et rue, code postal" value="'+esc(S.adresse)+'" data-set="adresse"></div>';
+    h+='<button class="cta" data-go="foyer" '+(S.logement&&S.anciennete&&S.occupation&&S.usage&&S.adresse.length>4?"":"disabled")+'>Continuer</button>';
+  }
+  else if(step==="foyer"){
+    h+=dots()+back("logement");
+    h+='<p class="q">Votre situation</p><p class="qs">Ces réponses servent uniquement à estimer les aides. Rien n\'est transmis à un tiers.</p>';
+    h+='<p class="qn">Personnes dans le foyer</p><div class="chips">'+["1","2","3","4","5 et plus"].map(function(v){
+      return '<button class="chip" data-personnes="'+esc(v)+'" aria-pressed="'+(S.personnes===v)+'">'+v+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Revenu fiscal de référence du foyer</p><div class="chips">'+Object.keys(REVENUS).map(function(k){
+      return '<button class="chip" data-revenus="'+k+'" aria-pressed="'+(S.revenus===k)+'">'+REVENUS[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="note">Il figure sur votre dernier avis d\'imposition. Une fourchette suffit à ce stade.</p>';
+    h+='<p class="qn">Chauffage actuel</p><div class="chips">'+Object.keys(CHAUFFAGES).map(function(k){
+      return '<button class="chip" data-chauffage="'+k+'" aria-pressed="'+(S.chauffage===k)+'">'+CHAUFFAGES[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Étiquette du DPE, si vous la connaissez</p><div class="chips">'+Object.keys(DPES).map(function(k){
+      return '<button class="chip" data-dpe="'+k+'" aria-pressed="'+(S.dpe===k)+'">'+DPES[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Avez-vous déjà signé un devis pour ces travaux ?</p><div class="chips">'+["Non","Oui"].map(function(v){
+      return '<button class="chip" data-devis="'+v+'" aria-pressed="'+(S.devisSigne===v)+'">'+v+'</button>'}).join("")+'</div>';
+    if(S.devisSigne==="Oui")h+='<p class="note" style="color:var(--urg)">Attention : les aides se demandent avant la signature du devis. Appelez-moi avant d\'aller plus loin.</p>';
+    h+='<button class="cta" data-go="contact" '+(S.personnes&&S.revenus&&S.chauffage&&S.devisSigne?"":"disabled")+'>Continuer</button>';
+  }
   else if(step==="contact"){
-    h+=dots()+back(S.intent==="projet"?"scope":"where");
+    h+=dots()+back(S.intent==="projet"?"scope":S.intent==="energie"?"foyer":"where");
     h+='<p class="q">Comment je vous rappelle ?</p><p class="qs">Je réponds moi-même, pas un standard.</p>';
     h+='<div class="col">'
       +'<input class="fld" id="c-nom" placeholder="Prénom et nom" value="'+esc(S.nom)+'" data-set="nom">'
@@ -651,9 +740,12 @@ function render(){
   }
   else if(step==="done"){
     stopClock();
-    var d=S.intent==="urgence"?"Je vous rappelle dans les minutes qui viennent.":S.intent==="depannage"?"Je vous rappelle aujourd'hui, intervention sous 72 h.":"Je vous rappelle sous 48 h pour convenir d'une visite.";
+    var d=S.intent==="urgence"?"Je vous rappelle dans les minutes qui viennent."
+      :S.intent==="depannage"?"Je vous rappelle aujourd'hui, intervention sous 72 h."
+      :S.intent==="energie"?"Je vous rappelle sous 48 h avec le point sur les aides mobilisables."
+      :"Je vous rappelle sous 48 h pour convenir d'une visite.";
     h+='<div class="ok"><div class="mark">✓</div><p class="q">Demande enregistrée</p><p class="qs">'+d+'</p>'
-      +'<span class="ref">réf. VD-260912-'+(S.intent==="urgence"?"U":S.intent==="projet"?"P":"D")+String(taps*7%90+10)+'</span>'
+      +'<span class="ref">réf. VD-260912-'+(S.intent==="urgence"?"U":S.intent==="projet"?"P":S.intent==="energie"?"E":"D")+String(taps*7%90+10)+'</span>'
       +'<a class="cta" href="#" data-noop="1">Enregistrer mon numéro</a>'
       +'<p class="note"><strong>VD SERVICES</strong> — le même contact pour toute la copropriété, en urgence comme en projet.</p></div>';
   }
@@ -665,7 +757,7 @@ function render(){
 
 function row(k,v){return '<div class="frow"><dt>'+k+'</dt><dd class="'+(v?"":"empty")+'">'+(esc(v)||"—")+'</dd></div>'}
 function paint(){
-  var intent=S.intent?({urgence:"Urgence",depannage:"Dépannage",projet:"Projet de travaux"})[S.intent]:"";
+  var intent=S.intent?({urgence:"Urgence",depannage:"Dépannage",projet:"Projet de travaux",energie:"Travaux énergétiques"})[S.intent]:"";
   var tr=S.trades.map(function(id){return TRADES.filter(function(t){return t.id===id})[0].l}).join(" + ");
   var st=S.statut?STATUTS.filter(function(s){return s.id===S.statut})[0].l:"";
   var h="";
@@ -674,6 +766,13 @@ function paint(){
   h+=row("Lieu",S.lieu?LIEUX[S.lieu]:"");
   h+=row("Demandeur",st);
   h+=row("Adresse",[S.residence,S.adresse,S.precision].filter(Boolean).join(" · "));
+  if(S.intent==="energie"){
+    h+=row("Gestes",S.gestes.map(function(g){var x=GESTES.filter(function(y){return y.id===g})[0];return x?x.l:g}).join(" · "));
+    h+=row("Logement",[LOGEMENTS[S.logement],ANCIENS[S.anciennete],USAGES[S.usage],OCCUPS[S.occupation]].filter(Boolean).join(" · "));
+    h+=row("Foyer",[S.personnes?S.personnes+" personne(s)":"",REVENUS[S.revenus]].filter(Boolean).join(" · "));
+    h+=row("Énergie",[CHAUFFAGES[S.chauffage],S.dpe?"DPE "+DPES[S.dpe]:""].filter(Boolean).join(" · "));
+    h+=row("Devis déjà signé",S.devisSigne||"");
+  }
   if(S.intent==="projet"){
     h+=row("Projet",S.projet?PROJETS.filter(function(x){return x.id===S.projet})[0].l:"");
     h+=row("Prestations",S.presta.map(function(k){return k.split("|")[1]}).join(" · "));
@@ -686,6 +785,11 @@ function paint(){
 
   var v=document.getElementById("verdict"),why=[],kind;
   if(!S.intent){kind="w"}
+  else if(S.intent==="energie"){
+    kind="m";
+    why.push("Travaux d'économies d'énergie : le dossier d'aides se monte avant la signature du devis. C'est là que se joue votre valeur ajoutée.");
+    aides(S).forEach(function(a){why.push(a)});
+  }
   else if(S.intent==="urgence"){kind="e";why.push("Urgence déclarée : l\'astreinte part la première, la coordination vient après si le sinistre touche les communs.")}
   else{
     if(S.trades.length>=2)why.push("Deux corps de métier ou plus : il faut quelqu\'un pour les faire tenir ensemble.");
@@ -707,7 +811,7 @@ document.getElementById("screen").addEventListener("click",function(e){
   if(b.disabled)return;
   bump();
   var d=b.dataset;
-  if(d.intent){S.intent=d.intent;S.trades=[];S.presta=[];S.projet=null;step="trade"}
+  if(d.intent){S.intent=d.intent;S.trades=[];S.presta=[];S.gestes=[];S.projet=null;step="trade"}
   else if(d.projet){
     var pr=PROJETS.filter(function(x){return x.id===d.projet})[0];
     S.projet=pr.id;S.trades=pr.t.slice();S.presta=[];step="where";
@@ -723,6 +827,25 @@ document.getElementById("screen").addEventListener("click",function(e){
     if(ip>=0)S.presta.splice(ip,1);else S.presta.push(d.presta);
   }
   else if(d.addtrade){if(S.trades.indexOf(d.addtrade)<0)S.trades.push(d.addtrade)}
+  else if(d.geste){
+    var ig=S.gestes.indexOf(d.geste);
+    if(ig>=0)S.gestes.splice(ig,1);else S.gestes.push(d.geste);
+    S.trades=[];
+    S.gestes.forEach(function(gid){
+      var g=GESTES.filter(function(x){return x.id===gid})[0];
+      if(g)g.t.forEach(function(t){if(S.trades.indexOf(t)<0)S.trades.push(t)});
+    });
+  }
+  else if(d.logement){S.logement=d.logement;S.lieu=d.logement==="copro"?"commun":"privatif"}
+  else if(d.anciennete){S.anciennete=d.anciennete}
+  else if(d.occupation){S.occupation=d.occupation;
+    S.statut={occupant:"occupant",bailleur:"bailleur",locataire:"locataire",syndicat:"syndic"}[d.occupation]||null}
+  else if(d.usage){S.usage=d.usage}
+  else if(d.personnes){S.personnes=d.personnes}
+  else if(d.revenus){S.revenus=d.revenus}
+  else if(d.chauffage){S.chauffage=d.chauffage}
+  else if(d.dpe){S.dpe=d.dpe}
+  else if(d.devis){S.devisSigne=d.devis}
   else if(d.lieu){S.lieu=d.lieu}
   else if(d.statut){S.statut=S.statut===d.statut?null:d.statut}
   else if(d.ag){S.ag=d.ag}
