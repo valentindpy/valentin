@@ -413,6 +413,16 @@ function dansPeriode(iso,per){
   if(per==="trimestre"){a=new Date(now);a.setDate(now.getDate()-89);a.setHours(0,0,0,0);return d>=a}
   return true;
 }
+function joursPeriode(per){
+  var now=new Date();
+  if(per==="jour")return 1;
+  if(per==="semaine")return 7;
+  if(per==="mois")return now.getDate();
+  if(per==="trimestre")return 90;
+  var d=DATA.interventions.map(function(i){return i.date}).filter(Boolean).sort();
+  if(!d.length)return 1;
+  return Math.max(1,Math.round((now-new Date(d[0]))/86400000)+1);
+}
 function barres(items){
   var max=Math.max.apply(null,items.map(function(i){return Number(i.v)||0}).concat([1]));
   return '<div class="bars">'+items.map(function(i){
@@ -566,6 +576,7 @@ function vDashboard(){
     +tile("Volume travaux HT",Math.round(vol).toLocaleString("fr-FR"),"€")
     +tile("Mes commissions HT",Math.round(com).toLocaleString("fr-FR"),"€")
     +tile("Part du volume",taux(com,vol))
+    +tile("Interventions par jour",(itv.length/joursPeriode(per)).toLocaleString("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1}))
     +'</dl>';
   h+='<p class="note" style="margin:-6px 0 18px">Part du volume : ce que vos commissions représentent sur le total des travaux facturés aux clients par les entreprises.</p>';
   if(accord)h+='<p class="note" style="margin:-6px 0 18px">'+accord+' intervention(s) au-delà de 50 000 € : commission sur accord préalable, non comptée ci-dessus.</p>';
