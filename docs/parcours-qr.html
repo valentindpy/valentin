@@ -471,6 +471,7 @@ var TRADES=[
  {id:"carrelage",l:"Carrelage, sol",u:0},
  {id:"menuiserie",l:"Fenêtres, menuiserie",u:0},
  {id:"verts",l:"Espaces verts",u:0},
+ {id:"menage",l:"Ménage, nettoyage",u:0},
  {id:"autre",l:"Autre, je ne sais pas",u:1}
 ];
 var PRESTA={
@@ -485,6 +486,9 @@ var PRESTA={
  carrelage:["Carrelage au sol","Faïence murale","Parquet ou stratifié","Sol souple, lino","Ragréage","Terrasse extérieure"],
  menuiserie:["Cuisine équipée","Plan de travail","Installation d'électroménager","Changement de fenêtres","Volets roulants","Porte d'entrée","Placards et rangements"],
  verts:["Entretien des espaces verts","Élagage, abattage","Création de massifs","Clôture, portail","Arrosage automatique"],
+ menage:["Ménage régulier des parties communes","Entretien de bureaux ou de locaux","Nettoyage de fin de chantier",
+   "Remise en état après sinistre","Vitrerie et surfaces vitrées","Parking et local poubelles",
+   "Nettoyage haute pression des sols et façades","Désinfection et débarras"],
  autre:["Je préfère le décrire plus bas"]
 };
 var GESTES=[
@@ -540,6 +544,7 @@ var PROJETS=[
  {id:"sdb",l:"Salle de bains",t:["plomberie","carrelage","electricite","platrerie"]},
  {id:"menuis",l:"Fenêtres, volets, portes",t:["menuiserie","serrurerie"]},
  {id:"exter",l:"Extérieurs, espaces verts",t:["verts"]},
+ {id:"entretien",l:"Ménage et entretien régulier",g:["Contrat d'entretien régulier","Prestation ponctuelle","Remise en état complète"],t:["menage"]},
  {id:"autre",l:"Autre projet, à décrire",t:[]}
 ];
 function esc(v){return String(v||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
