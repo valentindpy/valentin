@@ -133,6 +133,29 @@ select.sel{background:var(--surface);border:1px solid var(--line);border-radius:
 .crumb{display:flex;flex-wrap:wrap;gap:7px;align-items:center;font-size:.85rem;color:var(--ink-3);margin-bottom:14px}
 .crumb button{background:none;border:0;color:var(--accent-ink);cursor:pointer;font-size:.85rem;padding:0;text-decoration:underline;text-underline-offset:3px}
 .actions{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:16px}
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:minmax(88px,auto) minmax(0,1fr) auto;gap:12px;align-items:center;font-size:.86rem}
+.bar .bl{color:var(--ink-2);overflow-wrap:anywhere}
+.bar .bt{height:10px;background:var(--sunk);border-radius:5px;overflow:hidden}
+.bar .bf{display:block;height:100%;background:var(--accent);border-radius:5px;min-width:3px}
+.bar .bf.u{background:var(--urg)} .bar .bf.d{background:var(--dep)} .bar .bf.p{background:var(--pro)}
+.bar .bv{font-family:var(--mono);font-size:.8rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.qui{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;border-radius:4px;padding:3px 7px;border:1px solid;white-space:nowrap}
+.qui.pro{color:var(--accent-ink);border-color:var(--accent);background:var(--accent-soft)}
+.qui.part{color:var(--ink-3);border-color:var(--line-strong);background:var(--surface-2)}
+.qui b{width:6px;height:6px;border-radius:1px;background:currentColor;display:block}
+.qui.part b{border-radius:50%}
+.urgbox{border:1px solid var(--urg);background:var(--urg-soft);border-radius:6px;padding:16px 18px;margin-bottom:16px}
+.urgbox h3{color:var(--urg);font-size:1.02rem}
+.urgbox p{color:var(--urg);font-size:.86rem;margin-top:4px;line-height:1.45}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px}
+.fact+.fact{margin-top:14px}
+.fact .tot{display:flex;justify-content:space-between;gap:12px;align-items:baseline;border-top:1px solid var(--line-strong);margin-top:10px;padding-top:11px;font-family:var(--display);font-weight:600}
+.fact .tot span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.grille{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 18px;font-size:.86rem}
+.grille div{padding:7px 0;border-top:1px solid var(--line)}
+.grille div:nth-child(-n+2){border-top:0;font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.grille div:nth-child(even){text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
 .tag.ex{color:var(--ink-3);border-color:var(--line-strong);background:var(--surface-2);text-transform:none;letter-spacing:.04em}
 .pick input{width:16px;height:16px;accent-color:var(--accent);margin:0}
 .pick .nm{font-weight:600;font-family:var(--display);font-size:.92rem}
@@ -198,7 +221,61 @@ var MET={plomberie:"Plomberie",electricite:"Électricité",chauffage:"Chauffage"
 var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"}};
 var ETATS={nouvelle:{l:"Nouvelle",c:"a"},devis:{l:"Devis demandé",c:"d"},chiffre:{l:"Chiffrée",c:"d"},planifiee:{l:"Planifiée",c:"p"},close:{l:"Clôturée",c:"n"}};
 var STATUTS={occupant:"Propriétaire occupant",locataire:"Locataire",bailleur:"Propriétaire bailleur",syndic:"Syndic ou gestionnaire",conseil:"Conseil syndical",pro:"Commerce ou entreprise"};
-var NAV=[{id:"demandes",l:"Demandes"},{id:"prestataires",l:"Prestataires"},{id:"clients",l:"Clients"},{id:"interventions",l:"Historique"}];
+var NAV=[{id:"dashboard",l:"Tableau de bord"},{id:"demandes",l:"Demandes"},{id:"prestataires",l:"Prestataires"},{id:"clients",l:"Clients"},{id:"interventions",l:"Historique"},{id:"facturation",l:"Facturation"}];
+var PRO_ROLES=["syndic","bailleur","pro"];
+var GRILLE=[
+ {max:300,forfait:30,l:"Jusqu'à 300 €",c:"30 € HT"},
+ {max:750,forfait:50,l:"301 € à 750 €",c:"50 € HT"},
+ {max:1500,forfait:100,l:"751 € à 1 500 €",c:"100 € HT"},
+ {max:5000,taux:0.10,l:"1 501 € à 5 000 €",c:"10 % du montant HT"},
+ {max:20000,taux:0.07,l:"5 001 € à 20 000 €",c:"7 % du montant HT"},
+ {max:50000,taux:0.05,l:"20 001 € à 50 000 €",c:"5 % du montant HT"},
+ {max:Infinity,accord:true,l:"Plus de 50 000 €",c:"Sur accord préalable"}
+];
+function commission(m){
+  m=Number(m)||0;
+  if(m<=0)return {v:0,base:"—",accord:false};
+  for(var i=0;i<GRILLE.length;i++){
+    var g=GRILLE[i];
+    if(m<=g.max){
+      if(g.accord)return {v:null,base:"accord préalable",accord:true};
+      return {v:g.forfait!=null?g.forfait:m*g.taux,base:g.forfait!=null?"forfait "+g.forfait+" €":(g.taux*100)+" %",accord:false};
+    }
+  }
+  return {v:0,base:"—",accord:false};
+}
+function estPro(r){return PRO_ROLES.indexOf(r)>=0}
+function quiBadge(role){
+  return estPro(role)
+    ? '<span class="qui pro"><b></b>Pro</span>'
+    : '<span class="qui part"><b></b>Particulier</span>';
+}
+function moisDe(iso){return String(iso||"").slice(0,7)}
+function moisLong(m){
+  if(!m)return "";
+  var d=new Date(m+"-01T12:00:00");
+  return isNaN(d)?m:d.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+}
+function dansPeriode(iso,per){
+  if(per==="tout")return true;
+  if(!iso)return false;
+  var d=new Date(iso);if(isNaN(d))return false;
+  var now=new Date(),a;
+  if(per==="jour")return d.toDateString()===now.toDateString();
+  if(per==="semaine"){a=new Date(now);a.setDate(now.getDate()-6);a.setHours(0,0,0,0);return d>=a}
+  if(per==="mois")return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
+  if(per==="trimestre"){a=new Date(now);a.setDate(now.getDate()-89);a.setHours(0,0,0,0);return d>=a}
+  return true;
+}
+function barres(items){
+  var max=Math.max.apply(null,items.map(function(i){return Number(i.v)||0}).concat([1]));
+  return '<div class="bars">'+items.map(function(i){
+    return '<div class="bar" title="'+E(i.l+" : "+(i.d||i.v))+'"><span class="bl">'+E(i.l)+'</span>'
+      +'<span class="bt"><span class="bf'+(i.c?" "+i.c:"")+'" style="width:'+Math.max(2,Math.round((Number(i.v)||0)/max*100))+'%"></span></span>'
+      +'<span class="bv">'+E(i.d!=null?i.d:i.v)+'</span></div>';
+  }).join("")+'</div>';
+}
+function interDe(d){return DATA.interventions.filter(function(i){return i.demandeId===d.id})[0]}
 
 /* ---------- utilitaires ---------- */
 function E(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -233,8 +310,8 @@ function metiersOf(d){return (d.trades||[]).map(function(t){return MET[t]||t})}
 /* ---------- état ---------- */
 var db=null,ready=false,etatCx="attente",cxErr="";
 var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[]};
-var route={v:"demandes",id:null};
-var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note"};
+var route={v:"dashboard",id:null};
+var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note",type:"tous",per:"semaine",mois:"",cq:"",ctype:"tous",cville:"",crole:""};
 var BD=null,bdTimer=null,qTimer=null;
 
 function coll(name){
@@ -282,11 +359,170 @@ function paintNav(){
       : '<span class="dotlive dotoff"></span>Base injoignable<br>'+E(cxErr||etatCx)+'<br><button data-act="reconnecter">Réessayer</button>';
 }
 
+/* ---------- vue : tableau de bord ---------- */
+var PERIODES=[["jour","Aujourd'hui"],["semaine","7 jours"],["mois","Mois en cours"],["trimestre","90 jours"],["tout","Tout"]];
+function vDashboard(){
+  var per=flt.per;
+  var dem=DATA.demandes.filter(function(d){return dansPeriode(d.recu,per)});
+  var itv=DATA.interventions.filter(function(i){return dansPeriode(i.date,per)});
+  var vol=itv.reduce(function(s,i){return s+(Number(i.montant)||0)},0);
+  var com=itv.reduce(function(s,i){var c=commission(i.montant);return s+(c.v||0)},0);
+  var accord=itv.filter(function(i){return commission(i.montant).accord}).length;
+  var attente=DATA.demandes.filter(function(d){return d.etat!=="close"});
+  var urg=dem.filter(function(d){return d.intent==="urgence"});
+  var label=(PERIODES.filter(function(x){return x[0]===per})[0]||["","" ])[1].toLowerCase();
+
+  var h='<div class="head"><div><p class="eyebrow">Vue d\'ensemble</p><h1>Tableau de bord</h1>'
+    +'<p>Chiffres arrêtés sur : '+E(label)+'.</p></div></div>';
+  h+='<div class="bar">'+PERIODES.map(function(x){
+    return '<button class="pill" data-flt="per" data-v="'+x[0]+'" aria-pressed="'+(per===x[0])+'">'+x[1]+'</button>'}).join("")+'</div>';
+
+  h+='<dl class="tiles">'
+    +tile("Demandes reçues",dem.length)
+    +tile("Dont urgences",urg.length)
+    +tile("En attente, tous mois",attente.length)
+    +tile("Interventions",itv.length)
+    +tile("Volume travaux HT",Math.round(vol).toLocaleString("fr-FR"),"€")
+    +tile("Mes commissions HT",Math.round(com).toLocaleString("fr-FR"),"€")
+    +'</dl>';
+  if(accord)h+='<p class="note" style="margin:-6px 0 18px">'+accord+' intervention(s) au-delà de 50 000 € : commission sur accord préalable, non comptée ci-dessus.</p>';
+
+  h+='<div class="split"><div>';
+  /* nature */
+  var nat=[["urgence","u"],["depannage","d"],["projet","p"]].map(function(x){
+    var v=dem.filter(function(d){return d.intent===x[0]}).length;
+    return {l:INTENT[x[0]].l,v:v,c:x[1],d:v+(dem.length?"  ("+Math.round(v/dem.length*100)+" %)":"")};
+  });
+  h+='<div class="card"><h3>Nature des demandes</h3><p class="sub">Le rouge est ce qui ne peut pas attendre.</p>'
+    +(dem.length?barres(nat):'<p class="note">Aucune demande sur cette période.</p>')+'</div>';
+  /* pro / particulier */
+  var pro=dem.filter(function(d){return estPro(d.statutDemandeur)}).length;
+  h+='<div class="card"><h3>Qui demande</h3><p class="sub">Un professionnel rapporte plusieurs immeubles, un particulier un logement.</p>'
+    +(dem.length?barres([
+      {l:"Professionnels",v:pro,d:pro},
+      {l:"Particuliers",v:dem.length-pro,d:dem.length-pro}
+    ]):'<p class="note">Aucune demande sur cette période.</p>')+'</div>';
+  /* métiers */
+  var pm={};
+  dem.forEach(function(d){(d.trades||[]).forEach(function(t){pm[t]=(pm[t]||0)+1})});
+  var mets=Object.keys(pm).map(function(t){return {l:MET[t]||t,v:pm[t],d:pm[t]}}).sort(function(a,b){return b.v-a.v}).slice(0,8);
+  h+='<div class="card"><h3>Corps de métier demandés</h3><p class="sub">Ce que votre secteur réclame le plus.</p>'
+    +(mets.length?barres(mets):'<p class="note">Aucune demande sur cette période.</p>')+'</div>';
+  h+='</div><div>';
+  /* entreprises */
+  var pe={};
+  itv.forEach(function(i){pe[i.prestataireId]=(pe[i.prestataireId]||0)+(Number(i.montant)||0)});
+  var ents=Object.keys(pe).map(function(id){
+    var p=DATA.prestataires.filter(function(x){return x.id===id})[0];
+    return {l:p?p.nom:"—",v:pe[id],d:Math.round(pe[id]).toLocaleString("fr-FR")+" €"};
+  }).sort(function(a,b){return b.v-a.v}).slice(0,6);
+  h+='<div class="card"><h3>Volume par entreprise</h3><p class="sub">Travaux facturés au client, pas votre commission.</p>'
+    +(ents.length?barres(ents):'<p class="note">Aucune intervention sur cette période.</p>')+'</div>';
+  /* à traiter */
+  var vieilles=attente.slice().sort(function(a,b){return (a.recu||"").localeCompare(b.recu||"")}).slice(0,6);
+  h+='<div class="card"><h3>Les plus anciennes non traitées</h3><p class="sub">À prendre dans cet ordre.</p>';
+  h+=vieilles.length?'<div class="pick">'+vieilles.map(function(d){
+      var it=INTENT[d.intent]||{l:"?",c:"n"};
+      return '<div class="r"><span><span class="nm">'+E(d.nom||"—")+'</span>'
+        +'<span class="ct">'+E(d.ref)+' · '+E(d.ville||"")+' · reçue le '+E(jour(d.recu))+'</span></span>'
+        +'<span class="tag '+it.c+'">'+it.l+'</span>'
+        +'<button class="btn sm ghost" data-open="'+E(d.id)+'">Ouvrir</button></div>';
+    }).join("")+'</div>':'<p class="note">Rien en attente. Tout est traité.</p>';
+  h+='</div></div></div>';
+  return h;
+}
+function tile(k,v,u){
+  return '<div class="tile"><dt>'+E(k)+'</dt><dd>'+E(v)+(u?' <small>'+E(u)+'</small>':"")+'</dd></div>';
+}
+
+/* ---------- vue : facturation des commissions ---------- */
+function vFacturation(){
+  var mois={};
+  DATA.interventions.forEach(function(i){if(i.date)mois[moisDe(i.date)]=1});
+  var liste=Object.keys(mois).sort().reverse();
+  if(!flt.mois||liste.indexOf(flt.mois)<0)flt.mois=liste[0]||moisDe(new Date().toISOString());
+  var itv=DATA.interventions.filter(function(i){return moisDe(i.date)===flt.mois});
+
+  var h='<div class="head"><div><p class="eyebrow">Fin de mois</p><h1>Factures de commissions</h1>'
+    +'<p>Une facture par entreprise, ligne par intervention, selon la grille d\'apport d\'affaires.</p></div>'
+    +'<div class="actions" style="margin:0"><button class="btn ghost" data-act="fact-copy-all">Copier toutes les factures</button></div></div>';
+  h+='<div class="bar"><select class="sel" data-flt="mois">'
+    +(liste.length?liste.map(function(m){return '<option value="'+E(m)+'"'+(flt.mois===m?" selected":"")+'>'+E(moisLong(m))+'</option>'}).join("")
+      :'<option>'+E(moisLong(flt.mois))+'</option>')
+    +'</select><span class="note">'+itv.length+' intervention(s) ce mois-ci</span></div>';
+
+  var parEnt={};
+  itv.forEach(function(i){(parEnt[i.prestataireId]=parEnt[i.prestataireId]||[]).push(i)});
+  var ids=Object.keys(parEnt);
+  if(!ids.length)h+='<div class="empty"><h3>Aucune intervention ce mois-ci</h3><p>Clôturez une demande pour qu\'elle apparaisse ici.</p></div>';
+  ids.forEach(function(pid){
+    var p=DATA.prestataires.filter(function(x){return x.id===pid})[0]||{nom:"Entreprise inconnue"};
+    var lignes=parEnt[pid].slice().sort(function(a,b){return (a.date||"").localeCompare(b.date||"")});
+    var tot=0,accord=0;
+    h+='<div class="fact"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">'
+      +'<div><h3>'+E(p.nom)+'</h3><p class="sub">'+E(p.contact||"")+(p.email?' · '+E(p.email):"")+'</p></div>'
+      +'<button class="btn sm ghost" data-act="fact-copy" data-id="'+E(pid)+'">Copier cette facture</button></div>';
+    h+='<div class="scroll"><table class="tbl"><thead><tr><th>Date</th><th>Réf</th><th>Client</th><th>Ville</th>'
+      +'<th class="num">Travaux HT</th><th class="num">Base</th><th class="num">Commission HT</th></tr></thead><tbody>';
+    lignes.forEach(function(i){
+      var c=commission(i.montant);
+      if(c.accord)accord++;else tot+=c.v||0;
+      var d=DATA.demandes.filter(function(x){return x.id===i.demandeId})[0];
+      h+='<tr><td>'+E(jour(i.date))+'</td><td>'+E(i.ref||(d&&d.ref)||"—")+'</td>'
+        +'<td>'+E((d&&d.nom)||i.client||"—")+'</td><td>'+E(i.ville||(d&&d.ville)||"—")+'</td>'
+        +'<td class="num">'+eur(i.montant||0)+'</td><td class="num">'+E(c.base)+'</td>'
+        +'<td class="num">'+(c.accord?"à convenir":eur(c.v||0))+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+    h+='<div class="tot"><span>Total commissions HT</span><span>'+eur(tot)+'</span></div>';
+    h+='<div class="tot" style="border-top:0;padding-top:4px;font-weight:400;font-family:var(--body);font-size:.86rem;color:var(--ink-3)">'
+      +'<span>TVA 20 % · total TTC</span><span>'+eur(tot*0.2)+' · '+eur(tot*1.2)+'</span></div>';
+    if(accord)h+='<p class="note" style="margin-top:8px">'+accord+' ligne(s) au-delà de 50 000 € à convenir de gré à gré, hors total.</p>';
+    h+='</div>';
+  });
+
+  h+='<div class="card" style="margin-top:22px"><h3>Grille d\'apport d\'affaires</h3>'
+    +'<p class="sub">Appliquée automatiquement au montant HT facturé au client par l\'entreprise.</p>'
+    +'<div class="grille"><div>Montant HT facturé au client</div><div>Commission d\'apport</div>'
+    +GRILLE.map(function(g){return '<div>'+E(g.l)+'</div><div>'+E(g.c)+'</div>'}).join("")+'</div></div>';
+  return h;
+}
+function texteFacture(pid){
+  var p=DATA.prestataires.filter(function(x){return x.id===pid})[0]||{nom:"—"};
+  var lignes=DATA.interventions.filter(function(i){return i.prestataireId===pid&&moisDe(i.date)===flt.mois})
+    .sort(function(a,b){return (a.date||"").localeCompare(b.date||"")});
+  var L=[],tot=0;
+  L.push("FACTURE DE COMMISSIONS D'APPORT D'AFFAIRES");
+  L.push("Période : "+moisLong(flt.mois));
+  L.push("");
+  L.push("Émetteur : Valentin Dupuy — maîtrise d'œuvre — Mandelieu-la-Napoule");
+  L.push("Destinataire : "+p.nom+(p.contact?" — "+p.contact:""));
+  L.push("");
+  L.push("Date | Référence | Client | Travaux HT | Base | Commission HT");
+  lignes.forEach(function(i){
+    var c=commission(i.montant);
+    var d=DATA.demandes.filter(function(x){return x.id===i.demandeId})[0];
+    if(!c.accord)tot+=c.v||0;
+    L.push(jour(i.date)+" | "+(i.ref||(d&&d.ref)||"-")+" | "+((d&&d.nom)||"-")+" | "+eur(i.montant||0)
+      +" | "+c.base+" | "+(c.accord?"à convenir":eur(c.v||0)));
+  });
+  L.push("");
+  L.push("Total commissions HT : "+eur(tot));
+  L.push("TVA 20 % : "+eur(tot*0.2));
+  L.push("Total TTC : "+eur(tot*1.2));
+  L.push("");
+  L.push("Règlement à 30 jours. Grille d'apport d'affaires en vigueur :");
+  GRILLE.forEach(function(g){L.push("  "+g.l+" : "+g.c)});
+  return L.join("\n");
+}
+
 /* ---------- vue : liste des demandes ---------- */
 function vDemandes(){
   var list=DATA.demandes.slice().sort(function(a,b){return (b.recu||"").localeCompare(a.recu||"")});
   if(flt.etat==="actives")list=list.filter(function(d){return d.etat!=="close"});
   else if(flt.etat!=="toutes")list=list.filter(function(d){return d.etat===flt.etat});
+  if(flt.type==="pro")list=list.filter(function(d){return estPro(d.statutDemandeur)});
+  else if(flt.type==="part")list=list.filter(function(d){return !estPro(d.statutDemandeur)});
   if(flt.q){
     var q=flt.q.toLowerCase();
     list=list.filter(function(d){
@@ -302,6 +538,9 @@ function vDemandes(){
   [["actives","À traiter"],["nouvelle","Nouvelles"],["devis","Devis demandé"],["planifiee","Planifiées"],["close","Clôturées"],["toutes","Toutes"]]
     .forEach(function(f){h+='<button class="pill" data-flt="etat" data-v="'+f[0]+'" aria-pressed="'+(flt.etat===f[0])+'">'+f[1]+'</button>'});
   h+='<input class="search" id="q" placeholder="Chercher une adresse, un nom, un métier…" value="'+E(flt.q)+'"></div>';
+  h+='<div class="bar">'+[["tous","Tout le monde"],["pro","Professionnels"],["part","Particuliers"]].map(function(f){
+    return '<button class="pill" data-flt="type" data-v="'+f[0]+'" aria-pressed="'+(flt.type===f[0])+'">'+f[1]+'</button>'}).join("")
+    +'<span class="note">'+list.length+' demande(s)</span></div>';
   if(!list.length)return h+emptyBlock();
   h+='<div class="rows">'+list.map(function(d){
     var it=INTENT[d.intent]||{l:"?",c:"n"},et=ETATS[d.etat]||ETATS.nouvelle,r=routage(d);
@@ -313,6 +552,7 @@ function vDemandes(){
       +'<span class="meta">'+E(d.nom)+' · '+E([d.residence,d.adresse,d.ville].filter(Boolean).join(", "))
       +' · '+(d.lieu==="commun"?"parties communes":d.lieu==="privatif"?"partie privative":"lieu à préciser")+'</span>'
       +'</span><span class="end">'
+      +quiBadge(d.statutDemandeur)
       +'<span class="tag '+it.c+'">'+it.l+'</span>'
       +'<span class="tag '+(r==="moe"?"p":"n")+'">'+(r==="moe"?"Maîtrise d\'œuvre":"Envoi direct")+'</span>'
       +'<span class="tag '+et.c+'">'+et.l+'</span>'+(d.exemple?'<span class="tag ex">exemple</span>':"")
@@ -348,11 +588,28 @@ function vDemande(){
     +'<h1>'+E(prestaLabels(d).slice(0,2).join(" · ")||metiersOf(d).join(" · ")||"Demande")+'</h1>'
     +'<p><span class="tag '+it.c+'">'+it.l+'</span> <span class="tag '+(r==="moe"?"p":"n")+'">'
     +(r==="moe"?"Maîtrise d\'œuvre conseillée":"Envoi direct possible")+'</span>'
+    +' '+quiBadge(d.statutDemandeur)
     +(d.exemple?' <span class="tag ex">exemple</span>':"")+'</p></div>'
     +'<select class="sel" id="etat" data-act="etat" data-id="'+E(d.id)+'">'
     +Object.keys(ETATS).map(function(k){return '<option value="'+k+'"'+(d.etat===k?" selected":"")+'>'+ETATS[k].l+'</option>'}).join("")
     +'</select></div>';
 
+  if(d.intent==="urgence"){
+    var ast=cand.filter(function(p){return p.local}).sort(function(a,b){return (b.reactivite||0)-(a.reactivite||0)})[0]||cand[0];
+    var dejaAppelee=(d.journal||[]).some(function(j){return (j.texte||"").indexOf("contacté directement")>=0});
+    h+='<div class="urgbox"><h3>Urgence : mise en relation directe</h3>'
+      +'<p>En urgence, le demandeur n\'attend pas un devis. Il appelle lui-même l\'entreprise de dépannage la plus proche, vous régularisez ensuite.</p>';
+    if(ast){
+      h+='<p style="margin-top:10px"><strong>La plus proche et la plus réactive : '+E(ast.nom)+'</strong>'
+        +' · '+E((ast.villes||[]).join(", "))+' · réactivité '+(ast.reactivite||0)+'/5</p>';
+      h+='<div class="actions" style="margin:14px 0 0">'
+        +(ast.tel?'<a class="btn" style="background:var(--urg)" href="tel:'+E(tel(ast.tel))+'">Appeler '+E(ast.nom)+'</a>':"")
+        +(dejaAppelee?'<span class="tag u">demandeur déjà mis en relation</span>'
+          :'<button class="btn ghost" data-act="urg-appel" data-id="'+E(d.id)+'" data-v="'+E(ast.id)+'">Le demandeur a contacté cette entreprise</button>')
+        +'</div>';
+    }else h+='<p style="margin-top:10px">Aucune entreprise de ce métier dans le répertoire. Ajoutez un contact d\'astreinte sans attendre.</p>';
+    h+='</div>';
+  }
   h+='<div class="split"><div>';
   h+='<div class="card"><h3>Ce qui est demandé</h3><p class="sub">Tel que le demandeur l\'a rempli sur la page du QR code.</p>';
   h+='<div class="chips">'+(prestaLabels(d).map(function(l){return '<span class="chip on">'+E(l)+'</span>'}).join("")
@@ -369,6 +626,32 @@ function vDemande(){
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8.5A1.5 1.5 0 014.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0121 8.5v9A1.5 1.5 0 0119.5 19h-15A1.5 1.5 0 013 17.5z"/><circle cx="12" cy="13" r="3.2"/></svg>'
       +E(p.nom)+'<span>'+E(p.h||"")+'</span></button>';
     }).join("")+'</div>':'<p class="note">Rien de joint. Demandez une photo par SMS avant de déranger une entreprise.</p>';
+  var iv=interDe(d);
+  if(d.etat==="close"){
+    var pe=iv?DATA.prestataires.filter(function(x){return x.id===iv.prestataireId})[0]:null;
+    var cm=iv?commission(iv.montant):null;
+    h+='<div class="card" style="border-color:var(--pro)"><h3>Réalisation</h3>'
+      +'<p class="sub">Ce qui a réellement été fait, par qui, et ce que ça vous rapporte.</p>';
+    if(!iv)h+='<p class="note">Aucune intervention enregistrée. Utilisez le bouton de clôture plus bas pour saisir l\'entreprise, la date et la facture.</p>';
+    else{
+      h+='<dl>'
+        +kv("Intervenant",E(pe?pe.nom:"—")+(pe&&pe.tel?' · <a href="tel:'+E(tel(pe.tel))+'">'+E(pe.tel)+'</a>':""))
+        +kv("Date",E(jour(iv.date)))
+        +kv("Facture entreprise",(iv.factureNum?"n° "+E(iv.factureNum)+" · ":"")+eur(iv.montant||0)+" HT")
+        +kv("Ma commission",cm.accord?"à convenir, au-delà de 50 000 €":eur(cm.v||0)+" HT ("+E(cm.base)+")")
+        +kv("Notes",stars(iv.noteQualite||0)+' <span class="note">qualité</span> &nbsp; '+stars(iv.noteReactivite||0)+' <span class="note">réactivité</span>')
+        +(iv.notes?kv("Compte rendu",E(iv.notes)):"")
+        +'</dl>';
+      h+='<p class="eyebrow" style="margin:16px 0 8px">Photos après travaux</p>';
+      h+=(iv.photosApres||[]).length?'<div class="photos">'+(iv.photosApres||[]).map(function(ph,k){
+          return '<button class="photo" data-act="photo-apres" data-id="'+E(d.id)+'" data-v="'+k+'">'
+          +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8.5A1.5 1.5 0 014.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0121 8.5v9A1.5 1.5 0 0119.5 19h-15A1.5 1.5 0 013 17.5z"/><circle cx="12" cy="13" r="3.2"/></svg>'
+          +E(ph.nom||ph)+'</button>';
+        }).join("")+'</div>':'<p class="note">Aucune photo de fin de chantier. C\'est la preuve la plus utile en cas de litige avec un syndic.</p>';
+      h+='<div class="actions" style="margin:16px 0 0"><button class="btn sm ghost" data-act="cloturer" data-id="'+E(d.id)+'">Corriger la réalisation</button></div>';
+    }
+    h+='</div>';
+  }
   h+='</div></div><div>';
   h+='<div class="card"><h3>'+E(d.nom||"Demandeur")+'</h3><p class="sub">'+E(STATUTS[d.statutDemandeur]||"")+'</p><dl>'
     +kv("Téléphone",d.tel?'<a href="tel:'+E(tel(d.tel))+'">'+E(d.tel)+'</a>':"—")
@@ -597,38 +880,75 @@ function vPrestataires(){
 }
 
 /* ---------- vue : clients ---------- */
+function fiClient(c){
+  var nb=DATA.demandes.filter(function(d){return d.clientId===c.id}).length;
+  var lots=(c.copros||[]).reduce(function(a,k){return a+(Number(k.lots)||0)},0);
+  return '<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
+    +'<div><h3>'+E(c.nom)+(c.exemple?' <span class="tag ex">exemple</span>':"")+'</h3>'
+    +'<p class="sub">'+quiBadge(c.role)+' '+E(STATUTS[c.role]||c.role||"")+(c.ville?' · '+E(c.ville):"")+'</p></div>'
+    +'<button class="btn sm ghost" data-act="client-edit" data-id="'+E(c.id)+'">Modifier</button></div>'
+    +'<dl>'+kv("Interlocuteur",E(c.contactNom||"—")+(c.tel?' · <a href="tel:'+E(tel(c.tel))+'">'+E(c.tel)+'</a>':""))
+    +(c.email?kv("E-mail",'<a href="mailto:'+E(c.email)+'">'+E(c.email)+'</a>'):"")
+    +kv("Demandes",nb+((c.copros||[]).length?" · "+(c.copros||[]).length+" copro · "+lots+" lots":""))
+    +(c.notes?kv("Notes",E(c.notes)):"")+'</dl>'
+    +(c.copros||[]).map(function(k,ix){
+      return '<div class="copro"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">'
+        +'<h4>'+E(k.nom)+'</h4><span class="lots">'+E(k.lots||"?")+' lots</span></div>'
+        +'<p class="note">'+E([k.adresse,k.ville].filter(Boolean).join(", "))+'</p>'
+        +'<p class="note">Chargé de copro : '+E(k.chargeNom||"—")+(k.chargeTel?' · '+E(k.chargeTel):"")+(k.chargeEmail?' · '+E(k.chargeEmail):"")+'</p>'
+        +'<button class="btn sm ghost" style="margin-top:8px" data-act="copro-edit" data-id="'+E(c.id)+'" data-v="'+ix+'">Modifier la copropriété</button></div>';
+    }).join("")
+    +(c.type==="pro"?'<button class="btn sm ghost" style="margin-top:12px" data-act="copro-new" data-id="'+E(c.id)+'">+ Ajouter une copropriété</button>':"")
+    +'</div>';
+}
 function vClients(){
-  var pros=DATA.clients.filter(function(c){return c.type==="pro"});
-  var parts=DATA.clients.filter(function(c){return c.type!=="pro"});
-  var lots=pros.reduce(function(s,c){return s+(c.copros||[]).reduce(function(a,k){return a+(Number(k.lots)||0)},0)},0);
+  var all=DATA.clients.slice();
+  var villes={},roles={};
+  all.forEach(function(c){if(c.ville)villes[c.ville]=1;if(c.role)roles[c.role]=1;
+    (c.copros||[]).forEach(function(k){if(k.ville)villes[k.ville]=1})});
+  var list=all;
+  if(flt.ctype==="pro")list=list.filter(function(c){return c.type==="pro"});
+  else if(flt.ctype==="part")list=list.filter(function(c){return c.type!=="pro"});
+  if(flt.crole)list=list.filter(function(c){return c.role===flt.crole});
+  if(flt.cville)list=list.filter(function(c){
+    return c.ville===flt.cville||(c.copros||[]).some(function(k){return k.ville===flt.cville})});
+  if(flt.cq){
+    var q=flt.cq.toLowerCase();
+    list=list.filter(function(c){
+      return [c.nom,c.contactNom,c.tel,c.email,c.ville,c.notes]
+        .concat((c.copros||[]).map(function(k){return [k.nom,k.adresse,k.ville,k.chargeNom].join(" ")}))
+        .join(" ").toLowerCase().indexOf(q)>=0;
+    });
+  }
+  list.sort(function(a,b){return String(a.nom||"").localeCompare(String(b.nom||""))});
+  var pros=list.filter(function(c){return c.type==="pro"});
+  var parts=list.filter(function(c){return c.type!=="pro"});
+  var lots=all.filter(function(c){return c.type==="pro"}).reduce(function(s,c){
+    return s+(c.copros||[]).reduce(function(a,k){return a+(Number(k.lots)||0)},0)},0);
+
   var h='<div class="head"><div><p class="eyebrow">Portefeuille</p><h1>Clients</h1>'
-    +'<p>'+pros.length+' comptes professionnels · '+pros.reduce(function(s,c){return s+(c.copros||[]).length},0)
-    +' copropriétés · '+lots+' lots · '+parts.length+' particuliers</p></div>'
+    +'<p>'+all.filter(function(c){return c.type==="pro"}).length+' comptes professionnels · '
+    +all.reduce(function(s,c){return s+(c.copros||[]).length},0)+' copropriétés · '+lots+' lots · '
+    +all.filter(function(c){return c.type!=="pro"}).length+' particuliers</p></div>'
     +'<div class="actions" style="margin:0"><button class="btn ghost" data-act="purge">Vider les exemples</button>'
     +'<button class="btn" data-act="client-new">+ Ajouter un client</button></div></div>';
-  h+='<p class="eyebrow" style="margin-bottom:10px">Professionnels</p><div class="grid2">'+(pros.map(function(c){
-    return '<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
-      +'<div><h3>'+E(c.nom)+(c.exemple?' <span class="tag ex">exemple</span>':"")+'</h3><p class="sub">'+E(STATUTS[c.role]||c.role||"")+' · '+E(c.ville||"")+'</p></div>'
-      +'<button class="btn sm ghost" data-act="client-edit" data-id="'+E(c.id)+'">Modifier</button></div>'
-      +'<dl>'+kv("Interlocuteur",E(c.contactNom||"—")+(c.tel?" · "+E(c.tel):""))+(c.email?kv("E-mail",E(c.email)):"")+'</dl>'
-      +(c.copros||[]).map(function(k,i){
-        return '<div class="copro"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">'
-          +'<h4>'+E(k.nom)+'</h4><span class="lots">'+E(k.lots||"?")+' lots</span></div>'
-          +'<p class="note">'+E([k.adresse,k.ville].filter(Boolean).join(", "))+'</p>'
-          +'<p class="note">Chargé de copro : '+E(k.chargeNom||"—")+(k.chargeTel?" · "+E(k.chargeTel):"")+(k.chargeEmail?" · "+E(k.chargeEmail):"")+'</p>'
-          +'<button class="btn sm ghost" style="margin-top:8px" data-act="copro-edit" data-id="'+E(c.id)+'" data-v="'+i+'">Modifier la copropriété</button></div>';
-      }).join("")
-      +'<button class="btn sm ghost" style="margin-top:12px" data-act="copro-new" data-id="'+E(c.id)+'">+ Ajouter une copropriété</button>'
-      +'</div>';
-  }).join("")||'<div class="empty"><h3>Aucun compte professionnel</h3><p>Un syndic, un bailleur, une agence.</p></div>')+'</div>';
-  h+='<p class="eyebrow" style="margin:26px 0 10px">Particuliers</p><div class="grid2">'+(parts.map(function(c){
-    var nb=DATA.demandes.filter(function(d){return d.clientId===c.id}).length;
-    return '<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
-      +'<div><h3>'+E(c.nom)+(c.exemple?' <span class="tag ex">exemple</span>':"")+'</h3><p class="sub">'+E(STATUTS[c.role]||"")+' · '+E(c.ville||"")+'</p></div>'
-      +'<button class="btn sm ghost" data-act="client-edit" data-id="'+E(c.id)+'">Modifier</button></div>'
-      +'<dl>'+kv("Téléphone",E(c.tel||"—"))+(c.email?kv("E-mail",E(c.email)):"")
-      +kv("Demandes",nb)+(c.notes?kv("Notes",E(c.notes)):"")+'</dl></div>';
-  }).join("")||'<div class="empty"><h3>Aucun particulier</h3></div>')+'</div>';
+  h+='<div class="bar">'+[["tous","Tous"],["pro","Professionnels"],["part","Particuliers"]].map(function(f){
+      return '<button class="pill" data-flt="ctype" data-v="'+f[0]+'" aria-pressed="'+(flt.ctype===f[0])+'">'+f[1]+'</button>'}).join("")
+    +'<input class="search" id="cq" placeholder="Chercher un nom, une copropriété, un téléphone…" value="'+E(flt.cq)+'"></div>';
+  h+='<div class="bar"><select class="sel" data-flt="crole"><option value="">Toutes les qualités</option>'
+    +Object.keys(roles).map(function(r){return '<option value="'+E(r)+'"'+(flt.crole===r?" selected":"")+'>'+E(STATUTS[r]||r)+'</option>'}).join("")+'</select>'
+    +'<select class="sel" data-flt="cville"><option value="">Toutes les villes</option>'
+    +Object.keys(villes).sort().map(function(v){return '<option value="'+E(v)+'"'+(flt.cville===v?" selected":"")+'>'+E(v)+'</option>'}).join("")+'</select>'
+    +'<span class="note">'+list.length+' fiche(s)</span>'
+    +((flt.crole||flt.cville||flt.cq||flt.ctype!=="tous")?'<button class="pill" data-act="clients-reset">Effacer les filtres</button>':"")
+    +'</div>';
+  if(!list.length)return h+emptyBlock();
+  if(pros.length||flt.ctype!=="part")
+    h+='<p class="eyebrow" style="margin-bottom:10px">Professionnels — '+pros.length+'</p><div class="grid2">'
+      +(pros.map(fiClient).join("")||'<div class="empty"><h3>Aucun professionnel</h3><p>Syndic, bailleur, agence, commerçant.</p></div>')+'</div>';
+  if(parts.length||flt.ctype!=="pro")
+    h+='<p class="eyebrow" style="margin:26px 0 10px">Particuliers — '+parts.length+'</p><div class="grid2">'
+      +(parts.map(fiClient).join("")||'<div class="empty"><h3>Aucun particulier</h3></div>')+'</div>';
   return h;
 }
 
@@ -636,18 +956,18 @@ function vClients(){
 function vInterventions(){
   var list=DATA.interventions.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"")});
   var ca=list.reduce(function(s,i){return s+(Number(i.montant)||0)},0);
-  var marge=list.reduce(function(s,i){return s+(Number(i.marge)||0)},0);
+  var marge=list.reduce(function(s,i){return s+(commission(i.montant).v||0)},0);
   var h='<div class="head"><div><p class="eyebrow">Historique</p><h1>Interventions</h1>'
     +'<p>Tout ce qui est passé par vous, entreprise par entreprise.</p></div></div>';
   h+='<dl class="tiles">'
     +'<div class="tile"><dt>Interventions</dt><dd>'+list.length+'</dd></div>'
     +'<div class="tile"><dt>Volume travaux</dt><dd>'+(Math.round(ca).toLocaleString("fr-FR"))+' <small>€</small></dd></div>'
-    +'<div class="tile"><dt>Dont votre part</dt><dd>'+(Math.round(marge).toLocaleString("fr-FR"))+' <small>€</small></dd></div>'
+    +'<div class="tile"><dt>Mes commissions</dt><dd>'+(Math.round(marge).toLocaleString("fr-FR"))+' <small>€</small></dd></div>'
     +'<div class="tile"><dt>Entreprises actives</dt><dd>'+Object.keys(list.reduce(function(o,i){o[i.prestataireId]=1;return o},{})).length+'</dd></div>'
     +'</dl>';
   if(!list.length)return h+emptyBlock();
   h+='<div class="card"><div class="scroll"><table class="tbl"><thead><tr>'
-    +'<th>Date</th><th>Demande</th><th>Entreprise</th><th>Métier</th><th>Lieu</th><th class="num">Travaux</th><th class="num">Votre part</th><th>Qualité</th></tr></thead><tbody>'
+    +'<th>Date</th><th>Demande</th><th>Entreprise</th><th>Métier</th><th>Lieu</th><th class="num">Travaux HT</th><th class="num">Commission</th><th>Qualité</th></tr></thead><tbody>'
     +list.map(function(i){
       var p=DATA.prestataires.filter(function(x){return x.id===i.prestataireId})[0]||{nom:"—"};
       var d=DATA.demandes.filter(function(x){return x.id===i.demandeId})[0];
@@ -655,7 +975,7 @@ function vInterventions(){
         +'<td>'+(d?'<button class="btn sm ghost" data-open="'+E(d.id)+'">'+E(d.ref)+'</button>':E(i.ref||"—"))+'</td>'
         +'<td>'+E(p.nom)+'</td><td>'+E(MET[i.metier]||i.metier||"—")+'</td><td>'+E(i.ville||"—")+'</td>'
         +'<td class="num">'+(i.montant?eur(i.montant):"—")+'</td>'
-        +'<td class="num">'+(i.marge?eur(i.marge):"—")+'</td>'
+        +'<td class="num">'+(commission(i.montant).accord?"à convenir":eur(commission(i.montant).v||0))+'</td>'
         +'<td>'+stars(i.noteQualite||0)+'</td></tr>';
     }).join("")+'</tbody></table></div></div>';
   return h;
@@ -668,7 +988,9 @@ function paint(){
   var a=document.activeElement,fid=a&&a.id?a.id:null,pos=null;
   try{pos=a&&a.selectionStart}catch(e){}
   try{
-    el.innerHTML= route.v==="demandes"?vDemandes()
+    el.innerHTML= route.v==="dashboard"?vDashboard()
+      : route.v==="facturation"?vFacturation()
+      : route.v==="demandes"?vDemandes()
       : route.v==="demande"?vDemande()
       : route.v==="bordereau"?vBordereau()
       : route.v==="prestataires"?vPrestataires()
@@ -835,6 +1157,32 @@ document.addEventListener("click",function(ev){
 
   if(act==="dlg-close"){closeDlg();return}
   if(act==="reconnecter"){boot();return}
+  if(act==="clients-reset"){flt.cq="";flt.ctype="tous";flt.cville="";flt.crole="";paint();return}
+  if(act==="urg-appel"){
+    var pu=DATA.prestataires.filter(function(x){return x.id===b.dataset.v})[0]||{nom:"l'entreprise"};
+    maj(d.id,{etat:"planifiee",assignes:[b.dataset.v],
+      journal:journalise(d,"Le demandeur a contacté directement "+pu.nom+" pour cette urgence.")});
+    toast("Mise en relation enregistrée");return;
+  }
+  if(act==="photo-apres"){
+    var iva=interDe(d)||{},pa=(iva.photosApres||[])[Number(b.dataset.v)]||{};
+    openDlg("Photo après travaux",E(pa.nom||""),
+      '<div class="photo" style="aspect-ratio:4/3;font-size:.8rem;cursor:default">'
+      +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:40px;height:40px"><path d="M3 8.5A1.5 1.5 0 014.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0121 8.5v9A1.5 1.5 0 0119.5 19h-15A1.5 1.5 0 013 17.5z"/><circle cx="12" cy="13" r="3.2"/></svg>'
+      +E(pa.nom||"")+'</div>'
+      +'<p class="note" style="margin-top:12px">Emplacement de la photo de fin de chantier. Le stockage des fichiers reste à brancher.</p>',
+      '<button class="btn ghost" data-act="dlg-close">Fermer</button>');
+    return;
+  }
+  if(act==="fact-copy"){copier(texteFacture(b.dataset.id),"Facture copiée");return}
+  if(act==="fact-copy-all"){
+    var idsf={};
+    DATA.interventions.forEach(function(i){if(moisDe(i.date)===flt.mois)idsf[i.prestataireId]=1});
+    var keysf=Object.keys(idsf);
+    if(!keysf.length){toast("Aucune intervention ce mois-ci");return}
+    copier(keysf.map(texteFacture).join("\n\n----------------------------------------\n\n"),keysf.length+" facture(s) copiée(s)");
+    return;
+  }
 
   if(act==="photo"){
     var p=(d.photos||[])[Number(b.dataset.v)]||{};
@@ -1012,34 +1360,48 @@ document.addEventListener("click",function(ev){
   }
   if(act==="cloturer"){
     var opts=(d.assignes&&d.assignes.length?d.assignes.map(function(pid){return DATA.prestataires.filter(function(x){return x.id===pid})[0]}).filter(Boolean):DATA.prestataires);
-    openDlg("Clôturer "+E(d.ref),"L'intervention rejoint l'historique et la note de l'entreprise est mise à jour.",
+    var ex=interDe(d)||{};
+    openDlg("Clôturer "+E(d.ref),"Qui est intervenu, quand, les photos après et la facture de l'entreprise.",
       '<div class="field"><label for="i-p">Entreprise intervenue</label><select id="i-p">'
-      +opts.map(function(p){return '<option value="'+E(p.id)+'">'+E(p.nom)+'</option>'}).join("")+'</select></div>'
-      +'<div class="two">'+fld("i-date","Date","","date")+fld("i-mt","Montant des travaux (€)","","number")+'</div>'
-      +'<div class="two">'+fld("i-marge","Votre part (€)","","number")
+      +opts.map(function(p){return '<option value="'+E(p.id)+'"'+(ex.prestataireId===p.id?" selected":"")+'>'+E(p.nom)+'</option>'}).join("")+'</select></div>'
+      +'<div class="two">'+fld("i-date","Date de l'intervention",ex.date||new Date().toISOString().slice(0,10),"date")
+      +fld("i-fn","N° de facture de l'entreprise",ex.factureNum,"text","F-2026-0148")+'</div>'
+      +fld("i-mt","Montant HT facturé au client (€)",ex.montant,"number","1840")
+      +'<p class="note" style="margin:-4px 0 14px">La commission se calcule seule sur ce montant, selon la grille d\'apport d\'affaires.</p>'
+      +fld("i-ph","Photos après travaux",(ex.photosApres||[]).map(function(x){return x.nom||x}).join(", "),"text","apres_1.jpg, apres_2.jpg")
+      +'<div class="two">'
       +'<div class="field"><label for="i-q">Qualité du travail</label><select id="i-q">'
-      +[5,4,3,2,1].map(function(n){return '<option value="'+n+'">'+n+" / 5"+'</option>'}).join("")+'</select></div></div>'
+      +[5,4,3,2,1].map(function(k){return '<option value="'+k+'"'+(ex.noteQualite===k?" selected":"")+'>'+k+" / 5"+'</option>'}).join("")+'</select></div>'
       +'<div class="field"><label for="i-r">Réactivité</label><select id="i-r">'
-      +[5,4,3,2,1].map(function(n){return '<option value="'+n+'">'+n+" / 5"+'</option>'}).join("")+'</select></div>'
-      +area("i-n","Ce qu'il faut retenir",""),
-      '<button class="btn ghost" data-act="dlg-close">Annuler</button><button class="btn" data-act="cloture-save" data-id="'+E(d.id)+'">Clôturer</button>');
+      +[5,4,3,2,1].map(function(k){return '<option value="'+k+'"'+(ex.noteReactivite===k?" selected":"")+'>'+k+" / 5"+'</option>'}).join("")+'</select></div></div>'
+      +area("i-n","Compte rendu",ex.notes,"Ce qu'il faut retenir avant de les renvoyer chez un client."),
+      '<button class="btn ghost" data-act="dlg-close">Annuler</button><button class="btn" data-act="cloture-save" data-id="'+E(d.id)+'">Enregistrer</button>');
     return;
   }
   if(act==="cloture-save"){
     if(!db){toast("Base indisponible");return}
     var pid=val("i-p"),p2=DATA.prestataires.filter(function(x){return x.id===pid})[0]||{};
     var nq=Number(val("i-q")),nr=Number(val("i-r"));
-    var nb=DATA.interventions.filter(function(i){return i.prestataireId===pid}).length;
-    db.collection("interventions").add({demandeId:d.id,ref:d.ref,prestataireId:pid,
+    var mt=Number(val("i-mt"))||0,cm=commission(mt);
+    var photos=val("i-ph").split(",").map(function(x){return x.trim()}).filter(Boolean).map(function(x){return {nom:x}});
+    var body={demandeId:d.id,ref:d.ref,prestataireId:pid,client:d.nom||"",
       date:val("i-date")||new Date().toISOString().slice(0,10),
-      montant:Number(val("i-mt"))||0,marge:Number(val("i-marge"))||0,
-      metier:(d.trades||[])[0]||"",ville:d.ville||"",noteQualite:nq,noteReactivite:nr,notes:val("i-n")});
-    db.doc("prestataires/"+pid).update({
-      qualite:Math.round(((Number(p2.qualite||0)*nb+nq)/(nb+1))*10)/10,
-      reactivite:Math.round(((Number(p2.reactivite||0)*nb+nr)/(nb+1))*10)/10
-    }).catch(function(){});
-    maj(d.id,{etat:"close",journal:journalise(d,"Clôturée. Intervention par "+(p2.nom||"—")+(val("i-mt")?" pour "+eur(Number(val("i-mt"))):"")+".")});
-    closeDlg();toast("Intervention enregistrée");return;
+      montant:mt,factureNum:val("i-fn"),commission:cm.accord?null:Math.round((cm.v||0)*100)/100,
+      photosApres:photos,metier:(d.trades||[])[0]||"",ville:d.ville||"",
+      noteQualite:nq,noteReactivite:nr,notes:val("i-n")};
+    var ancienne=interDe(d);
+    if(ancienne)db.doc("interventions/"+ancienne.id).set(body);
+    else{
+      var nb=DATA.interventions.filter(function(i){return i.prestataireId===pid}).length;
+      db.collection("interventions").add(body);
+      db.doc("prestataires/"+pid).update({
+        qualite:Math.round(((Number(p2.qualite||0)*nb+nq)/(nb+1))*10)/10,
+        reactivite:Math.round(((Number(p2.reactivite||0)*nb+nr)/(nb+1))*10)/10
+      }).catch(function(){});
+    }
+    maj(d.id,{etat:"close",journal:journalise(d,(ancienne?"Réalisation corrigée. ":"Clôturée. ")+"Intervention par "+(p2.nom||"—")
+      +(mt?" pour "+eur(mt)+" HT, commission "+(cm.accord?"à convenir":eur(cm.v||0)):"")+".")});
+    closeDlg();toast(ancienne?"Réalisation mise à jour":"Intervention enregistrée");return;
   }
   if(act==="demande-manuelle"){
     openDlg("Saisir une demande","Pour un appel reçu directement, hors QR code.",
@@ -1076,6 +1438,7 @@ document.addEventListener("click",function(ev){
 document.addEventListener("input",function(ev){
   var t=ev.target;
   if(t.id==="q"){flt.q=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
+  if(t.id==="cq"){flt.cq=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
   if(t.dataset.act==="bd-marge"){BD.marge=Number(t.value)||0;bdRefresh();return}
   if(t.dataset.bd){
     var i=Number(t.dataset.i);

@@ -92,7 +92,7 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
   <div class="sec-head">
     <p class="eyebrow">Le parcours</p>
     <h2>Le premier tap décide de la longueur du formulaire</h2>
-    <p class="prose" style="color:var(--ink-2)">L'erreur classique est de poser les mêmes questions à tout le monde. Une fuite qui coule maintenant et un ravalement voté en assemblée générale n'ont pas droit au même nombre d'écrans. L'urgence ne remplit rien : elle appelle.</p>
+    <p class="prose" style="color:var(--ink-2)">L'erreur classique est de poser les mêmes questions à tout le monde. Une fuite qui coule maintenant et un ravalement voté en assemblée générale n'ont pas droit au même nombre d'écrans. L'urgence ne remplit rien : elle appelle l'entreprise d'astreinte, pas vous.</p>
   </div>
   <figure>
     <div class="figbox">
@@ -124,9 +124,9 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
         <text class="d-sub" x="361" y="101" text-anchor="middle">6 tuiles max</text>
         <line x1="418" y1="90" x2="436" y2="90" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar)"/>
         <rect x="440" y="66" width="110" height="48" rx="4" fill="var(--urg)" stroke="var(--urg)"/>
-        <text class="d-lab" x="495" y="95" text-anchor="middle" fill="var(--surface)">Appeler</text>
+        <text class="d-lab" x="495" y="95" text-anchor="middle" fill="var(--surface)">Appeler l’astreinte</text>
         <line x1="552" y1="90" x2="838" y2="90" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#ar)"/>
-        <text class="d-edge" x="695" y="82" text-anchor="middle">aucun formulaire à remplir</text>
+        <text class="d-edge" x="695" y="82" text-anchor="middle">mise en relation directe, aucun formulaire</text>
         <rect x="842" y="66" width="134" height="48" rx="4" fill="var(--surface)" stroke="var(--urg)" stroke-width="1.5"/>
         <text class="d-lab" x="909" y="86" text-anchor="middle" fill="var(--urg)">Astreinte sur site</text>
         <text class="d-sub" x="909" y="101" text-anchor="middle" fill="var(--urg)">sous 2 h</text>
@@ -442,7 +442,7 @@ Partie COMMUNE · vote en AG à prévoir
   </div>
   <ol class="todo">
     <li><b>Un QR par résidence</b><span>Le même site, mais une adresse par immeuble : la page pré-remplit l'adresse et le syndic, et vous savez quel hall vous rapporte des demandes. Deux questions en moins et une donnée commerciale en plus.</span></li>
-    <li><b>Le numéro d'urgence</b><span>Le parcours urgence ne vaut que si quelqu'un décroche. Votre ligne, un renvoi le soir, ou le numéro d'astreinte d'un partenaire : à trancher avant d'imprimer le QR.</span></li>
+    <li><b>L'astreinte par métier et par zone</b><span>En urgence, la page n'appelle pas le maître d'œuvre : elle met l'habitant en relation avec l'entreprise de dépannage la plus proche pour ce métier, et la demande remonte ensuite comme mise en relation directe. Il faut donc une entreprise d'astreinte identifiée par métier et par secteur, qui décroche vraiment le soir.</span></li>
     <li><b>Les délais affichés</b><span>« Sous 2 h », « sous 72 h », « visite sous 8 jours » sont des promesses opposables. Affichez ce que vous tenez réellement, quitte à annoncer plus large.</span></li>
     <li><b>Où arrive la demande</b><span>SMS et e-mail suffisent pour démarrer. Prévoyez dès maintenant que chaque fiche parte aussi dans un tableau : sans historique, vous ne saurez jamais quel immeuble convertit.</span></li>
     <li><b>Le double discours habitant / syndic</b><span>Un habitant cherche un dépanneur, un syndic cherche un coordinateur assuré. Même QR, mais une entrée « je suis syndic ou gestionnaire » qui mène à vos références et à votre attestation décennale.</span></li>
@@ -582,12 +582,12 @@ function render(){
   }
   else if(step==="call"){
     h+=dots()+back("trade");
-    h+='<div class="banner"><b>N\'écrivez rien, appelez.</b><p>Une urgence se règle au téléphone. Coupez l\'eau ou l\'électricité si vous le pouvez sans risque, et composez le numéro.</p></div>';
-    h+='<a class="cta urg" href="tel:+33600000000">Appeler le 06 00 00 00 00</a>';
+    h+='<div class="banner"><b>N\'écrivez rien, appelez.</b><p>Vous êtes mis en relation directe avec l\'entreprise de dépannage la plus proche. Coupez l\'eau ou l\'électricité si vous le pouvez sans risque, puis appelez.</p></div>';
+    h+='<a class="cta urg" href="tel:+33400000010">Appeler l\'entreprise d\'astreinte</a>';
     h+='<p class="qn">Pas de réponse dans la minute ?</p>';
     h+='<input class="fld" id="u-tel" type="tel" inputmode="tel" placeholder="Votre numéro" value="'+esc(S.tel)+'" data-set="tel">';
     h+='<button class="cta" data-go="done" '+(S.tel.length>=8?"":"disabled")+'>Je veux être rappelé tout de suite</button>';
-    h+='<p class="note">Numéro d\'exemple. À remplacer par votre ligne ou par le renvoi d\'astreinte du soir.</p>';
+    h+='<p class="note">Le numéro affiché est celui de l\'entreprise d\'astreinte du métier choisi, la plus proche de la résidence. La demande remonte à la maîtrise d\'œuvre comme mise en relation directe.</p>';
   }
   else if(step==="where"){
     h+=dots()+back("trade");

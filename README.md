@@ -21,7 +21,13 @@ nature de la partie concernée et le statut du demandeur.
 ## `docs/regie-copro.html` — la plateforme
 
 Back-office publié comme artifact, avec base de données persistante (capacité
-`db`). Quatre vues :
+`db`). Six vues :
+
+- **Tableau de bord** — chiffres du jour, des 7 jours, du mois en cours ou des
+  90 jours : demandes reçues, urgences, en attente, interventions, volume de
+  travaux, commissions. Répartition par nature, par type de demandeur et par
+  corps de métier, volume par entreprise, et les demandes les plus anciennes
+  non traitées.
 
 - **Demandes** — boîte de réception, filtres par état, fiche détaillée avec
   photos et suivi. En bas de la fiche, le bloc de traitement : appeler le
@@ -34,7 +40,30 @@ Back-office publié comme artifact, avec base de données persistante (capacité
   Fréjus à Nice, siège à Mandelieu-la-Napoule.
 - **Clients** — professionnels et particuliers ; un syndic porte ses
   copropriétés avec le nombre de lots et le contact du chargé de copropriété.
-- **Historique** — interventions passées, volume de travaux, part conservée.
+- **Historique** — interventions passées, volume de travaux, commissions.
+- **Facturation** — une facture de commissions par entreprise et par mois,
+  ligne par intervention, calculée sur la grille d'apport d'affaires.
+
+En urgence, la page publique ne renvoie pas vers le maître d'œuvre : elle met
+l'habitant en relation avec l'entreprise d'astreinte la plus proche pour ce
+métier. La fiche de la demande porte alors un bandeau rouge, le contact
+recommandé et un bouton qui enregistre la mise en relation dans le suivi.
+
+À la clôture, la fiche enregistre qui est intervenu, quand, les photos après
+travaux, le numéro et le montant de la facture de l'entreprise, et en déduit la
+commission.
+
+### Grille d'apport d'affaires
+
+| Montant HT facturé au client | Commission |
+|---|---|
+| Jusqu'à 300 € | 30 € HT |
+| 301 € à 750 € | 50 € HT |
+| 751 € à 1 500 € | 100 € HT |
+| 1 501 € à 5 000 € | 10 % |
+| 5 001 € à 20 000 € | 7 % |
+| 20 001 € à 50 000 € | 5 % |
+| Plus de 50 000 € | Sur accord préalable |
 
 Le **bordereau de prix** est accessible depuis chaque demande : les postes sont
 listés, chaque entreprise consultée reçoit une colonne de prix à remplir, le
