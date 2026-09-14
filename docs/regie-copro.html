@@ -244,6 +244,10 @@ function commission(m){
   }
   return {v:0,base:"—",accord:false};
 }
+function taux(com,vol){
+  if(!vol)return "—";
+  return (Math.round(com/vol*1000)/10).toLocaleString("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1})+" %";
+}
 function estPro(r){return PRO_ROLES.indexOf(r)>=0}
 function quiBadge(role){
   return estPro(role)
@@ -384,7 +388,9 @@ function vDashboard(){
     +tile("Interventions",itv.length)
     +tile("Volume travaux HT",Math.round(vol).toLocaleString("fr-FR"),"€")
     +tile("Mes commissions HT",Math.round(com).toLocaleString("fr-FR"),"€")
+    +tile("Part du volume",taux(com,vol))
     +'</dl>';
+  h+='<p class="note" style="margin:-6px 0 18px">Part du volume : ce que vos commissions représentent sur le total des travaux facturés aux clients par les entreprises.</p>';
   if(accord)h+='<p class="note" style="margin:-6px 0 18px">'+accord+' intervention(s) au-delà de 50 000 € : commission sur accord préalable, non comptée ci-dessus.</p>';
 
   h+='<div class="split"><div>';
@@ -458,7 +464,7 @@ function vFacturation(){
   ids.forEach(function(pid){
     var p=DATA.prestataires.filter(function(x){return x.id===pid})[0]||{nom:"Entreprise inconnue"};
     var lignes=parEnt[pid].slice().sort(function(a,b){return (a.date||"").localeCompare(b.date||"")});
-    var tot=0,accord=0;
+    var tot=0,accord=0,volEnt=0;
     h+='<div class="fact"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">'
       +'<div><h3>'+E(p.nom)+'</h3><p class="sub">'+E(p.contact||"")+(p.email?' · '+E(p.email):"")+'</p></div>'
       +'<button class="btn sm ghost" data-act="fact-copy" data-id="'+E(pid)+'">Copier cette facture</button></div>';
@@ -467,6 +473,7 @@ function vFacturation(){
     lignes.forEach(function(i){
       var c=commission(i.montant);
       if(c.accord)accord++;else tot+=c.v||0;
+      volEnt+=Number(i.montant)||0;
       var d=DATA.demandes.filter(function(x){return x.id===i.demandeId})[0];
       h+='<tr><td>'+E(jour(i.date))+'</td><td>'+E(i.ref||(d&&d.ref)||"—")+'</td>'
         +'<td>'+E((d&&d.nom)||i.client||"—")+'</td><td>'+E(i.ville||(d&&d.ville)||"—")+'</td>'
@@ -475,6 +482,8 @@ function vFacturation(){
     });
     h+='</tbody></table></div>';
     h+='<div class="tot"><span>Total commissions HT</span><span>'+eur(tot)+'</span></div>';
+    h+='<div class="tot" style="border-top:0;padding-top:4px;font-weight:400;font-family:var(--body);font-size:.86rem;color:var(--ink-3)">'
+      +'<span>Volume de travaux confié · part prélevée</span><span>'+eur(volEnt)+' · '+E(taux(tot,volEnt))+'</span></div>';
     h+='<div class="tot" style="border-top:0;padding-top:4px;font-weight:400;font-family:var(--body);font-size:.86rem;color:var(--ink-3)">'
       +'<span>TVA 20 % · total TTC</span><span>'+eur(tot*0.2)+' · '+eur(tot*1.2)+'</span></div>';
     if(accord)h+='<p class="note" style="margin-top:8px">'+accord+' ligne(s) au-delà de 50 000 € à convenir de gré à gré, hors total.</p>';
@@ -491,7 +500,7 @@ function texteFacture(pid){
   var p=DATA.prestataires.filter(function(x){return x.id===pid})[0]||{nom:"—"};
   var lignes=DATA.interventions.filter(function(i){return i.prestataireId===pid&&moisDe(i.date)===flt.mois})
     .sort(function(a,b){return (a.date||"").localeCompare(b.date||"")});
-  var L=[],tot=0;
+  var L=[],tot=0,vol=0;
   L.push("VD SERVICES — FACTURE DE COMMISSIONS D'APPORT D'AFFAIRES");
   L.push("Période : "+moisLong(flt.mois));
   L.push("");
@@ -505,11 +514,13 @@ function texteFacture(pid){
     var c=commission(i.montant);
     var d=DATA.demandes.filter(function(x){return x.id===i.demandeId})[0];
     if(!c.accord)tot+=c.v||0;
+    vol+=Number(i.montant)||0;
     L.push(jour(i.date)+" | "+(i.ref||(d&&d.ref)||"-")+" | "+((d&&d.nom)||"-")+" | "+eur(i.montant||0)
       +" | "+c.base+" | "+(c.accord?"à convenir":eur(c.v||0)));
   });
   L.push("");
-  L.push("Total commissions HT : "+eur(tot));
+  L.push("Volume de travaux confié : "+eur(vol));
+  L.push("Total commissions HT : "+eur(tot)+"  ("+taux(tot,vol)+" du volume)");
   L.push("TVA 20 % : "+eur(tot*0.2));
   L.push("Total TTC : "+eur(tot*1.2));
   L.push("");
@@ -965,6 +976,7 @@ function vInterventions(){
     +'<div class="tile"><dt>Interventions</dt><dd>'+list.length+'</dd></div>'
     +'<div class="tile"><dt>Volume travaux</dt><dd>'+(Math.round(ca).toLocaleString("fr-FR"))+' <small>€</small></dd></div>'
     +'<div class="tile"><dt>Mes commissions</dt><dd>'+(Math.round(marge).toLocaleString("fr-FR"))+' <small>€</small></dd></div>'
+    +'<div class="tile"><dt>Part du volume</dt><dd>'+E(taux(marge,ca))+'</dd></div>'
     +'<div class="tile"><dt>Entreprises actives</dt><dd>'+Object.keys(list.reduce(function(o,i){o[i.prestataireId]=1;return o},{})).length+'</dd></div>'
     +'</dl>';
   if(!list.length)return h+emptyBlock();
