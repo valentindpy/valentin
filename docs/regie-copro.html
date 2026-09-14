@@ -1344,13 +1344,25 @@ function sel(id,label,v,opts){
       return '<option value="'+E(val)+'"'+(String(v||"")===String(val)?" selected":"")+'>'+E(lab)+'</option>'}).join("")
     +'</select></div>';
 }
+var FORMES=["SARL","EURL","SAS","SASU","SA","SNC","SCI","SCOP","SELARL",
+  "Micro-entreprise","Auto-entrepreneur","Entreprise individuelle (EI)","EIRL",
+  "Artisan inscrit au répertoire des métiers","Association loi 1901","Groupement d'entreprises","Autre"];
+var QUALITES=["Gérant","Co-gérant","Gérante","Président","Présidente","Directeur général","Directeur","Directrice",
+  "Chargé d'affaires","Chargée d'affaires","Chef de projet","Conducteur de travaux","Responsable d'agence",
+  "Responsable commercial","Commercial","Commerciale","Chef d'entreprise","Entrepreneur individuel","Artisan","Autre"];
+function dl(id,label,v,opts,ph,aide){
+  return '<div class="field"><label for="'+id+'">'+label+'</label>'
+    +'<input id="'+id+'" list="'+id+'-l" value="'+E(v||"")+'" placeholder="'+E(ph||"")+'" autocomplete="off">'
+    +'<datalist id="'+id+'-l">'+opts.map(function(o){return '<option value="'+E(o)+'"></option>'}).join("")+'</datalist>'
+    +(aide?'<span class="note">'+aide+'</span>':"")+'</div>';
+}
 function sect(t,sub){return '<p class="sect">'+t+(sub?'<small>'+sub+'</small>':"")+'</p>'}
 function formPresta(p){
   p=p||{};
   return sect("Identité de l'entreprise","Repris tel quel dans la convention d'apport d'affaires.")
     +fld("p-nom","Raison sociale",p.nom,"text","Azur Plomberie Siagne")
     +'<div class="two">'
-    +sel("p-forme","Forme sociale",p.forme,["SARL","SAS","SASU","EURL","SA","SCOP","Entreprise individuelle","Auto-entrepreneur","Autre"])
+    +dl("p-forme","Forme sociale",p.forme,FORMES,"SARL","Choisissez dans la liste ou tapez la vôtre.")
     +fld("p-capital","Capital social (€)",p.capital,"text","10 000")+'</div>'
     +fld("p-adresse","Adresse du siège social",p.adresse,"text","14 avenue de Cannes, 06210 Mandelieu-la-Napoule")
     +'<div class="two">'+fld("p-rcsville","Ville du RCS",p.rcsville,"text","Cannes")
@@ -1359,7 +1371,8 @@ function formPresta(p){
 
     +sect("Représentant légal","Celui qui signera la convention.")
     +'<div class="two">'+fld("p-repnom","Nom et prénom",p.repnom,"text","FERRERO Pascal")
-    +sel("p-repqualite","Qualité",p.repqualite,["Gérant","Président","Directeur général","Entrepreneur individuel","Autre"])+'</div>'
+    +dl("p-repqualite","Qualité du signataire",p.repqualite,QUALITES,"Gérant")+'</div>'
+    +'<p class="note" style="margin:-6px 0 14px">Le signataire doit pouvoir engager la société. Un chargé d\'affaires ou un commercial le peut s\'il dispose d\'une délégation.</p>'
     +fld("p-repmail","E-mail pour la signature",p.repmail,"email","direction@entreprise.fr")
 
     +sect("Contact au quotidien","Ce dont vous avez besoin pour envoyer une intervention, hors contrat.")
@@ -1507,11 +1520,11 @@ document.addEventListener("click",function(ev){
   if(act==="reglages"){
     var v2=societe();
     openDlg("Mes coordonnées","Reprises en en-tête de la convention, des devis et des factures.",
-      '<div class="two">'+fld("v-nom","Raison sociale",v2.nom)+fld("v-forme","Forme sociale",v2.forme)+'</div>'
+      '<div class="two">'+fld("v-nom","Raison sociale",v2.nom)+dl("v-forme","Forme sociale",v2.forme,FORMES,"SAS")+'</div>'
       +'<div class="two">'+fld("v-capital","Capital social (€)",v2.capital)+fld("v-siren","SIREN ou RCS",v2.siren,"text","À compléter")+'</div>'
       +fld("v-adresse","Adresse du siège social",v2.adresse,"text","06210 Mandelieu-la-Napoule")
       +'<div class="two">'+fld("v-rcsville","Ville du RCS",v2.rcsville)+fld("v-repnom","Représentant",v2.repnom)+'</div>'
-      +'<div class="two">'+fld("v-repqualite","Qualité",v2.repqualite)+fld("v-tel","Téléphone",v2.tel,"tel")+'</div>'
+      +'<div class="two">'+dl("v-repqualite","Qualité",v2.repqualite,QUALITES,"Président")+fld("v-tel","Téléphone",v2.tel,"tel")+'</div>'
       +fld("v-email","E-mail",v2.email,"email"),
       '<button class="btn ghost" data-act="dlg-close">Annuler</button><button class="btn" data-act="reglages-save">Enregistrer</button>');
     return;
