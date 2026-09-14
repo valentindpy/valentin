@@ -41,7 +41,11 @@ Back-office publié comme artifact, avec base de données persistante (capacité
   représentant légal, contact d'intervention, couverture, assurances,
   conditions commerciales et évaluation. Le bouton Convention génère la
   convention d'apport d'affaires pré-remplie, prête à imprimer, à copier ou à
-  envoyer, et suit son état : sans convention, envoyée, signée.
+  envoyer, et suit son état : sans convention, envoyée, signée. Le bouton
+  Documents ouvre huit onglets de pièces administratives : décennale, RC
+  professionnelle, vigilance URSSAF, attestation travail dissimulé, Kbis,
+  qualifications, RIB et divers. Chaque dépôt est stocké avec la fiche, lu
+  automatiquement, et les valeurs trouvées sont proposées à la reprise.
   Navigation en trois temps comme le formulaire : domaine,
   puis ville, puis entreprises. Double notation qualité du travail et
   réactivité, moyennes recalculées à chaque clôture. Secteur couvert : de
@@ -86,6 +90,19 @@ sans toucher à ce qui a été saisi.
 Le modèle d'origine de la convention est conservé dans
 `docs/modeles/convention-apport-affaires.docx`. Le générateur reprend ses
 vingt-sept articles et ses deux annexes à l'identique.
+
+### Lecture des pièces déposées
+
+Un PDF avec couche de texte est extrait dans le navigateur, une photo est
+envoyée telle quelle. Le contenu part ensuite à Claude, qui renvoie les champs
+reconnus : assureur, numéro de police, dates de validité, SIREN, forme sociale,
+capital, siège, activités, représentant. Rien n'est écrit dans la fiche sans
+validation case par case. Un PDF scanné sans texte n'est pas lisible : il faut
+déposer une photo.
+
+L'état du dossier apparaît sur chaque fiche du répertoire : complet, pièces
+manquantes, ou attestation expirée. Les quatre premières pièces sont traitées
+comme obligatoires, avec alerte soixante jours avant échéance.
 
 ### Reste à brancher
 

@@ -208,6 +208,11 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 .sect small{display:block;text-transform:none;letter-spacing:0;font-family:var(--body);font-size:.76rem;color:var(--ink-3);margin-top:3px}
 .manque{background:var(--dep-soft);border:1px solid var(--dep);color:var(--dep);border-radius:6px;padding:11px 14px;font-size:.83rem;line-height:1.5;margin-bottom:14px}
 .conv{font-family:var(--mono);font-size:.76rem;line-height:1.65;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere;width:100%;min-height:340px;resize:vertical}
+.depot{display:flex;flex-direction:column;gap:4px;border:1.5px dashed var(--line-strong);border-radius:8px;
+  padding:20px 18px;text-align:center;cursor:pointer;background:var(--surface-2);margin-top:12px}
+.depot:hover,.depot.sur{border-color:var(--accent);background:var(--accent-soft)}
+.depot strong{font-family:var(--display);font-size:.96rem}
+.depot span{font-size:.8rem;color:var(--ink-3);line-height:1.45}
 #printable{display:none}
 @media print{
   body>.shell,body>dialog{display:none!important}
@@ -259,6 +264,61 @@ function commission(m){
 function taux(com,vol){
   if(!vol)return "—";
   return (Math.round(com/vol*1000)/10).toLocaleString("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1})+" %";
+}
+var TYPES_DOC=[
+ {id:"decennale",l:"Assurance décennale",req:1,sub:"Garantie décennale en cours de validité, avec les activités garanties.",
+  map:{assureur:"dec",numeroPolice:"decnum",dateFin:"assurance"}},
+ {id:"rcpro",l:"RC professionnelle",req:1,sub:"Responsabilité civile professionnelle et exploitation.",
+  map:{assureur:"rcpro",numeroPolice:"rcpronum"}},
+ {id:"urssaf",l:"Vigilance URSSAF",req:1,sub:"Attestation de vigilance, à renouveler tous les six mois.",
+  map:{siren:"siren",raisonSociale:"nom"}},
+ {id:"honneur",l:"Travail dissimulé",req:1,sub:"Attestation sur l'honneur de non-emploi de travailleurs étrangers sans titre et de lutte contre le travail dissimulé.",
+  map:{raisonSociale:"nom",representant:"repnom",qualiteRepresentant:"repqualite"}},
+ {id:"kbis",l:"Kbis ou avis SIRENE",req:1,sub:"Moins de trois mois. C'est lui qui remplit le mieux la fiche.",
+  map:{raisonSociale:"nom",formeSociale:"forme",capital:"capital",adresse:"adresse",villeRcs:"rcsville",
+       siren:"siren",activites:"activite",representant:"repnom",qualiteRepresentant:"repqualite"}},
+ {id:"qualif",l:"Qualifications",req:0,sub:"RGE, Qualibat, Qualifelec, attestation fluides frigorigènes, habilitations.",
+  map:{certifications:"certifs"}},
+ {id:"rib",l:"RIB",req:0,sub:"Pour le règlement des situations et le rapprochement des factures.",map:{}},
+ {id:"autre",l:"Autres pièces",req:0,sub:"Convention signée, plaquette, références, tout le reste.",map:{}}
+];
+function typeDoc(id){return TYPES_DOC.filter(function(t){return t.id===id})[0]||TYPES_DOC[7]}
+function docsDe(pid,type){
+  return DATA.documents.filter(function(d){return d.prestataireId===pid&&(!type||d.type===type)})
+    .sort(function(a,b){return (b.ajouteLe||"").localeCompare(a.ajouteLe||"")});
+}
+function dateFr(v){
+  if(!v)return null;
+  var m=String(v).match(/(\d{1,2})[\/\-. ](\d{1,2})[\/\-. ](\d{2,4})/);
+  if(m){var an=m[3].length===2?"20"+m[3]:m[3];return new Date(an+"-"+m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0")+"T12:00:00")}
+  var d=new Date(v);return isNaN(d)?null:d;
+}
+function validite(doc){
+  var f=dateFr(doc.dateFin);
+  if(!f)return {c:"n",l:"sans échéance",jours:null};
+  var j=Math.round((f-new Date())/86400000);
+  if(j<0)return {c:"u",l:"expirée depuis "+(-j)+" j",jours:j};
+  if(j<=60)return {c:"d",l:"expire dans "+j+" j",jours:j};
+  return {c:"p",l:"valable jusqu'au "+f.toLocaleDateString("fr-FR"),jours:j};
+}
+function dossier(p){
+  var manque=[],alerte=[];
+  TYPES_DOC.filter(function(t){return t.req}).forEach(function(t){
+    var l=docsDe(p.id,t.id);
+    if(!l.length)manque.push(t.l);
+    else{
+      var v=validite(l[0]);
+      if(v.jours!==null&&v.jours<0)alerte.push(t.l+" expirée");
+      else if(v.jours!==null&&v.jours<=60)alerte.push(t.l+" à renouveler");
+    }
+  });
+  return {manque:manque,alerte:alerte,ok:!manque.length&&!alerte.length};
+}
+function dossierTag(p){
+  var d=dossier(p);
+  if(d.ok)return '<span class="tag p">Dossier complet</span>';
+  if(d.alerte.length)return '<span class="tag u">'+E(d.alerte[0])+'</span>';
+  return '<span class="tag d">'+d.manque.length+' pièce(s) manquante(s)</span>';
 }
 function societe(){
   var r=DATA.reglages.filter(function(x){return x.id==="societe"})[0]||{};
@@ -341,7 +401,7 @@ function metiersOf(d){return (d.trades||[]).map(function(t){return MET[t]||t})}
 
 /* ---------- état ---------- */
 var db=null,ready=false,etatCx="attente",cxErr="";
-var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[],reglages:[]};
+var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[],reglages:[],documents:[]};
 var route={v:"dashboard",id:null};
 var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note",type:"tous",per:"semaine",mois:"",cq:"",ctype:"tous",cville:"",crole:""};
 var BD=null,bdTimer=null,qTimer=null;
@@ -380,7 +440,8 @@ function navigate(v,id){route={v:v,id:id||null};if(v!=="bordereau")BD=null;windo
 function paintNav(){
   var nouvelles=DATA.demandes.filter(function(d){return d.etat==="nouvelle"}).length;
   document.getElementById("nav").innerHTML=NAV.map(function(n){
-    var cur=(route.v===n.id)||(n.id==="demandes"&&(route.v==="demande"||route.v==="bordereau"));
+    var cur=(route.v===n.id)||(n.id==="demandes"&&(route.v==="demande"||route.v==="bordereau"))
+      ||(n.id==="prestataires"&&route.v==="documents");
     return '<button data-nav="'+n.id+'" aria-current="'+cur+'">'+n.l+(n.id==="demandes"&&nouvelles?' <b>'+nouvelles+'</b>':"")+'</button>';
   }).join("");
   document.getElementById("railfoot").innerHTML= etatCx==="ok"
@@ -843,7 +904,7 @@ function carte(p){
     +'<div><h3>'+E(p.nom)+(p.exemple?' <span class="tag ex">exemple</span>':"")+'</h3>'
     +'<p class="sub">'+E((p.villes||[]).join(" · "))+'</p></div>'
     +'<button class="btn sm ghost" data-act="presta-edit" data-id="'+E(p.id)+'">Modifier</button></div>'
-    +'<div class="chips" style="margin-bottom:8px">'+convTag(p)+'</div>'
+    +'<div class="chips" style="margin-bottom:8px">'+convTag(p)+' '+dossierTag(p)+'</div>'
     +'<div class="chips">'+(p.metiers||[]).map(function(m){return '<span class="chip">'+E(MET[m]||m)+'</span>'}).join("")+'</div>'
     +'<dl style="margin-top:12px">'
     +kv("Contact",E(p.contact||"—")+(p.tel?' · <a href="tel:'+E(tel(p.tel))+'">'+E(p.tel)+'</a>':""))
@@ -856,7 +917,8 @@ function carte(p){
     +'<div class="actions" style="margin:14px 0 0">'
       +(p.tel?'<a class="btn sm" href="tel:'+E(tel(p.tel))+'">Appeler</a>':"")
       +(p.email?'<a class="btn sm ghost" href="mailto:'+E(p.email)+'">Écrire</a>':"")
-      +'<button class="btn sm ghost" data-act="conv" data-id="'+E(p.id)+'">Convention</button></div>' 
+      +'<button class="btn sm ghost" data-act="conv" data-id="'+E(p.id)+'">Convention</button>'
+      +'<button class="btn sm ghost" data-nav="documents" data-id="'+E(p.id)+'">Documents</button></div>' 
     +'</div>';
 }
 function vPrestataires(){
@@ -922,6 +984,148 @@ function vPrestataires(){
       return '<option value="'+t[0]+'"'+(flt.tri===t[0]?" selected":"")+'>Trier : '+t[1]+'</option>'}).join("")
     +'</select><span class="note">'+list.length+' entreprise(s)</span></div>';
   return h+(list.length?'<div class="grid2">'+list.map(carte).join("")+'</div>':emptyBlock());
+}
+
+/* ---------- vue : documents d'un partenaire ---------- */
+var docTab="decennale",extraitEnCours=null,analyseEnCours=false;
+function vDocuments(){
+  var p=DATA.prestataires.filter(function(x){return x.id===route.id})[0];
+  if(!p)return '<button class="back" data-nav="prestataires">← Prestataires</button>'+emptyBlock();
+  var d=dossier(p);
+  var h='<button class="back" data-nav="prestataires">← Retour au répertoire</button>';
+  h+='<div class="head"><div><p class="eyebrow">Pièces administratives</p><h1>'+E(p.nom)+'</h1>'
+    +'<p>'+(d.ok?"Dossier complet et à jour."
+      :[d.manque.length?d.manque.length+" pièce(s) manquante(s)":"",d.alerte.length?d.alerte.join(", "):""].filter(Boolean).join(" · "))
+    +'</p></div><button class="btn ghost" data-act="presta-edit" data-id="'+E(p.id)+'">Ouvrir la fiche</button></div>';
+
+  h+='<div class="bar">'+TYPES_DOC.map(function(t){
+    var l=docsDe(p.id,t.id),v=l.length?validite(l[0]):null;
+    var pastille=l.length?(v.c==="u"?" ✕":v.c==="d"?" !":" ✓"):(t.req?" ○":"");
+    return '<button class="pill" data-doctab="'+t.id+'" aria-pressed="'+(docTab===t.id)+'">'+E(t.l)+pastille+'</button>';
+  }).join("")+'</div>';
+
+  var t=typeDoc(docTab),liste=docsDe(p.id,docTab);
+  h+='<div class="split"><div>';
+  h+='<div class="card"><h3>'+E(t.l)+(t.req?' <span class="tag d">obligatoire</span>':"")+'</h3><p class="sub">'+E(t.sub)+'</p>';
+  h+='<label class="depot" for="up"><strong>Déposer un fichier</strong>'
+    +'<span>PDF ou photo, 20 Mo maximum. Le contenu est lu automatiquement pour remplir la fiche.</span>'
+    +'<input type="file" id="up" accept="application/pdf,image/png,image/jpeg,image/webp" multiple hidden></label>';
+  h+='<p class="note" id="up-etat"></p>';
+  if(!liste.length)h+='<p class="note" style="margin-top:12px">Aucune pièce déposée dans cet onglet.</p>';
+  else h+='<div class="pick" style="margin-top:14px">'+liste.map(function(doc){
+    var v=validite(doc);
+    return '<div class="r"><span><span class="nm">'+E(doc.nom)+'</span>'
+      +'<span class="ct">déposé le '+E(jour(doc.ajouteLe))+' · '+Math.round((doc.sizeBytes||0)/1024)+' Ko'
+      +(doc.numero?' · n° '+E(doc.numero):"")+(doc.assureur?' · '+E(doc.assureur):"")+'</span></span>'
+      +'<span class="tag '+v.c+'">'+E(v.l)+'</span>'
+      +'<span class="actions" style="margin:0">'
+      +'<a class="btn sm ghost" href="'+E(doc.url||("/_blob/"+doc.assetId))+'" target="_blank" rel="noopener">Ouvrir</a>'
+      +(doc.extrait?'<button class="btn sm" data-act="doc-appliquer" data-id="'+E(doc.id)+'">Reprendre</button>':"")
+      +'<button class="x" data-act="doc-suppr" data-id="'+E(doc.id)+'" aria-label="Supprimer">×</button></span></div>';
+  }).join("")+'</div>';
+  h+='</div>';
+
+  h+='<div class="card"><h3>Ce que la convention exige</h3><p class="sub">Les quatre premières pièces sont réclamées avant toute première intervention.</p><dl>'
+    +TYPES_DOC.filter(function(x){return x.req}).map(function(x){
+      var l=docsDe(p.id,x.id),v=l.length?validite(l[0]):null;
+      return kv(x.l,l.length?'<span class="tag '+v.c+'">'+E(v.l)+'</span>':'<span class="tag d">manquante</span>');
+    }).join("")+'</dl></div>';
+  h+='</div><div>';
+
+  h+='<div class="card"><h3>Fiche partenaire</h3><p class="sub">Alimentée par les pièces déposées.</p><dl>'
+    +kv("Raison sociale",E(p.nom||"—"))+kv("Forme",E(p.forme||"—"))+kv("Capital",E(p.capital||"—"))
+    +kv("Siège",E(p.adresse||"—"))+kv("RCS",E([p.rcsville,p.siren].filter(Boolean).join(" · ")||"—"))
+    +kv("Activité",E(p.activite||"—"))
+    +kv("Représentant",E([p.repnom,p.repqualite].filter(Boolean).join(", ")||"—"))
+    +kv("Décennale",E([p.dec,p.decnum].filter(Boolean).join(" · ")||"—"))
+    +kv("RC pro",E([p.rcpro,p.rcpronum].filter(Boolean).join(" · ")||"—"))
+    +kv("Attestation",E(p.assurance||"—"))
+    +kv("Certifications",E(p.certifs||"—"))
+    +'</dl></div>';
+  h+='<div class="card"><h3>Comment ça marche</h3>'
+    +'<p class="note">Le fichier est stocké avec la fiche. S\'il contient du texte, Claude le lit et propose les valeurs trouvées : assureur, numéro de police, dates de validité, SIREN, forme sociale, représentant. Vous cochez ce que vous voulez reprendre, rien ne s\'écrit sans votre accord.</p>'
+    +'<p class="note" style="margin-top:10px">Un PDF scanné sans couche de texte ne peut pas être lu : déposez plutôt une photo nette de l\'attestation, elle sera analysée comme image.</p></div>';
+  h+='</div></div>';
+  return h;
+}
+function panneauExtrait(doc,p){
+  var t=typeDoc(doc.type),x=doc.extrait||{},lignes=[];
+  Object.keys(t.map).forEach(function(k){
+    if(x[k])lignes.push({k:k,champ:t.map[k],v:x[k]});
+  });
+  var autres=Object.keys(x).filter(function(k){return x[k]&&!t.map[k]});
+  var corps='';
+  if(!lignes.length&&!autres.length)corps='<p class="note">Rien d\'exploitable n\'a été trouvé dans ce document.</p>';
+  else{
+    if(lignes.length)corps+='<div class="pick">'+lignes.map(function(l,i){
+      var actuel=p[l.champ];
+      return '<div class="r"><label><input type="checkbox" data-appl="'+E(l.champ)+'" data-v="'+E(l.v)+'" checked>'
+        +'<span><span class="nm">'+E(l.v)+'</span><span class="ct">'+E(NOMS_CHAMP[l.champ]||l.champ)
+        +(actuel?' · remplace « '+E(actuel)+' »':' · champ vide')+'</span></span></label></div>';
+    }).join("")+'</div>';
+    if(autres.length)corps+='<p class="eyebrow" style="margin:16px 0 8px">Autres informations lues</p><dl>'
+      +autres.map(function(k){return kv(NOMS_CHAMP[k]||k,E(x[k]))}).join("")+'</dl>';
+  }
+  return corps;
+}
+var NOMS_CHAMP={nom:"Raison sociale",forme:"Forme sociale",capital:"Capital social",adresse:"Adresse du siège",
+  rcsville:"Ville du RCS",siren:"SIREN",activite:"Activité principale",repnom:"Représentant",
+  repqualite:"Qualité du représentant",dec:"Assureur décennale",decnum:"N° de police décennale",
+  rcpro:"Assureur RC pro",rcpronum:"N° de police RC pro",assurance:"Attestation valable jusqu'au",
+  certifs:"Certifications",raisonSociale:"Raison sociale",formeSociale:"Forme sociale",villeRcs:"Ville du RCS",
+  assureur:"Assureur",numeroPolice:"N° de police",dateDebut:"Début de validité",dateFin:"Fin de validité",
+  activites:"Activités garanties",representant:"Représentant",qualiteRepresentant:"Qualité",
+  certifications:"Certifications",observations:"Observations"};
+
+/* ---------- lecture des documents ---------- */
+function chargerPdfJs(){
+  return new Promise(function(res,rej){
+    if(window.pdfjsLib)return res(window.pdfjsLib);
+    var sc=document.createElement("script");
+    sc.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    sc.onload=function(){
+      if(!window.pdfjsLib)return rej(new Error("pdf.js indisponible"));
+      try{window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"}catch(e){}
+      res(window.pdfjsLib);
+    };
+    sc.onerror=function(){rej(new Error("lecteur PDF non chargé"))};
+    document.head.appendChild(sc);
+  });
+}
+async function pdfTexte(file){
+  var lib=await chargerPdfJs();
+  var buf=await file.arrayBuffer();
+  var pdf=await lib.getDocument({data:buf}).promise;
+  var out=[];
+  for(var i=1;i<=Math.min(pdf.numPages,6);i++){
+    var pg=await pdf.getPage(i);
+    var tc=await pg.getTextContent();
+    out.push(tc.items.map(function(it){return it.str}).join(" "));
+  }
+  return out.join("\n").replace(/\s+/g," ").trim();
+}
+async function analyser(type,file){
+  var sp=null;
+  try{sp=window.claude&&window.claude.use?await window.claude.use("sample"):null}catch(e){sp=null}
+  if(!sp)throw new Error("la lecture automatique n'est pas disponible sur cette page");
+  var forme='{"raisonSociale":"","formeSociale":"","capital":"","adresse":"","villeRcs":"","siren":"",'
+    +'"activites":"","representant":"","qualiteRepresentant":"","assureur":"","numeroPolice":"",'
+    +'"dateDebut":"","dateFin":"","certifications":"","observations":""}';
+  var consigne="Tu lis une pièce administrative d'une entreprise du bâtiment en France, de type : "+typeDoc(type).l+". "
+    +"Renvoie UNIQUEMENT un objet JSON de cette forme exacte, sans texte autour : "+forme+" "
+    +"Règles : laisse la chaîne vide pour tout champ qui ne figure pas explicitement dans le document. "
+    +"N'invente jamais une valeur. Les dates au format JJ/MM/AAAA. "
+    +"dateFin est la date de fin de validité de l'attestation ou du contrat. "
+    +"activites résume les activités garanties ou déclarées, en une ligne. "
+    +"observations signale une réserve, une exclusion ou une mention importante, sinon chaîne vide.";
+  if(/^image\//.test(file.type)){
+    var lim=null;try{lim=await sp.limits()}catch(e){}
+    if(!lim||!lim.images)throw new Error("cette page ne peut pas envoyer d'images à Claude");
+    return await sp.json(consigne,{images:file,modelTier:"default"});
+  }
+  var txt=await pdfTexte(file);
+  if(txt.length<40)throw new Error("ce PDF ne contient pas de texte, il est probablement scanné : déposez une photo de la pièce");
+  return await sp.json(consigne+"\n\nTexte du document :\n"+txt.slice(0,40000),{modelTier:"default"});
 }
 
 /* ---------- vue : clients ---------- */
@@ -1034,7 +1238,8 @@ function paint(){
   var a=document.activeElement,fid=a&&a.id?a.id:null,pos=null;
   try{pos=a&&a.selectionStart}catch(e){}
   try{
-    el.innerHTML= route.v==="dashboard"?vDashboard()
+    el.innerHTML= route.v==="documents"?vDocuments()
+      : route.v==="dashboard"?vDashboard()
       : route.v==="facturation"?vFacturation()
       : route.v==="demandes"?vDemandes()
       : route.v==="demande"?vDemande()
@@ -1467,6 +1672,44 @@ document.addEventListener("click",function(ev){
 
   if(act==="dlg-close"){closeDlg();return}
   if(act==="reconnecter"){boot();return}
+  if(b.dataset.doctab){docTab=b.dataset.doctab;paint();return}
+  if(act==="doc-appliquer"){
+    var dc=DATA.documents.filter(function(x){return x.id===b.dataset.id})[0];
+    if(dc)ouvrirAppliquer(dc);
+    return;
+  }
+  if(act==="appl-save"){
+    var dc2=DATA.documents.filter(function(x){return x.id===b.dataset.id})[0];
+    if(!dc2||!db){toast("Base indisponible");return}
+    var patch={};
+    [].slice.call(document.querySelectorAll("[data-appl]")).forEach(function(i){
+      if(i.checked)patch[i.dataset.appl]=i.dataset.v;
+    });
+    if(!Object.keys(patch).length){closeDlg();return}
+    db.doc("prestataires/"+dc2.prestataireId).update(patch)
+      .then(function(){closeDlg();toast(Object.keys(patch).length+" champ(s) repris dans la fiche")})
+      .catch(function(){toast("Écriture refusée")});
+    return;
+  }
+  if(act==="doc-suppr"){
+    var dc3=DATA.documents.filter(function(x){return x.id===b.dataset.id})[0];
+    if(!dc3||!db)return;
+    openDlg("Supprimer la pièce",E(dc3.nom),
+      '<p class="warn">Le fichier et ses informations lues seront définitivement supprimés. La fiche partenaire n\'est pas modifiée.</p>',
+      '<button class="btn ghost" data-act="dlg-close">Annuler</button>'
+      +'<button class="btn" data-act="doc-suppr-go" data-id="'+E(dc3.id)+'">Supprimer</button>');
+    return;
+  }
+  if(act==="doc-suppr-go"){
+    var dc4=DATA.documents.filter(function(x){return x.id===b.dataset.id})[0];
+    if(!dc4||!db)return;
+    db.doc("documents/"+dc4.id).delete().then(function(){closeDlg();toast("Pièce supprimée")});
+    if(dc4.assetId){
+      (window.claude&&window.claude.use?window.claude.use("assets"):Promise.resolve(null))
+        .then(function(as){if(as)as.delete(dc4.assetId).catch(function(){})});
+    }
+    return;
+  }
   if(act==="conv"){
     var pc=DATA.prestataires.filter(function(x){return x.id===b.dataset.id})[0];if(!pc)return;
     convId=pc.id;
@@ -1814,6 +2057,65 @@ document.addEventListener("click",function(ev){
       .catch(function(e){toast("Écriture refusée")});
     return;
   }
+});
+function ouvrirAppliquer(doc){
+  var pr=DATA.prestataires.filter(function(x){return x.id===doc.prestataireId})[0]||{};
+  openDlg("Informations lues dans le document",E(doc.nom)+" · "+E(typeDoc(doc.type).l),
+    panneauExtrait(doc,pr),
+    '<button class="btn ghost" data-act="dlg-close">Ne rien reprendre</button>'
+    +'<button class="btn" data-act="appl-save" data-id="'+E(doc.id)+'">Reprendre dans la fiche</button>');
+}
+async function televerser(files,pid,type){
+  var etat=document.getElementById("up-etat");
+  function dire(t){if(etat)etat.textContent=t}
+  if(!db){dire("Base indisponible.");return}
+  var as=null;
+  try{as=window.claude&&window.claude.use?await window.claude.use("assets"):null}catch(e){as=null}
+  if(!as){dire("Le stockage de fichiers n'est pas disponible sur cette page.");return}
+  for(var i=0;i<files.length;i++){
+    var f=files[i];
+    try{
+      dire("Envoi de "+f.name+"…");
+      var up=await as.upload(f);
+      var doc={prestataireId:pid,type:type,nom:f.name,assetId:up.id,url:up.url,
+        contentType:up.contentType,sizeBytes:up.sizeBytes,ajouteLe:new Date().toISOString()};
+      var x=null;
+      try{dire("Lecture de "+f.name+"…");x=await analyser(type,f)}
+      catch(err){dire("Fichier enregistré. Lecture automatique impossible : "+(err&&err.message||"erreur")+".")}
+      if(x&&typeof x==="object"){
+        doc.extrait=x;
+        doc.assureur=x.assureur||"";doc.numero=x.numeroPolice||"";
+        doc.dateDebut=x.dateDebut||"";doc.dateFin=x.dateFin||"";
+        dire("Document lu. Vérifiez ce qui peut être repris.");
+      }
+      var ref=await db.collection("documents").add(doc);
+      if(x&&typeof x==="object"){doc.id=ref.id;ouvrirAppliquer(doc)}
+    }catch(err){
+      dire("Échec sur "+f.name+" : "+((err&&(err.message||err.code))||"erreur"));
+    }
+  }
+}
+document.addEventListener("change",function(ev){
+  if(ev.target.id!=="up")return;
+  var f=ev.target.files;
+  if(f&&f.length)televerser(f,route.id,docTab);
+  ev.target.value="";
+});
+document.addEventListener("dragover",function(ev){
+  var z=ev.target.closest?ev.target.closest(".depot"):null;
+  if(!z)return;
+  ev.preventDefault();z.classList.add("sur");
+});
+document.addEventListener("dragleave",function(ev){
+  var z=ev.target.closest?ev.target.closest(".depot"):null;
+  if(z)z.classList.remove("sur");
+});
+document.addEventListener("drop",function(ev){
+  var z=ev.target.closest?ev.target.closest(".depot"):null;
+  if(!z)return;
+  ev.preventDefault();z.classList.remove("sur");
+  var f=ev.dataTransfer&&ev.dataTransfer.files;
+  if(f&&f.length)televerser(f,route.id,docTab);
 });
 document.addEventListener("input",function(ev){
   var t=ev.target;
