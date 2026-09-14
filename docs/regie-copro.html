@@ -203,6 +203,17 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 .bd-in.txt{text-align:left;font-family:var(--body)}
 .warn{background:var(--dep-soft);border:1px solid var(--dep);color:var(--dep);border-radius:6px;padding:11px 14px;font-size:.85rem;line-height:1.5}
 .note{font-size:.8rem;color:var(--ink-3);line-height:1.5}
+.sect{font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink);border-top:1px solid var(--line);margin:18px 0 12px;padding-top:14px}
+.sect:first-child{border-top:0;margin-top:0;padding-top:0}
+.sect small{display:block;text-transform:none;letter-spacing:0;font-family:var(--body);font-size:.76rem;color:var(--ink-3);margin-top:3px}
+.manque{background:var(--dep-soft);border:1px solid var(--dep);color:var(--dep);border-radius:6px;padding:11px 14px;font-size:.83rem;line-height:1.5;margin-bottom:14px}
+.conv{font-family:var(--mono);font-size:.76rem;line-height:1.65;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere;width:100%;min-height:340px;resize:vertical}
+#printable{display:none}
+@media print{
+  body>.shell,body>dialog{display:none!important}
+  #printable{display:block!important;background:#fff;color:#000;padding:0;margin:0}
+  #printable pre{white-space:pre-wrap;font-family:Georgia,"Times New Roman",serif;font-size:10.5pt;line-height:1.55;margin:0}
+}
 </style>
 
 <div class="shell">
@@ -214,6 +225,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
   <main><div id="view"></div></main>
 </div>
 <dialog id="dlg"></dialog>
+<div id="printable"><pre id="printable-txt"></pre></div>
 
 <script>
 /* ---------- constantes ---------- */
@@ -248,6 +260,16 @@ function taux(com,vol){
   if(!vol)return "—";
   return (Math.round(com/vol*1000)/10).toLocaleString("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1})+" %";
 }
+function societe(){
+  var r=DATA.reglages.filter(function(x){return x.id==="societe"})[0]||{};
+  return {
+    nom:r.nom||"VD SERVICES",forme:r.forme||"SAS",capital:r.capital||"1 000",
+    adresse:r.adresse||"",rcsville:r.rcsville||"Nice",siren:r.siren||"",
+    repnom:r.repnom||"Valentin DUPUY",repqualite:r.repqualite||"Président",
+    tel:r.tel||"",email:r.email||""
+  };
+}
+function b(v,l){return v?String(v):"_".repeat(l||30)}
 function estPro(r){return PRO_ROLES.indexOf(r)>=0}
 function quiBadge(role){
   return estPro(role)
@@ -280,6 +302,12 @@ function barres(items){
   }).join("")+'</div>';
 }
 function interDe(d){return DATA.interventions.filter(function(i){return i.demandeId===d.id})[0]}
+function convTag(p){
+  var c=p.convention||{};
+  if(c.statut==="signee")return '<span class="tag p">Convention signée'+(c.dateSignature?" le "+E(jour(c.dateSignature)):"")+'</span>';
+  if(c.statut==="envoyee")return '<span class="tag d">Convention envoyée'+(c.dateEnvoi?" le "+E(jour(c.dateEnvoi)):"")+'</span>';
+  return '<span class="tag n">Sans convention</span>';
+}
 
 /* ---------- utilitaires ---------- */
 function E(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -313,7 +341,7 @@ function metiersOf(d){return (d.trades||[]).map(function(t){return MET[t]||t})}
 
 /* ---------- état ---------- */
 var db=null,ready=false,etatCx="attente",cxErr="";
-var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[]};
+var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[],reglages:[]};
 var route={v:"dashboard",id:null};
 var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note",type:"tous",per:"semaine",mois:"",cq:"",ctype:"tous",cville:"",crole:""};
 var BD=null,bdTimer=null,qTimer=null;
@@ -815,6 +843,7 @@ function carte(p){
     +'<div><h3>'+E(p.nom)+(p.exemple?' <span class="tag ex">exemple</span>':"")+'</h3>'
     +'<p class="sub">'+E((p.villes||[]).join(" · "))+'</p></div>'
     +'<button class="btn sm ghost" data-act="presta-edit" data-id="'+E(p.id)+'">Modifier</button></div>'
+    +'<div class="chips" style="margin-bottom:8px">'+convTag(p)+'</div>'
     +'<div class="chips">'+(p.metiers||[]).map(function(m){return '<span class="chip">'+E(MET[m]||m)+'</span>'}).join("")+'</div>'
     +'<dl style="margin-top:12px">'
     +kv("Contact",E(p.contact||"—")+(p.tel?' · <a href="tel:'+E(tel(p.tel))+'">'+E(p.tel)+'</a>':""))
@@ -824,15 +853,18 @@ function carte(p){
     +kv("Interventions",nb+(p.assurance?" · décennale "+E(p.assurance):""))
     +(p.remarques?kv("Remarques",E(p.remarques)):"")
     +'</dl>'
-    +(p.tel?'<div class="actions" style="margin:14px 0 0"><a class="btn sm" href="tel:'+E(tel(p.tel))+'">Appeler</a>'
-      +(p.email?'<a class="btn sm ghost" href="mailto:'+E(p.email)+'">Écrire</a>':"")+'</div>':"")
+    +'<div class="actions" style="margin:14px 0 0">'
+      +(p.tel?'<a class="btn sm" href="tel:'+E(tel(p.tel))+'">Appeler</a>':"")
+      +(p.email?'<a class="btn sm ghost" href="mailto:'+E(p.email)+'">Écrire</a>':"")
+      +'<button class="btn sm ghost" data-act="conv" data-id="'+E(p.id)+'">Convention</button></div>' 
     +'</div>';
 }
 function vPrestataires(){
   var all=DATA.prestataires;
   var h='<div class="head"><div><p class="eyebrow">Répertoire</p><h1>Prestataires</h1>'
     +'<p>'+all.length+' entreprises du secteur, de Fréjus à Nice. Choisissez un domaine, puis une ville.</p></div>'
-    +'<div class="actions" style="margin:0"><button class="btn ghost" data-act="purge">Vider les exemples</button>'
+    +'<div class="actions" style="margin:0"><button class="btn ghost" data-act="reglages">Mes coordonnées</button>'
+    +'<button class="btn ghost" data-act="purge">Vider les exemples</button>'
     +'<button class="btn" data-act="presta-new">+ Ajouter une entreprise</button></div></div>';
   h+='<div class="bar"><input class="search" id="q" placeholder="Chercher une entreprise, une ville…" value="'+E(flt.q)+'"></div>';
 
@@ -1057,6 +1089,189 @@ function maj(id,patch){
 }
 
 /* ---------- textes générés ---------- */
+function texteConvention(p){
+  var v=societe(),L=[],today=new Date();
+  function T(t){L.push(t)}
+  T("CONVENTION D'APPORT D'AFFAIRES");
+  T("BTP • MAINTENANCE • INTERVENTIONS TECHNIQUES");
+  T("");
+  T("Apporteur : "+v.nom+" - "+v.forme+" au capital de "+v.capital+" € - RCS "+v.rcsville+" - Représentée par "+v.repnom);
+  T("Partenaire : "+b(p.nom,28)+" - "+b(p.forme,12)+" - "+b(p.siren,14));
+  T("");
+  T("ENTRE LES SOUSSIGNÉS");
+  T("");
+  T("La société "+v.nom+", "+v.forme+" au capital de "+v.capital+" euros, dont le siège social est situé "
+    +b(v.adresse,34)+", immatriculée au Registre du commerce et des sociétés de "+v.rcsville
+    +" sous le numéro "+b(v.siren,18)+", représentée par Monsieur "+v.repnom+", agissant en qualité de "+v.repqualite+",");
+  T("Ci-après désignée « l'Apporteur », d'une part,");
+  T("");
+  T("Et :");
+  T("La société "+b(p.nom,28)+", "+b(p.forme,12)+" au capital de "+b(p.capital,10)
+    +" euros, dont le siège social est situé "+b(p.adresse,34)
+    +", immatriculée au Registre du commerce et des sociétés de "+b(p.rcsville,14)
+    +" sous le numéro "+b(p.siren,14)+", représentée par "+b(p.repnom,24)
+    +", agissant en qualité de "+b(p.repqualite,14)+",");
+  T("Ci-après désignée « le Partenaire », d'autre part.");
+  T("");
+  T("L'Apporteur et le Partenaire sont ci-après individuellement désignés une « Partie » et collectivement les « Parties ».");
+  T("");
+  T("PRÉAMBULE");
+  T("L'Apporteur dispose d'un réseau professionnel notamment constitué d'acteurs de l'immobilier, de la gestion immobilière, du bâtiment et, plus généralement, de propriétaires ou exploitants ayant des besoins en matière de travaux, maintenance, entretien, dépannage ou interventions techniques.");
+  T("Le Partenaire exerce une activité de "+b(p.activite,26)+" et souhaite développer son activité commerciale.");
+  T("Les Parties souhaitent organiser les conditions dans lesquelles l'Apporteur pourra présenter au Partenaire des prospects ou clients susceptibles de lui confier des prestations. Il est expressément convenu que l'Apporteur intervient exclusivement dans le cadre défini par la présente convention et ne réalise pas lui-même les travaux confiés au Partenaire.");
+  T("Les Parties ont donc convenu ce qui suit.");
+  T("");
+  T("ARTICLE 1 - OBJET");
+  T("La présente convention a pour objet de déterminer les conditions dans lesquelles l'Apporteur identifie et transmet au Partenaire des opportunités commerciales relatives notamment à :");
+  T("  • des dépannages et interventions de maintenance ;");
+  T("  • des travaux de plomberie, climatisation, chauffage, ventilation ou électricité ;");
+  T("  • des travaux de serrurerie, peinture, entretien ou rénovation ;");
+  T("  • des travaux de second œuvre ;");
+  T("  • et, plus généralement, toute prestation entrant dans le domaine de compétence du Partenaire.");
+  T("En contrepartie des affaires effectivement apportées et réalisées dans les conditions prévues ci-dessous, l'Apporteur perçoit une commission.");
+  T("");
+  T("ARTICLE 2 - DÉFINITION D'UNE AFFAIRE APPORTÉE");
+  T("Est considérée comme une « Affaire Apportée » toute demande, prospect, client ou opportunité commerciale qui :");
+  T("  • est identifié ou obtenu par l'Apporteur ;");
+  T("  • est transmis au Partenaire par tout moyen permettant d'en conserver une trace ;");
+  T("  • et donne lieu à une prestation effectivement facturée et encaissée par le Partenaire.");
+  T("La transmission pourra notamment être effectuée par courrier électronique, SMS, messagerie instantanée, logiciel de gestion, CRM ou tout autre moyen écrit permettant d'identifier raisonnablement le client ou l'intervention concernée.");
+  T("Client déjà connu du Partenaire. Le Partenaire ne sera pas redevable d'une commission lorsqu'il peut démontrer que le client concerné faisait déjà l'objet, avant la transmission de l'Apporteur, d'une relation commerciale active ou d'une négociation portant sur la même affaire. Il devra signaler cette situation à l'Apporteur dans un délai de cinq (5) jours ouvrés suivant la transmission. À défaut de contestation dans ce délai, l'opportunité sera réputée avoir été apportée par l'Apporteur, sous réserve de la réalisation effective de l'affaire.");
+  T("");
+  T("ARTICLE 3 - MODALITÉS DE TRANSMISSION DES DEMANDES");
+  T("Pour chaque opportunité, l'Apporteur transmet au Partenaire, dans la mesure des informations dont il dispose, les éléments utiles à la prise en charge : identité ou coordonnées du client, adresse de l'intervention, nature de la demande, degré d'urgence éventuel, informations techniques disponibles et autres renseignements pertinents.");
+  T("Le Partenaire reste entièrement libre d'accepter ou de refuser une demande. Aucun volume minimum d'affaires n'est garanti par l'Apporteur.");
+  T("");
+  T("ARTICLE 4 - RELATION ENTRE LE PARTENAIRE ET LE CLIENT");
+  T("Lorsqu'il accepte une Affaire Apportée, le Partenaire prend directement en charge la relation commerciale et technique avec le client. Il demeure notamment seul responsable :");
+  T("  • de l'analyse technique du besoin et de l'établissement du devis ;");
+  T("  • de la détermination de ses prix et du respect de ses obligations d'information ;");
+  T("  • de la planification et de l'exécution de la prestation ;");
+  T("  • de la fourniture des matériaux et équipements ;");
+  T("  • de la conformité des travaux et de la sécurité du chantier ;");
+  T("  • de la facturation, du recouvrement, du service après-vente et des garanties applicables.");
+  T("Sauf accord écrit distinct entre les Parties, l'Apporteur ne dispose d'aucun pouvoir pour négocier, conclure ou signer un marché de travaux au nom du Partenaire. Le devis et la facture relatifs aux travaux sont établis directement par le Partenaire à destination du client.");
+  T("");
+  T("ARTICLE 5 - GRILLE DE COMMISSIONS");
+  T("En contrepartie de l'apport d'affaires, le Partenaire versera à l'Apporteur une commission déterminée selon le montant total hors taxes effectivement facturé et encaissé auprès du client :");
+  GRILLE.forEach(function(g){T("  "+g.l+" ".repeat(Math.max(1,26-g.l.length))+g.c)});
+  T("Sauf accord contraire écrit, la tranche correspondant au montant total HT de l'affaire détermine le taux applicable à l'intégralité de ce montant.");
+  T("Exemples : pour une intervention de 2 500 € HT, la commission est de 250 € HT. Pour une intervention de 10 000 € HT, la commission est de 700 € HT.");
+  T("");
+  T("ARTICLE 6 - BASE DE CALCUL");
+  T("La commission est calculée sur le montant total HT effectivement encaissé par le Partenaire au titre de l'Affaire Apportée. Sont notamment inclus, lorsqu'ils sont directement rattachables à l'affaire, la prestation initiale, les travaux complémentaires, les avenants, les prestations supplémentaires demandées par le client et les extensions de l'intervention initiale.");
+  T("La TVA facturée au client est exclue de la base de calcul. Les éventuels avoirs, remboursements ou annulations effectivement consentis au client réduisent la base de calcul de la commission.");
+  T("");
+  T("ARTICLE 7 - EXIGIBILITÉ ET FACTURATION DE LA COMMISSION");
+  T("La commission devient exigible après encaissement par le Partenaire des sommes correspondantes versées par le client. En cas de paiement en plusieurs échéances, la commission pourra être facturée proportionnellement aux sommes effectivement encaissées.");
+  T("Le Partenaire s'engage à informer l'Apporteur de l'encaissement dans un délai maximal de quinze (15) jours. L'Apporteur établira ensuite sa facture de commission. Sauf mention différente sur la facture ou accord particulier entre les Parties, celle-ci sera payable dans un délai de trente (30) jours à compter de sa date d'émission, dans le respect des dispositions légales applicables. La TVA sera ajoutée à la commission lorsqu'elle est légalement applicable.");
+  T("");
+  T("ARTICLE 8 - TRANSPARENCE ET JUSTIFICATIFS");
+  T("Afin de permettre le calcul des commissions, le Partenaire s'engage à communiquer à l'Apporteur les informations strictement nécessaires concernant les Affaires Apportées, notamment le montant HT du devis accepté, le montant HT définitivement facturé, les éventuels avenants ou avoirs et la date d'encaissement.");
+  T("");
+  T("ARTICLE 9 - AFFAIRES SUCCESSIVES ET PROTECTION DU CLIENT APPORTÉ");
+  T("Lorsqu'un client a été initialement présenté au Partenaire par l'Apporteur, les nouvelles prestations directement conclues entre ce même client et le Partenaire pendant une période de douze (12) mois à compter de la première Affaire Apportée donnent également lieu à commission lorsqu'elles résultent de la relation commerciale créée par l'apport initial.");
+  T("La grille prévue à l'article 5 s'applique à ces nouvelles prestations, notamment aux nouvelles interventions, travaux complémentaires, nouveaux chantiers, contrats de maintenance ou interventions réalisées sur d'autres biens appartenant ou étant gérés par le même client, dès lors qu'un lien commercial suffisamment direct existe avec l'apport initial.");
+  T("");
+  T("ARTICLE 10 - NON-CONTOURNEMENT");
+  T("Le Partenaire s'engage à ne pas mettre en place de mécanisme ayant pour objet principal de dissimuler une Affaire Apportée ou d'éviter artificiellement le paiement d'une commission due à l'Apporteur. Sont notamment visés la facturation par une société liée dans le seul but d'éviter la commission, la dissimulation volontaire d'un avenant ou d'une nouvelle intervention entrant dans la période de protection prévue à l'article 9.");
+  T("En cas de différend, les Parties s'engagent prioritairement à rechercher une solution amiable sur la base des éléments commerciaux et comptables disponibles.");
+  T("");
+  T("ARTICLE 11 - INDÉPENDANCE DES PARTIES");
+  T("Les Parties déclarent agir en qualité de professionnels indépendants. La présente convention ne saurait être interprétée comme créant un contrat de travail, une société commune, une franchise, un mandat général, une relation d'agence commerciale, une exclusivité ou un lien de subordination. Chaque Partie conserve la direction et l'organisation de sa propre activité. L'Apporteur ne dispose d'aucun pouvoir général de représentation du Partenaire.");
+  T("");
+  T("ARTICLE 12 - ABSENCE D'EXCLUSIVITÉ");
+  T("Sauf avenant écrit contraire, la présente convention est conclue sans exclusivité. L'Apporteur peut collaborer avec d'autres professionnels exerçant des activités identiques ou concurrentes. Le Partenaire peut utiliser ses propres canaux commerciaux et collaborer avec d'autres apporteurs d'affaires.");
+  T("");
+  T("ARTICLE 13 - OBLIGATIONS PROFESSIONNELLES DU PARTENAIRE");
+  T("Le Partenaire déclare disposer de l'ensemble des compétences, qualifications, autorisations, assurances, moyens humains et matériels nécessaires à l'exercice régulier de son activité. Il s'engage à respecter les dispositions légales, réglementaires et professionnelles applicables aux prestations qu'il réalise.");
+  T("Lorsqu'une assurance de responsabilité civile professionnelle, responsabilité décennale ou toute autre assurance obligatoire est applicable à son activité, le Partenaire s'engage à la maintenir en vigueur pendant toute la durée de la collaboration et à fournir, sur demande, une attestation en cours de validité.");
+  T("");
+  T("ARTICLE 14 - RESPONSABILITÉ DE L'APPORTEUR");
+  T("Dans le cadre de la présente convention, l'Apporteur intervient exclusivement pour identifier et mettre en relation des opportunités commerciales. Il n'exécute pas les travaux et ne garantit ni leur réalisation ni leur conformité.");
+  T("L'Apporteur ne saurait être tenu responsable des fautes, malfaçons, retards, dommages, inexécutions ou manquements imputables au Partenaire dans l'exécution de ses prestations. Cette clause ne saurait toutefois exclure ou limiter une responsabilité de l'Apporteur qui ne pourrait légalement l'être, notamment en raison de ses propres fautes ou d'obligations qu'il aurait effectivement assumées.");
+  T("");
+  T("ARTICLE 15 - RÉCLAMATIONS CLIENTS");
+  T("Toute réclamation relative à la réalisation technique de l'intervention est prise en charge par le Partenaire. Lorsque l'Apporteur reçoit directement une réclamation concernant une prestation réalisée par le Partenaire, il la transmet dans les meilleurs délais à ce dernier, lequel s'engage à la traiter avec diligence.");
+  T("");
+  T("ARTICLE 16 - CONFIDENTIALITÉ");
+  T("Chaque Partie s'engage à conserver confidentielles les informations non publiques obtenues dans le cadre de la collaboration, notamment les fichiers clients, coordonnées des prospects, conditions commerciales, tarifs négociés, données financières, méthodes commerciales et informations relatives aux partenaires. Cette obligation demeure applicable pendant la durée du contrat et pendant deux (2) ans après sa cessation.");
+  T("");
+  T("ARTICLE 17 - DONNÉES PERSONNELLES");
+  T("Chaque Partie s'engage à traiter les données personnelles auxquelles elle accède dans le respect de la réglementation applicable, notamment du Règlement général sur la protection des données (RGPD) et de la législation française applicable. Les coordonnées d'un prospect ou client ne doivent être transmises que dans la mesure nécessaire au traitement de la demande concernée et sur une base juridique appropriée. Chaque Partie demeure responsable des traitements qu'elle réalise pour son propre compte.");
+  T("");
+  T("ARTICLE 18 - IMAGE ET RÉPUTATION");
+  T("Le Partenaire s'engage à adopter un comportement professionnel à l'égard des clients présentés par l'Apporteur, notamment à respecter les rendez-vous convenus, communiquer de manière professionnelle, informer le client en cas de retard, maintenir le lieu d'intervention dans un état approprié et assurer un suivi raisonnable des réclamations. Des manquements graves ou répétés pourront justifier la résiliation de la convention.");
+  T("");
+  T("ARTICLE 19 - DURÉE");
+  T("La présente convention est conclue pour une durée initiale de douze (12) mois à compter de sa signature. À son terme, elle sera renouvelée tacitement par périodes successives de douze mois, sauf dénonciation par l'une des Parties dans les conditions prévues à l'article 20.");
+  T("");
+  T("ARTICLE 20 - RÉSILIATION");
+  T("Chaque Partie pourra mettre fin à la présente convention, sans avoir à justifier d'un motif, moyennant un préavis écrit de trente (30) jours.");
+  T("En cas de manquement grave par l'une des Parties à ses obligations contractuelles, l'autre Partie pourra résilier la convention après mise en demeure restée sans effet pendant un délai de quinze (15) jours, sauf manquement justifiant légalement une cessation plus immédiate.");
+  T("La résiliation n'a pas pour effet de supprimer les commissions déjà acquises. Les Affaires Apportées avant la date effective de résiliation continueront à ouvrir droit aux commissions lorsqu'elles se réalisent après la résiliation. La protection prévue à l'article 9 continuera également à produire ses effets jusqu'à l'expiration de la période applicable.");
+  T("");
+  T("ARTICLE 21 - RETARD DE PAIEMENT");
+  T("Toute facture impayée à son échéance pourra entraîner l'application, de plein droit et sans rappel préalable, des pénalités de retard ainsi que de l'indemnité forfaitaire pour frais de recouvrement prévues par la réglementation française applicable aux relations entre professionnels. Les modalités et taux applicables devront également figurer sur les factures de l'Apporteur conformément à la réglementation en vigueur.");
+  T("");
+  T("ARTICLE 22 - CESSION DU CONTRAT");
+  T("Aucune Partie ne pourra céder la présente convention à un tiers sans l'accord écrit préalable de l'autre Partie, sous réserve des opérations de restructuration interne qui n'affecteraient pas substantiellement les droits de l'autre Partie.");
+  T("");
+  T("ARTICLE 23 - MODIFICATION DE LA CONVENTION");
+  T("Toute modification substantielle de la présente convention devra faire l'objet d'un écrit accepté par les Parties. Toute modification de la grille de commissions devra notamment être convenue par écrit avant son application aux nouvelles Affaires Apportées.");
+  T("");
+  T("ARTICLE 24 - INTÉGRALITÉ DE L'ACCORD");
+  T("La présente convention et ses éventuelles annexes expriment l'intégralité de l'accord entre les Parties concernant son objet. Si une disposition était déclarée nulle ou inapplicable, les autres dispositions demeureraient applicables dans toute la mesure permise par la loi.");
+  T("");
+  T("ARTICLE 25 - DROIT APPLICABLE");
+  T("La présente convention est soumise au droit français.");
+  T("");
+  T("ARTICLE 26 - RÈGLEMENT DES DIFFÉRENDS");
+  T("En cas de différend relatif à l'interprétation, l'exécution ou la cessation de la présente convention, les Parties s'efforceront de rechercher une solution amiable avant toute procédure judiciaire. À défaut de résolution amiable, le litige sera porté devant la juridiction matériellement et territorialement compétente conformément aux règles de procédure applicables.");
+  T("");
+  T("ARTICLE 27 - SIGNATURE ÉLECTRONIQUE");
+  T("Les Parties conviennent que la présente convention pourra être signée manuscritement ou au moyen d'un procédé de signature électronique admis par la réglementation applicable. La signature électronique aura, dans les conditions prévues par la loi, la même valeur probante que la signature manuscrite.");
+  T("");
+  T("");
+  T("ANNEXE 1 - GRILLE DE COMMISSIONS");
+  GRILLE.forEach(function(g){T("  "+g.l+" ".repeat(Math.max(1,26-g.l.length))+g.c)});
+  T("");
+  T("ANNEXE 2 - INFORMATIONS DU PARTENAIRE");
+  T("  Activité principale                 : "+b(p.activite,30));
+  T("  Zone géographique d'intervention    : "+b(p.zone||(p.villes||[]).join(", "),30));
+  T("  Téléphone dédié aux interventions   : "+b(p.tel,20));
+  T("  E-mail                              : "+b(p.email,30));
+  T("  Délai d'intervention habituel       : "+b(p.delai,20));
+  T("  Numéro SIREN                        : "+b(p.siren,14));
+  T("  Assurance RC professionnelle        : "+b([p.rcpro,p.rcpronum].filter(Boolean).join(" - "),30));
+  T("  Assurance décennale                 : "+b([p.dec,p.decnum].filter(Boolean).join(" - "),30));
+  T("  Date d'expiration de l'attestation  : "+b(p.assurance,12));
+  T("");
+  T("SIGNATURES");
+  T("Fait à "+b(v.rcsville,20)+"    Le "+String(today.getDate()).padStart(2,"0")+" / "
+    +String(today.getMonth()+1).padStart(2,"0")+" / "+today.getFullYear());
+  T("En deux exemplaires, ou par signature électronique.");
+  T("");
+  T("POUR L'APPORTEUR                          POUR LE PARTENAIRE");
+  T(v.nom+"                               Société : "+b(p.nom,22));
+  T(v.repnom+" - "+v.repqualite+"        Nom / qualité : "+b((p.repnom||"")+(p.repqualite?" - "+p.repqualite:""),20));
+  T("");
+  T("Signature :                               Signature :");
+  T("");
+  T("Mention « Lu et approuvé » :              Mention « Lu et approuvé » :");
+  return L.join("\n");
+}
+function mailConvention(p){
+  var v=societe();
+  return "Bonjour "+(p.repnom||p.contact||"")+",\n\n"
+    +"Comme convenu, vous trouverez ci-joint la convention d'apport d'affaires entre "+v.nom+" et "+(p.nom||"votre société)")+".\n\n"
+    +"Le principe est simple : je vous transmets des demandes de travaux et de dépannage sur le secteur, vous restez maître de vos devis, de vos prix et de votre relation client. Une commission d'apport n'est due que sur les affaires effectivement réalisées et encaissées, selon la grille de l'article 5.\n\n"
+    +"Il n'y a ni exclusivité, ni volume minimum, ni engagement de ma part sur un chiffre d'affaires.\n\n"
+    +"Merci de me retourner la convention signée, accompagnée de votre attestation d'assurance en cours de validité.\n\n"
+    +"Je reste disponible pour en discuter.\n\n"
+    +"Cordialement,\n"+v.repnom+"\n"+v.nom+" — consultation, pilotage, maîtrise d'œuvre\n"
+    +(v.tel?v.tel+"\n":"")+(v.email||"");
+}
 function texteMail(d,ents){
   var lieu=[d.residence,d.adresse,[d.cp,d.ville].filter(Boolean).join(" ")].filter(Boolean).join(", ");
   var L=[];
@@ -1123,16 +1338,82 @@ function metierBoxes(sel){
     }).join("")+'</div></div>';
 }
 function metiersCoches(){return Object.keys(MET).filter(function(m){var e=document.getElementById("m-"+m);return e&&e.checked})}
+function sel(id,label,v,opts){
+  return '<div class="field"><label for="'+id+'">'+label+'</label><select id="'+id+'">'
+    +opts.map(function(o){var val=o[0]!==undefined?o[0]:o,lab=o[1]!==undefined?o[1]:o;
+      return '<option value="'+E(val)+'"'+(String(v||"")===String(val)?" selected":"")+'>'+E(lab)+'</option>'}).join("")
+    +'</select></div>';
+}
+function sect(t,sub){return '<p class="sect">'+t+(sub?'<small>'+sub+'</small>':"")+'</p>'}
 function formPresta(p){
   p=p||{};
-  return fld("p-nom","Raison sociale",p.nom,"text","SARL Duval Plomberie")
-    +'<div class="two">'+fld("p-contact","Interlocuteur",p.contact,"text","Prénom Nom")+fld("p-tel","Téléphone",p.tel,"tel")+'</div>'
-    +fld("p-email","E-mail",p.email,"email","devis@entreprise.fr")
-    +fld("p-villes","Villes couvertes",(p.villes||[]).join(", "),"text","Montreuil, Bagnolet, Romainville")
+  return sect("Identité de l'entreprise","Repris tel quel dans la convention d'apport d'affaires.")
+    +fld("p-nom","Raison sociale",p.nom,"text","Azur Plomberie Siagne")
+    +'<div class="two">'
+    +sel("p-forme","Forme sociale",p.forme,["SARL","SAS","SASU","EURL","SA","SCOP","Entreprise individuelle","Auto-entrepreneur","Autre"])
+    +fld("p-capital","Capital social (€)",p.capital,"text","10 000")+'</div>'
+    +fld("p-adresse","Adresse du siège social",p.adresse,"text","14 avenue de Cannes, 06210 Mandelieu-la-Napoule")
+    +'<div class="two">'+fld("p-rcsville","Ville du RCS",p.rcsville,"text","Cannes")
+    +fld("p-siren","SIREN ou RCS",p.siren,"text","123 456 789")+'</div>'
+    +fld("p-activite","Activité principale",p.activite,"text","plomberie, chauffage et sanitaire")
+
+    +sect("Représentant légal","Celui qui signera la convention.")
+    +'<div class="two">'+fld("p-repnom","Nom et prénom",p.repnom,"text","FERRERO Pascal")
+    +sel("p-repqualite","Qualité",p.repqualite,["Gérant","Président","Directeur général","Entrepreneur individuel","Autre"])+'</div>'
+    +fld("p-repmail","E-mail pour la signature",p.repmail,"email","direction@entreprise.fr")
+
+    +sect("Contact au quotidien","Ce dont vous avez besoin pour envoyer une intervention, hors contrat.")
+    +'<div class="two">'+fld("p-contact","Interlocuteur",p.contact,"text","Prénom Nom")
+    +fld("p-tel","Téléphone des interventions",p.tel,"tel","04 93 00 00 00")+'</div>'
+    +fld("p-email","E-mail des devis",p.email,"email","devis@entreprise.fr")
+    +'<div class="two">'
+    +sel("p-astreinte","Astreinte soir et week-end",p.astreinte,["","Non","Oui, en semaine","Oui, 7j/7 24h/24"])
+    +fld("p-delai","Délai d'intervention habituel",p.delai,"text","sous 48 h")+'</div>'
+    +fld("p-horaires","Horaires",p.horaires,"text","8 h - 18 h du lundi au vendredi")
+
+    +sect("Couverture","Sert au filtrage automatique des demandes par métier et par ville.")
+    +fld("p-villes","Villes couvertes",(p.villes||[]).join(", "),"text","Mandelieu-la-Napoule, Cannes, Le Cannet")
+    +fld("p-zone","Zone d'intervention déclarée au contrat",p.zone,"text","Alpes-Maritimes ouest, de Théoule à Antibes")
     +metierBoxes(p.metiers)
-    +'<div class="two">'+fld("p-q","Qualité du travail (0 à 5)",p.qualite||0,"number")+fld("p-r","Réactivité (0 à 5)",p.reactivite||0,"number")+'</div>'
-    +fld("p-ass","Décennale valable jusqu'au",p.assurance,"text","31/12/2026")
+
+    +sect("Assurances","Exigées par l'article 13 de la convention.")
+    +'<div class="two">'+fld("p-rcpro","Assureur RC professionnelle",p.rcpro,"text","AXA")
+    +fld("p-rcpronum","N° de police RC pro",p.rcpronum,"text","")+'</div>'
+    +'<div class="two">'+fld("p-dec","Assureur décennale",p.dec,"text","SMABTP")
+    +fld("p-decnum","N° de police décennale",p.decnum,"text","")+'</div>'
+    +fld("p-ass","Attestation valable jusqu'au",p.assurance,"text","31/12/2026")
+
+    +sect("Conditions commerciales","Hors contrat, pour arbitrer entre deux entreprises.")
+    +'<div class="two">'+fld("p-taux","Taux horaire HT (€)",p.taux,"text","55")
+    +fld("p-deplacement","Forfait déplacement HT (€)",p.deplacement,"text","45")+'</div>'
+    +'<div class="two">'+fld("p-reglement","Conditions de règlement",p.reglement,"text","30 jours fin de mois")
+    +fld("p-certifs","Certifications",p.certifs,"text","RGE, Qualibat 5111")+'</div>'
+
+    +sect("Mon évaluation","Ce qui remonte les bonnes entreprises en haut de la liste.")
+    +'<div class="two">'+fld("p-q","Qualité du travail (0 à 5)",p.qualite||0,"number")
+    +fld("p-r","Réactivité (0 à 5)",p.reactivite||0,"number")+'</div>'
     +area("p-rem","Remarques",p.remarques,"Ce qu'il faut savoir avant de l'envoyer chez un client.");
+}
+function lirePresta(){
+  return {nom:val("p-nom"),forme:val("p-forme"),capital:val("p-capital"),adresse:val("p-adresse"),
+    rcsville:val("p-rcsville"),siren:val("p-siren"),activite:val("p-activite"),
+    repnom:val("p-repnom"),repqualite:val("p-repqualite"),repmail:val("p-repmail"),
+    contact:val("p-contact"),tel:val("p-tel"),email:val("p-email"),
+    astreinte:val("p-astreinte"),delai:val("p-delai"),horaires:val("p-horaires"),
+    villes:val("p-villes").split(",").map(function(x){return x.trim()}).filter(Boolean),
+    zone:val("p-zone"),metiers:metiersCoches(),
+    rcpro:val("p-rcpro"),rcpronum:val("p-rcpronum"),dec:val("p-dec"),decnum:val("p-decnum"),
+    assurance:val("p-ass"),taux:val("p-taux"),deplacement:val("p-deplacement"),
+    reglement:val("p-reglement"),certifs:val("p-certifs"),
+    qualite:Number(val("p-q"))||0,reactivite:Number(val("p-r"))||0,remarques:val("p-rem")};
+}
+function manquants(p){
+  var need=[["nom","la raison sociale"],["forme","la forme sociale"],["capital","le capital social"],
+    ["adresse","l'adresse du siège"],["rcsville","la ville du RCS"],["siren","le SIREN"],
+    ["activite","l'activité principale"],["repnom","le nom du représentant"],["repqualite","sa qualité"],
+    ["zone","la zone d'intervention"],["tel","le téléphone"],["email","l'e-mail"],["delai","le délai habituel"],
+    ["rcpro","l'assureur RC professionnelle"],["assurance","la date d'expiration de l'attestation"]];
+  return need.filter(function(x){return !p[x[0]]}).map(function(x){return x[1]});
 }
 function formClient(c){
   c=c||{};
@@ -1157,7 +1438,7 @@ function formCopro(k){
 }
 
 /* ---------- actions ---------- */
-var editId=null,editIx=null;
+var editId=null,editIx=null,convId=null;
 document.addEventListener("click",function(ev){
   var b=ev.target.closest("[data-act],[data-nav],[data-open],[data-flt]");
   if(!b)return;
@@ -1173,6 +1454,77 @@ document.addEventListener("click",function(ev){
 
   if(act==="dlg-close"){closeDlg();return}
   if(act==="reconnecter"){boot();return}
+  if(act==="conv"){
+    var pc=DATA.prestataires.filter(function(x){return x.id===b.dataset.id})[0];if(!pc)return;
+    convId=pc.id;
+    var mq=manquants(pc),v=societe(),mqv=[];
+    if(!v.adresse)mqv.push("l'adresse de votre siège");
+    if(!v.siren)mqv.push("votre SIREN");
+    openDlg("Convention d'apport d'affaires",E(pc.nom),
+      (mqv.length?'<div class="manque"><strong>Vos coordonnées sont incomplètes :</strong> il manque '+E(mqv.join(", "))
+        +'. Renseignez-les dans « Mes coordonnées », sinon elles resteront en pointillés.</div>':"")
+      +(mq.length?'<div class="manque"><strong>'+mq.length+' information(s) manquante(s) sur le partenaire :</strong> '
+        +E(mq.join(", "))+'. Le document se génère quand même, ces champs restent à compléter à la main.</div>'
+        :'<p class="note" style="margin-bottom:12px">Toutes les informations nécessaires sont renseignées.</p>')
+      +'<textarea class="conv" id="conv-txt">'+E(texteConvention(pc))+'</textarea>',
+      '<button class="btn ghost" data-act="conv-print">Imprimer ou PDF</button>'
+      +'<button class="btn ghost" data-act="conv-copy">Copier le texte</button>'
+      +'<button class="btn ghost" data-act="conv-mail" data-id="'+E(pc.id)+'">Mail d\'accompagnement</button>'
+      +'<button class="btn" data-act="conv-envoyee" data-id="'+E(pc.id)+'">Marquer comme envoyée</button>'
+      +((pc.convention||{}).statut==="envoyee"?'<button class="btn" data-act="conv-signee" data-id="'+E(pc.id)+'">Marquer comme signée</button>':""));
+    return;
+  }
+  if(act==="conv-copy"){copier(val("conv-txt"),"Convention copiée");return}
+  if(act==="conv-print"){
+    document.getElementById("printable-txt").textContent=val("conv-txt");
+    closeDlg();
+    setTimeout(function(){window.print()},120);
+    return;
+  }
+  if(act==="conv-mail"){
+    var pm=DATA.prestataires.filter(function(x){return x.id===b.dataset.id})[0]||{};
+    openDlg("Mail d'accompagnement",E(pm.nom),
+      '<div class="field"><label>Destinataire</label><input id="cm-dest" value="'+E(pm.repmail||pm.email||"")+'"></div>'
+      +'<div class="field"><label for="cm-corps">Message</label><textarea class="mail" id="cm-corps">'+E(mailConvention(pm))+'</textarea></div>'
+      +'<p class="note">Imprimez d\'abord la convention en PDF, puis joignez-la à ce message.</p>',
+      '<button class="btn ghost" data-act="dlg-close">Fermer</button>'
+      +'<button class="btn" data-act="cm-copy">Copier le message</button>');
+    return;
+  }
+  if(act==="cm-copy"){copier(val("cm-dest")+"\n\n"+val("cm-corps"),"Message copié");return}
+  if(act==="conv-envoyee"||act==="conv-signee"){
+    if(!db){toast("Base indisponible");return}
+    var pid2=b.dataset.id,pv=DATA.prestataires.filter(function(x){return x.id===pid2})[0]||{};
+    var c2=Object.assign({},pv.convention||{});
+    var jourIso=new Date().toISOString().slice(0,10);
+    if(act==="conv-envoyee"){c2.statut="envoyee";c2.dateEnvoi=jourIso}
+    else{c2.statut="signee";c2.dateSignature=jourIso}
+    db.doc("prestataires/"+pid2).update({convention:c2})
+      .then(function(){closeDlg();toast(act==="conv-envoyee"?"Convention marquée envoyée":"Convention marquée signée")})
+      .catch(function(){toast("Écriture refusée")});
+    return;
+  }
+  if(act==="reglages"){
+    var v2=societe();
+    openDlg("Mes coordonnées","Reprises en en-tête de la convention, des devis et des factures.",
+      '<div class="two">'+fld("v-nom","Raison sociale",v2.nom)+fld("v-forme","Forme sociale",v2.forme)+'</div>'
+      +'<div class="two">'+fld("v-capital","Capital social (€)",v2.capital)+fld("v-siren","SIREN ou RCS",v2.siren,"text","À compléter")+'</div>'
+      +fld("v-adresse","Adresse du siège social",v2.adresse,"text","06210 Mandelieu-la-Napoule")
+      +'<div class="two">'+fld("v-rcsville","Ville du RCS",v2.rcsville)+fld("v-repnom","Représentant",v2.repnom)+'</div>'
+      +'<div class="two">'+fld("v-repqualite","Qualité",v2.repqualite)+fld("v-tel","Téléphone",v2.tel,"tel")+'</div>'
+      +fld("v-email","E-mail",v2.email,"email"),
+      '<button class="btn ghost" data-act="dlg-close">Annuler</button><button class="btn" data-act="reglages-save">Enregistrer</button>');
+    return;
+  }
+  if(act==="reglages-save"){
+    if(!db){toast("Base indisponible");return}
+    db.doc("reglages/societe").set({nom:val("v-nom"),forme:val("v-forme"),capital:val("v-capital"),
+      siren:val("v-siren"),adresse:val("v-adresse"),rcsville:val("v-rcsville"),
+      repnom:val("v-repnom"),repqualite:val("v-repqualite"),tel:val("v-tel"),email:val("v-email")})
+      .then(function(){closeDlg();toast("Coordonnées enregistrées")})
+      .catch(function(){toast("Écriture refusée")});
+    return;
+  }
   if(act==="clients-reset"){flt.cq="";flt.ctype="tous";flt.cville="";flt.crole="";paint();return}
   if(act==="urg-appel"){
     var pu=DATA.prestataires.filter(function(x){return x.id===b.dataset.v})[0]||{nom:"l'entreprise"};
@@ -1312,10 +1664,9 @@ document.addEventListener("click",function(ev){
   if(act==="presta-save"){
     if(!db){toast("Base indisponible");return}
     if(!val("p-nom")){toast("Il faut au moins un nom");return}
-    var body={nom:val("p-nom"),contact:val("p-contact"),tel:val("p-tel"),email:val("p-email"),
-      villes:val("p-villes").split(",").map(function(s){return s.trim()}).filter(Boolean),
-      metiers:metiersCoches(),qualite:Number(val("p-q"))||0,reactivite:Number(val("p-r"))||0,
-      assurance:val("p-ass"),remarques:val("p-rem")};
+    var body=lirePresta();
+    var anc=editId?DATA.prestataires.filter(function(x){return x.id===editId})[0]:null;
+    if(anc&&anc.convention)body.convention=anc.convention;
     (editId?db.doc("prestataires/"+editId).set(body):db.collection("prestataires").add(body))
       .then(function(){closeDlg();toast("Répertoire mis à jour")})
       .catch(function(e){toast("Écriture refusée : "+(e&&e.code||"erreur"))});

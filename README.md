@@ -37,7 +37,12 @@ Back-office publié comme artifact, avec base de données persistante (capacité
   demandeur, cocher les entreprises du métier concerné (celles de la commune
   en tête, le reste du secteur ensuite), les appeler une par une ou leur
   envoyer la demande de devis.
-- **Prestataires** — navigation en trois temps comme le formulaire : domaine,
+- **Prestataires** — fiche complète par entreprise : identité sociale,
+  représentant légal, contact d'intervention, couverture, assurances,
+  conditions commerciales et évaluation. Le bouton Convention génère la
+  convention d'apport d'affaires pré-remplie, prête à imprimer, à copier ou à
+  envoyer, et suit son état : sans convention, envoyée, signée.
+  Navigation en trois temps comme le formulaire : domaine,
   puis ville, puis entreprises. Double notation qualité du travail et
   réactivité, moyennes recalculées à chaque clôture. Secteur couvert : de
   Fréjus à Nice, siège à Mandelieu-la-Napoule.
@@ -77,6 +82,10 @@ pour le client.
 Les fiches marquées « exemple » sont des données de démonstration, aux bonnes
 communes mais fictives. Le bouton « Vider les exemples » les supprime toutes
 sans toucher à ce qui a été saisi.
+
+Le modèle d'origine de la convention est conservé dans
+`docs/modeles/convention-apport-affaires.docx`. Le générateur reprend ses
+vingt-sept articles et ses deux annexes à l'identique.
 
 ### Reste à brancher
 
