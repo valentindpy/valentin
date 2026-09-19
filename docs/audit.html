@@ -1,0 +1,298 @@
+<title>VD Services avant lancement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#E9EBEF; --surface:#FFFFFF; --surface-2:#F2F4F7; --sunk:#DFE3EA;
+  --ink:#131A24; --ink-2:#414B59; --ink-3:#6C7686;
+  --line:#CDD3DC; --line-strong:#A7B0BE;
+  --accent:#2E4E77; --accent-soft:#DCE5F1; --accent-ink:#2E4E77;
+  --stop:#BC2F26; --stop-soft:#F8DFDB;
+  --warn:#8E6206; --warn-soft:#F6E9C9;
+  --go:#20654A; --go-soft:#D5E9DF;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630; --sunk:#0A0F16;
+  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
+  --line:#28313D; --line-strong:#3E4A59;
+  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
+  --stop:#EE8F84; --stop-soft:#37201D;
+  --warn:#DCB25C; --warn-soft:#312818;
+  --go:#78C8A0; --go-soft:#142B21;
+}}
+:root[data-theme="dark"]{
+  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630; --sunk:#0A0F16;
+  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
+  --line:#28313D; --line-strong:#3E4A59;
+  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
+  --stop:#EE8F84; --stop-soft:#37201D;
+  --warn:#DCB25C; --warn-soft:#312818;
+  --go:#78C8A0; --go-soft:#142B21;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;letter-spacing:-.015em;text-wrap:balance}
+p{margin:0}
+.wrap{max-width:820px;margin-inline:auto;padding-inline:20px;padding-block:clamp(30px,6vw,60px) 80px}
+.prose{max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+h1{font-size:clamp(1.9rem,4.6vw,2.9rem);line-height:1.04;font-weight:700;margin-top:10px}
+.lede{color:var(--ink-2);margin-top:16px;font-size:1.05rem}
+.meta{display:flex;flex-wrap:wrap;gap:0;margin-top:30px;border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
+.meta div{flex:1 1 150px;padding:13px 16px;border-right:1px solid var(--line)}
+.meta div:last-child{border-right:0}
+.meta dt{font-family:var(--mono);font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.meta dd{margin:4px 0 0;font-family:var(--display);font-weight:600;font-size:1.02rem;font-variant-numeric:tabular-nums}
+
+section{margin-top:clamp(40px,7vw,64px)}
+.shead{display:flex;flex-direction:column;gap:7px;margin-bottom:22px;border-top:2px solid var(--ink);padding-top:16px}
+.shead h2{font-size:clamp(1.3rem,3vw,1.7rem)}
+.shead p{color:var(--ink-2);font-size:.95rem;max-width:64ch}
+
+.finds{display:flex;flex-direction:column;gap:12px}
+.f{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line-strong);border-radius:4px;padding:16px 19px}
+.f.stop{border-left-color:var(--stop)}
+.f.warn{border-left-color:var(--warn)}
+.f.go{border-left-color:var(--go)}
+.f .lab{font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.f.stop .lab{color:var(--stop)} .f.warn .lab{color:var(--warn)} .f.go .lab{color:var(--go)}
+.f h3{font-size:1.03rem;margin-top:5px}
+.f p{color:var(--ink-2);font-size:.94rem;margin-top:7px}
+.f .fix{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:.91rem;color:var(--ink)}
+.f .fix b{font-family:var(--mono);font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:3px;font-weight:400}
+
+.tbl{width:100%;border-collapse:collapse;font-size:.92rem;background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.tbl th{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;font-weight:400;padding:11px 14px;background:var(--surface-2)}
+.tbl td{padding:11px 14px;border-top:1px solid var(--line);vertical-align:top}
+.tbl td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto;margin-top:16px}
+.hyp{font-size:.85rem;color:var(--ink-3);margin-top:10px;line-height:1.5}
+
+ol.ordre{counter-reset:o;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:2px}
+ol.ordre li{counter-increment:o;background:var(--surface);border:1px solid var(--line);padding:14px 18px 14px 52px;position:relative}
+ol.ordre li:first-child{border-radius:4px 4px 0 0}
+ol.ordre li:last-child{border-radius:0 0 4px 4px}
+ol.ordre li+li{border-top:0}
+ol.ordre li::before{content:counter(o);position:absolute;left:18px;top:14px;font-family:var(--mono);font-size:.78rem;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+ol.ordre b{font-family:var(--display);font-weight:600;font-size:.98rem;display:block}
+ol.ordre span{font-size:.92rem;color:var(--ink-2);display:block;margin-top:3px}
+ol.ordre .quand{font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);display:block;margin-top:6px}
+
+.tient{background:var(--go-soft);border:1px solid var(--go);border-radius:4px;padding:18px 20px;color:var(--go)}
+.tient h2{font-size:1.1rem;color:var(--go)}
+.tient ul{margin:10px 0 0;padding-left:18px;font-size:.94rem;line-height:1.6}
+.tient li+li{margin-top:5px}
+footer{margin-top:60px;border-top:1px solid var(--line);padding-top:22px;font-size:.85rem;color:var(--ink-3);line-height:1.6}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">Revue technique, parcours et modèle · 19 septembre 2026</p>
+  <h1>Ce qui casse avant la première affiche</h1>
+  <p class="lede prose">Vingt-deux points relevés sur la plateforme, le parcours client et le modèle de rémunération. Trois sont bloquants au sens strict : ils peuvent vous coûter des données, un client ou une affaire. Le reste est du réglage, mais dans un ordre qui compte.</p>
+  <dl class="meta">
+    <div><dt>Bloquants</dt><dd>4</dd></div>
+    <div><dt>À corriger</dt><dd>11</dd></div>
+    <div><dt>Leviers</dt><dd>7</dd></div>
+    <div><dt>Avant l'affiche</dt><dd>2</dd></div>
+  </dl>
+</header>
+
+<section>
+  <div class="tient">
+    <h2>Ce qui tient déjà</h2>
+    <ul>
+      <li>La règle de routage est juste. Deux métiers ou une partie commune font basculer en maîtrise d'œuvre sans que personne ait à y penser.</li>
+      <li>Le bordereau de prix est votre vrai actif logiciel. Faire chiffrer plusieurs entreprises sur la même base et garder la main sur le prix client, c'est ce qu'aucun annuaire ne fait.</li>
+      <li>Le dossier administratif par entreprise, avec lecture automatique des attestations et alerte soixante jours avant échéance, vous met au-dessus de la plupart des cabinets de votre taille.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="shead">
+    <p class="eyebrow">Plateforme</p>
+    <h2>Huit points techniques</h2>
+    <p>Vérifiés dans le code, pas supposés.</p>
+  </div>
+  <div class="finds">
+
+    <div class="f stop"><p class="lab">Bloquant · perte de données</p>
+      <h3>Aucune sauvegarde, aucun export</h3>
+      <p>Répertoire, clients, copropriétés, historique, bordereaux et factures vivent dans une seule base attachée à une seule page privée. Il n'existe aucun export, même pas en tableur. Une suppression accidentelle, un compte fermé, et quarante entreprises et six mois d'historique disparaissent sans copie.</p>
+      <div class="fix"><b>Correction</b>Un bouton d'export par collection, et une sauvegarde manuelle le premier de chaque mois. C'est une demi-journée de travail et ça devrait précéder tout le reste.</div></div>
+
+    <div class="f stop"><p class="lab">Bloquant · la chaîne est coupée</p>
+      <h3>Le formulaire n'alimente pas la plateforme</h3>
+      <p>Le QR mène à une page qui ne transmet rien. Toutes les demandes doivent être ressaisies à la main. Tant que le site public n'existe pas, la moitié du système tourne à vide.</p>
+      <div class="fix"><b>Correction</b>Site public sur votre domaine, plus un point de réception qui écrit dans la base. C'est le prochain chantier, pas une option.</div></div>
+
+    <div class="f warn"><p class="lab">À corriger · intégrité</p>
+      <h3>Supprimer une entreprise casse l'historique</h3>
+      <p>La suppression part en un clic, sans confirmation. Elle laisse derrière elle les pièces administratives et les fichiers déposés, orphelins dans le stockage. Surtout, ses interventions passées pointent vers une fiche qui n'existe plus : l'historique affiche un tiret et la facture de commissions du mois perd son destinataire.</p>
+      <div class="fix"><b>Correction</b>Remplacer la suppression par un archivage. Une entreprise archivée sort des listes de sélection mais reste rattachée à ses interventions.</div></div>
+
+    <div class="f warn"><p class="lab">À corriger · données faussées</p>
+      <h3>Pas d'état « sans suite »</h3>
+      <p>Une demande qui ne se transforme pas n'a nulle part où aller. Le seul moyen de la fermer est d'enregistrer une intervention, donc une ligne d'historique et une commission qui n'existent pas. En pratique vous laisserez ces demandes ouvertes, et le compteur « en attente » du tableau de bord deviendra du bruit en trois mois.</p>
+      <div class="fix"><b>Correction</b>Deux états de plus, sans suite et refusée par le client, avec un motif. Le taux de transformation devient alors mesurable.</div></div>
+
+    <div class="f warn"><p class="lab">À corriger · rien ne vous rappelle</p>
+      <h3>Aucun vieillissement des demandes</h3>
+      <p>Rien ne signale une demande restée trois jours sans action, ni une demande de devis envoyée il y a deux semaines sans réponse. Le tableau de bord affiche les plus anciennes, mais sans alerte ni seuil. Sur deux interventions par jour, une demande oubliée par semaine est certaine.</p>
+      <div class="fix"><b>Correction</b>Un seuil par nature, quelques heures en urgence, deux jours en dépannage, cinq en projet, et une pastille rouge au-delà.</div></div>
+
+    <div class="f warn"><p class="lab">À corriger · preuve</p>
+      <h3>Aucune trace des envois</h3>
+      <p>Le mail de consultation est préparé puis copié à la main dans votre messagerie. Rien n'enregistre la date d'envoi ni les destinataires. Or votre convention fait courir un délai de cinq jours ouvrés à compter de la transmission pour qu'une entreprise conteste un client déjà connu. Sans date opposable, cette clause ne vaut rien.</p>
+      <div class="fix"><b>Correction</b>Le bouton « marquer comme envoyée » existe déjà : rendez-le obligatoire et horodatez-le dans le suivi.</div></div>
+
+    <div class="f warn"><p class="lab">À corriger · preuve</p>
+      <h3>Les photos ne sont pas stockées</h3>
+      <p>Les vignettes avant et après sont des emplacements portant un nom de fichier. Le stockage existe pourtant déjà, il sert aux pièces administratives. La photo de fin de chantier est votre meilleure défense face à un syndic qui conteste une réception.</p>
+      <div class="fix"><b>Correction</b>Brancher le dépôt de photos sur le même stockage que les attestations, à la clôture.</div></div>
+
+    <div class="f"><p class="lab">Mineur · confort</p>
+      <h3>La recherche est partagée entre deux vues</h3>
+      <p>Chercher « Cannes » dans les demandes puis passer au répertoire garde le filtre. Le répertoire paraît vide alors qu'il ne l'est pas.</p>
+      <div class="fix"><b>Correction</b>Une recherche par vue, remise à zéro au changement d'onglet.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="shead">
+    <p class="eyebrow">Expérience client</p>
+    <h2>Six points sur le parcours</h2>
+    <p>Ce que vit la personne qui scanne, et ce qu'elle ne vit pas encore.</p>
+  </div>
+  <div class="finds">
+
+    <div class="f stop"><p class="lab">Bloquant · promesse non tenue</p>
+      <h3>L'écran de confirmation ment</h3>
+      <p>Il annonce un rappel dans les minutes qui viennent. Aucun message ne part, ni vers vous ni vers la personne. Le jour de la mise en ligne, sans accusé de réception, la moitié des gens rescannent ou appellent, et vous perdez le bénéfice du formulaire.</p>
+      <div class="fix"><b>Correction</b>Un SMS ou un mail automatique portant la référence, avant même le premier autocollant collé.</div></div>
+
+    <div class="f stop"><p class="lab">Bloquant · engagement</p>
+      <h3>Les délais affichés vous engagent</h3>
+      <p>« Astreinte sur site sous 2 h » est une promesse commerciale opposable. Elle ne tient que si deux entreprises par métier se sont engagées par écrit à décrocher le soir et le week-end. Aujourd'hui la page les annonce, rien ne les garantit.</p>
+      <div class="fix"><b>Correction</b>Un avenant d'astreinte signé avec deux entreprises par métier avant d'imprimer, ou une promesse revue à la baisse.</div></div>
+
+    <div class="f warn"><p class="lab">À corriger · appels inutiles</p>
+      <h3>Le demandeur ne sait plus rien après l'envoi</h3>
+      <p>Une fois la demande partie, plus aucune information. C'est la première cause d'appels entrants dans ce métier, et chacun vous coûte cinq minutes.</p>
+      <div class="fix"><b>Correction</b>Un lien de suivi dans le SMS de confirmation, montrant l'état et le nom de l'entreprise retenue.</div></div>
+
+    <div class="f warn"><p class="lab">À corriger · demandes non solvables</p>
+      <h3>Le locataire passe sans avertissement</h3>
+      <p>Un locataire peut déclarer un projet de travaux en partie privative alors qu'il n'a ni la qualité pour décider ni la charge de payer. Vous le découvrirez au téléphone, après avoir consulté des entreprises.</p>
+      <div class="fix"><b>Correction</b>Un message dès la sélection, comme celui déjà présent sur le parcours énergie : sur les travaux, le propriétaire doit être dans la boucle.</div></div>
+
+    <div class="f"><p class="lab">Mineur · abandon</p>
+      <h3>Le contact arrive en dernier</h3>
+      <p>Le parcours énergie compte dix-huit interactions et demande les revenus avant le numéro de téléphone. Si la personne abandonne à cet écran, vous ne gardez rien du tout, alors qu'elle était qualifiée.</p>
+      <div class="fix"><b>Correction</b>Demander le prénom et le numéro juste après le choix des travaux, et traiter le reste comme du bonus.</div></div>
+
+    <div class="f"><p class="lab">Mineur · hors zone</p>
+      <h3>Rien ne filtre les demandes hors secteur</h3>
+      <p>Une personne qui scanne une photo de l'affiche à Toulon suit le même parcours et vous fait perdre un appel.</p>
+      <div class="fix"><b>Correction</b>Un contrôle du code postal à l'écran de l'adresse, avec un message honnête quand c'est hors zone.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="shead">
+    <p class="eyebrow">Modèle économique</p>
+    <h2>Le point qui décide de tout le reste</h2>
+    <p>Un conflit d'intérêts à trancher, trois contraintes de trésorerie et de volume, et les leviers qui rapportent vraiment.</p>
+  </div>
+  <div class="finds">
+
+    <div class="f stop"><p class="lab">Bloquant · conflit d'intérêts</p>
+      <h3>Vous ne pouvez pas être payé des deux côtés sur la même affaire</h3>
+      <p>Votre modèle actuel superpose deux rémunérations : une commission versée par l'entreprise, et une mission de maîtrise d'œuvre facturée au client. Sur une même affaire, c'est intenable. Vous conseillez le client sur le choix de l'entreprise tout en étant payé par celle que vous recommandez. Un client qui l'apprend peut vous en demander restitution, un syndic qui l'apprend vous écarte de son portefeuille, et c'est exactement le reproche qu'on adresse aux plateformes de mise en relation.</p>
+      <div class="fix"><b>Correction</b>Un mode par affaire, choisi à la qualification et écrit noir sur blanc au client. Apporteur : l'entreprise vous paie, vous ne facturez rien au client et vous ne prétendez pas l'avoir conseillé. Maître d'œuvre : le client vous paie des honoraires, vous ne prenez aucune commission sur cette affaire. Faites valider la formulation par un juriste, c'est le seul point du rapport où je vous recommande de payer un avis.</div></div>
+
+    <div class="f warn"><p class="lab">Important · rentabilité</p>
+      <h3>Les gros chantiers rapportent peu en apport</h3>
+      <p>Votre grille est dégressive : cinq pour cent entre vingt et cinquante mille euros, puis accord préalable au-delà. Un honoraire de maîtrise d'œuvre pour une mission complète se situe plutôt entre huit et douze pour cent du montant des travaux. Sur un ravalement à quatre-vingt mille euros, l'apport vous laisse en négociation quand la maîtrise d'œuvre vous vaudrait plusieurs milliers d'euros, pour un travail que vous faites déjà.</p>
+      <div class="fix"><b>Correction</b>Un seuil de bascule assumé. En dessous, apport d'affaires, simple et rapide. Au-dessus, mission de maîtrise d'œuvre facturée au client, avec contrat et phases.</div></div>
+
+    <div class="f warn"><p class="lab">Important · trésorerie</p>
+      <h3>Vous serez payé deux à quatre mois après</h3>
+      <p>La commission n'est exigible qu'après encaissement par l'entreprise, qui dispose ensuite de quinze jours pour vous en informer, puis de trente jours pour régler votre facture. Vous dépendez donc entièrement de sa déclaration pour savoir qu'une affaire est payée. Une entreprise qui oublie n'est pas sanctionnée dans les faits.</p>
+      <div class="fix"><b>Correction</b>Réclamer une copie du devis signé au moment de l'acceptation, pas la facture après coup. Vous connaissez alors le montant, et vous relancez sur une date que vous maîtrisez.</div></div>
+
+    <div class="f warn"><p class="lab">Important · désintermédiation</p>
+      <h3>Après la première affaire, ils n'ont plus besoin de vous</h3>
+      <p>Le client et l'entreprise se connaissent désormais. L'article 9 vous protège douze mois, mais vous ne saurez jamais qu'une deuxième affaire a eu lieu si personne ne vous le dit. Cette clause est un argument de négociation, pas une protection.</p>
+      <div class="fix"><b>Correction</b>Votre protection réelle est d'usage, pas juridique : rester dans le flux. Le client vous appelle parce que vous coordonnez, pas parce que vous avez un carnet d'adresses. C'est le sens de la bascule vers la maîtrise d'œuvre.</div></div>
+  </div>
+
+  <h3 style="margin-top:32px;font-size:1.05rem">Combien d'immeubles pour deux interventions par jour</h3>
+  <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Hypothèse d'adoption</th><th class="n">Demandes par immeuble et par an</th><th class="n">Immeubles nécessaires</th><th class="n">Syndics à convaincre</th></tr></thead>
+      <tbody>
+        <tr><td>Affiche seule, réflexe faible</td><td class="n">8</td><td class="n">110</td><td class="n">2 à 4</td></tr>
+        <tr><td>Affiche plus relais du gardien</td><td class="n">15</td><td class="n">60</td><td class="n">1 à 2</td></tr>
+        <tr><td>Syndic qui renvoie ses habitants</td><td class="n">25</td><td class="n">35</td><td class="n">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="hyp">Calcul : deux interventions par jour ouvré font environ cinq cents interventions par an. À un taux de transformation de soixante pour cent, il faut donc de l'ordre de huit cent cinquante demandes entrantes. Les trois hypothèses d'adoption sont à tester, pas à croire : mesurez-les sur vos trois premiers immeubles avant d'en imprimer cinquante. Un syndic gère couramment trente à quatre-vingts copropriétés.</p>
+  <p class="hyp"><strong>Ce que cela vaut.</strong> À trois mille euros de panier moyen, cinq cents interventions représentent environ un million cinq cent mille euros de travaux confiés, soit de l'ordre de cent mille euros de commissions à sept pour cent. Ce sont des ordres de grandeur, pas une prévision.</p>
+
+  <div class="finds" style="margin-top:26px">
+    <div class="f go"><p class="lab">Levier · le plus rentable</p>
+      <h3>Un contrat syndic vaut trente affiches</h3>
+      <p>Le tableau ci-dessus dit la même chose sous trois formes : le QR code est l'outil, le syndic est le canal. Un seul cabinet qui vous confie son portefeuille vous amène d'un coup le volume que cent autocollants mettraient un an à produire, et il paie ses factures.</p>
+      <div class="fix"><b>À faire</b>Construire l'argumentaire syndic autour de ce que vous leur enlevez : les appels d'habitants, la recherche d'entreprises, la relance des devis et la vérification des attestations. Pas autour de vos prix.</div></div>
+
+    <div class="f go"><p class="lab">Levier · revenu récurrent</p>
+      <h3>L'entretien est la seule ligne qui revient tous les mois</h3>
+      <p>Ménage des communs, espaces verts, contrat de chaufferie, vérifications périodiques. Un dépannage rapporte une fois, un contrat d'entretien rapporte douze fois et se renouvelle sans effort commercial. C'est aussi ce qui lisse votre trésorerie entre deux gros chantiers.</p>
+      <div class="fix"><b>À faire</b>Traiter le ménage et les espaces verts comme une offre à part entière auprès des syndics, pas comme un métier de plus dans la liste.</div></div>
+
+    <div class="f go"><p class="lab">Levier · valeur par dossier</p>
+      <h3>Le parcours énergie est le plus long et le mieux payé</h3>
+      <p>Une rénovation d'ampleur demande un audit, un accompagnateur, un montage de dossier et une coordination de plusieurs lots. C'est long à convertir, et c'est précisément pour cela que le client ne peut pas s'en passer. Le ticket moyen n'a aucun rapport avec un dépannage.</p>
+      <div class="fix"><b>À faire</b>Sur ce parcours, passer d'emblée en honoraires de maîtrise d'œuvre. La commission d'apport n'y est pas adaptée.</div></div>
+
+    <div class="f go"><p class="lab">Levier · fiabilité de paiement</p>
+      <h3>Le public paie mal en délai mais jamais en défaut</h3>
+      <p>Les collectivités règlent avec retard, rarement moins de trente jours, mais elles règlent. Et une consultation réussie en appelle d'autres : les services techniques rappellent celui qui leur a fait gagner du temps sur la mise en concurrence.</p>
+      <div class="fix"><b>À faire</b>Soigner le premier dossier public comme une référence, et demander une attestation de bonne exécution à la fin.</div></div>
+
+    <div class="f warn"><p class="lab">Risque · réglementaire</p>
+      <h3>Trois obligations à vérifier avant de démarrer</h3>
+      <p>Votre assurance de responsabilité civile professionnelle doit couvrir explicitement la maîtrise d'œuvre, et une décennale peut être requise dès que vous intervenez sur la conception. Le démarchage téléphonique pour la rénovation énergétique est interdit : n'achetez jamais de fichier, ne rappelez que les personnes qui vous ont sollicité. Enfin vous détenez des noms, des adresses et des photos de domiciles : il vous faut une mention d'information, une durée de conservation et un registre.</p>
+      <div class="fix"><b>À faire</b>Ces trois points se règlent en une matinée avec votre assureur et un modèle de registre. Ne les reportez pas après la première affiche.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="shead">
+    <p class="eyebrow">Ordre d'exécution</p>
+    <h2>Sept décisions, dans cet ordre</h2>
+    <p>L'ordre compte plus que la liste : chaque étape rend la suivante moins coûteuse.</p>
+  </div>
+  <ol class="ordre">
+    <li><b>Trancher le mode de rémunération par affaire</b><span>Apporteur ou maître d'œuvre, jamais les deux. Écrire la règle, la faire valider, l'annoncer au client.</span><span class="quand">Avant la première affiche</span></li>
+    <li><b>Contractualiser deux astreintes par métier</b><span>Sans engagement écrit de décrocher le soir et le week-end, retirez la promesse des deux heures.</span><span class="quand">Avant la première affiche</span></li>
+    <li><b>Mettre le formulaire en ligne avec un accusé de réception</b><span>Site public, réception des demandes, SMS de confirmation portant la référence.</span><span class="quand">Semaine 1</span></li>
+    <li><b>Exporter et sauvegarder la base</b><span>Une demi-journée, et le risque le plus grave du système disparaît.</span><span class="quand">Semaine 1</span></li>
+    <li><b>Ajouter les états sans suite et le vieillissement</b><span>Sans cela vous ne saurez jamais votre taux de transformation, donc jamais si le QR est rentable.</span><span class="quand">Mois 1</span></li>
+    <li><b>Équiper trois immeubles et mesurer</b><span>Compter les demandes réelles par immeuble et par mois avant d'imprimer cinquante autocollants.</span><span class="quand">Mois 1 et 2</span></li>
+    <li><b>Signer un syndic</b><span>C'est le seul point de cette liste qui change l'échelle du reste.</span><span class="quand">Mois 2 et 3</span></li>
+  </ol>
+</section>
+
+<footer>
+  Revue menée sur le code publié de la plateforme et du parcours au 19 septembre 2026. Les points techniques ont été vérifiés dans le code, pas déduits. Les hypothèses de volume et de rentabilité sont des ordres de grandeur à confronter à vos trois premiers immeubles. Les points juridiques, notamment le cumul de rémunérations et les obligations d'assurance, relèvent d'un avis professionnel que ce document ne remplace pas.
+</footer>
+</div>

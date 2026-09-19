@@ -38,6 +38,12 @@ vérifiés à la visite.
 Quatre données suffisent au routage : l'intention, le ou les corps de métier, la
 nature de la partie concernée et le statut du demandeur.
 
+## `docs/audit.html` — la revue avant lancement
+
+Vingt-deux points relevés sur la plateforme, le parcours client et le modèle de
+rémunération, avec leur correction et l'ordre d'exécution. Les points techniques
+ont été vérifiés dans le code.
+
 ## `docs/affiche-qr.html` — la signalétique
 
 Générateur des supports imprimés, avec un vrai QR code régénéré à chaque
