@@ -295,7 +295,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 <script>
 /* ---------- constantes ---------- */
 var MET={plomberie:"Plomberie",electricite:"Électricité",chauffage:"Chauffage",clim:"Climatisation, VMC",serrurerie:"Serrurerie",couverture:"Couverture, étanchéité",peinture:"Peinture",platrerie:"Plâtrerie",carrelage:"Carrelage, sols",menuiserie:"Menuiserie",verts:"Espaces verts",menage:"Ménage, nettoyage",autre:"Autre"};
-var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"},energie:{l:"Travaux aidés",c:"e"},public:{l:"Consultation publique",c:"a"}};
+var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"},energie:{l:"Travaux financés",c:"e"},public:{l:"Consultation publique",c:"a"}};
 var ETATS={nouvelle:{l:"Nouvelle",c:"a"},devis:{l:"Devis demandé",c:"d"},chiffre:{l:"Chiffrée",c:"d"},planifiee:{l:"Planifiée",c:"p"},close:{l:"Clôturée",c:"n"}};
 var STATUTS={occupant:"Propriétaire occupant",locataire:"Locataire",bailleur:"Propriétaire bailleur",syndic:"Syndic ou gestionnaire",conseil:"Conseil syndical",pro:"Commerce ou entreprise"};
 var NAV=[{id:"dashboard",l:"Tableau de bord"},{id:"demandes",l:"Demandes"},{id:"prestataires",l:"Prestataires"},{id:"clients",l:"Clients"},{id:"interventions",l:"Historique"},{id:"qrcodes",l:"QR codes"},{id:"facturation",l:"Facturation"}];
@@ -897,7 +897,8 @@ function vDemande(){
     +'</select></div>';
 
   if(d.intent==="urgence"){
-    var ast=cand.filter(function(p){return p.local}).sort(function(a,b){return (b.reactivite||0)-(a.reactivite||0)})[0]||cand[0];
+    var tri=cand.slice().sort(function(a,b){return (b.local?1:0)-(a.local?1:0)||(b.reactivite||0)-(a.reactivite||0)});
+    var ast=tri[0],ast2=tri[1];
     var dejaAppelee=(d.journal||[]).some(function(j){return (j.texte||"").indexOf("contacté directement")>=0});
     h+='<div class="urgbox"><h3>Urgence : mise en relation directe</h3>'
       +'<p>En urgence, le demandeur n\'attend pas un devis. Il appelle lui-même l\'entreprise de dépannage la plus proche, vous régularisez ensuite.</p>';
@@ -909,6 +910,14 @@ function vDemande(){
         +(dejaAppelee?'<span class="tag u">demandeur déjà mis en relation</span>'
           :'<button class="btn ghost" data-act="urg-appel" data-id="'+E(d.id)+'" data-v="'+E(ast.id)+'">Le demandeur a contacté cette entreprise</button>')
         +'</div>';
+      if(ast2){
+        h+='<p style="margin-top:12px"><strong>Second contact si personne ne décroche : '+E(ast2.nom)+'</strong>'
+          +' · réactivité '+(ast2.reactivite||0)+'/5</p>';
+        h+='<div class="actions" style="margin:10px 0 0">'
+          +(ast2.tel?'<a class="btn ghost" href="tel:'+E(tel(ast2.tel))+'">Appeler '+E(ast2.nom)+'</a>':"")
+          +(dejaAppelee?"":'<button class="btn ghost" data-act="urg-appel" data-id="'+E(d.id)+'" data-v="'+E(ast2.id)+'">C\'est lui qui a été contacté</button>')
+          +'</div>';
+      }
     }else h+='<p style="margin-top:10px">Aucune entreprise de ce métier dans le répertoire. Ajoutez un contact d\'astreinte sans attendre.</p>';
     h+='</div>';
   }
@@ -957,8 +966,8 @@ function vDemande(){
         CH={fioul:"Fioul",gaz:"Gaz",elec:"Électrique",bois:"Bois ou granulés",pac:"Pompe à chaleur",inconnu:"Inconnu"},
         DP={ab:"A ou B",cd:"C ou D",e:"E",fg:"F ou G",inconnu:"Inconnue"},
         RV={r1:"moins de 22 000 €",r2:"22 000 à 30 000 €",r3:"30 000 à 45 000 €",r4:"45 000 à 65 000 €",r5:"plus de 65 000 €",np:"non communiqué"};
-    h+='<div class="card" style="border-color:var(--ene)"><h3>Travaux aidés</h3>'
-      +'<p class="sub">Ce qui détermine les aides, avant tout chiffrage.</p><dl>'
+    h+='<div class="card" style="border-color:var(--ene)"><h3>Travaux énergétiques financés</h3>'
+      +'<p class="sub">Ce qui détermine le financement, avant tout chiffrage.</p><dl>'
       +kv("Gestes visés",E((d.gestes||[]).map(function(x){return GL[x]||x}).join(" · ")||"—"))
       +kv("Logement",E([LG[d.logement],AN[d.anciennete],US[d.usage]].filter(Boolean).join(" · ")||"—"))
       +kv("Demandeur",E(OC[d.occupation]||"—"))
@@ -968,7 +977,8 @@ function vDemande(){
       +'</dl>';
     h+='<p class="eyebrow" style="margin:16px 0 9px">Aides mobilisables</p><ul class="journal">'
       +aides(d).map(function(a){return '<li style="grid-template-columns:1fr"><span>'+E(a)+'</span></li>'}).join("")+'</ul>';
-    h+='<p class="note" style="margin-top:12px">Montants et conditions à confirmer : les barèmes changent chaque année. N\'annoncez aucun chiffre avant vérification, et n\'envoyez que des entreprises RGE.</p>';
+    h+='<p class="note" style="margin-top:12px"><strong>Le dispositif à expliquer au client.</strong> Les certificats d\'économies d\'énergie obligent les vendeurs d\'énergie, TotalEnergies, EDF, Engie et les enseignes qui vendent du carburant, à financer les travaux qui font baisser la consommation de leurs clients, sous peine de pénalité. Loi n° 2005-781 du 13 juillet 2005, articles L. 221-1 et suivants du code de l\'énergie.</p>';
+    h+='<p class="note" style="margin-top:10px">Montants et conditions à confirmer : les barèmes changent chaque année. N\'annoncez aucun chiffre avant vérification, et n\'envoyez que des entreprises RGE.</p>';
     h+='</div>';
   }
   var iv=interDe(d);
@@ -1023,11 +1033,20 @@ function vDemande(){
   h+='<p class="eyebrow" style="margin:22px 0 9px">Entreprises concernées dans le secteur</p>';
   if(!cand.length)h+='<p class="note">Aucune entreprise du répertoire ne fait '+E(metiersOf(d).join(", ")||"ce métier")+'. Ajoutez un contact depuis l\'onglet Prestataires.</p>';
   else{
-    h+='<p class="sub">'+cand.length+' entreprise(s) pour '+E(metiersOf(d).join(", "))
-      +(locaux.length?' · '+locaux.length+' sur '+E(d.ville):"")+'. Cochez celles à consulter, ou appelez directement.</p>';
+    h+='<p class="sub">'+cand.length+' entreprise(s) sur '+((d.trades||[]).length||1)+' corps de métier'
+      +(locaux.length?' · '+locaux.length+' sur '+E(d.ville):"")+'. Celles de la commune sont en tête de chaque groupe.</p>';
     h+='<div class="pick">';
-    if(locaux.length)h+='<div class="sep">Sur '+E(d.ville||"la commune")+'</div>'+locaux.map(function(p){return pickRow(p,d,false)}).join("");
-    if(loin.length)h+='<div class="sep">Ailleurs dans le secteur</div>'+loin.map(function(p){return pickRow(p,d,true)}).join("");
+    var vus={};
+    (d.trades||[]).forEach(function(t){
+      var grp=cand.filter(function(p){return !vus[p.id]&&(p.metiers||[]).indexOf(t)>=0});
+      if(!grp.length)return;
+      grp.forEach(function(p){vus[p.id]=1});
+      var nl=grp.filter(function(p){return p.local}).length;
+      h+='<div class="sep">'+E(MET[t]||t)+' — '+grp.length+' entreprise(s)'+(nl?', dont '+nl+' sur place':'')+'</div>';
+      h+=grp.map(function(p){return pickRow(p,d,!p.local)}).join("");
+    });
+    var reste=cand.filter(function(p){return !vus[p.id]});
+    if(reste.length)h+='<div class="sep">Autres métiers proches</div>'+reste.map(function(p){return pickRow(p,d,!p.local)}).join("");
     h+='</div>';
     h+='<div class="actions" style="margin-top:16px;margin-bottom:0">'
       +'<button class="btn" data-act="mail" data-id="'+E(d.id)+'">Envoyer la demande de devis par mail</button>'

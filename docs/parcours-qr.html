@@ -261,6 +261,15 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
 .opt.p{border-left-color:var(--pro)} .opt.p b{color:var(--pro)}
 .opt.e{border-left-color:var(--ene)} .opt.e b{color:var(--ene)}
 .opt.a{border-left-color:var(--accent)} .opt.a b{color:var(--accent-ink)}
+.marque{display:flex;flex-direction:column;gap:3px;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:16px}
+.marque strong{font-family:var(--display);font-weight:700;font-size:1.1rem;letter-spacing:-.01em;color:var(--ink)}
+.marque span{font-family:var(--mono);font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.etoile{background:none;border:0;padding:0;margin-top:14px;text-align:left;font:inherit;font-size:.79rem;
+  color:var(--ene);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.defi{margin-top:10px;border:1px solid var(--ene);background:var(--ene-soft);border-radius:9px;padding:13px 14px}
+.defi p{font-size:.79rem;line-height:1.5;color:var(--ene)}
+.defi p+p{margin-top:8px}
+.defi .loi{font-family:var(--mono);font-size:.68rem;letter-spacing:.03em}
 .opt.n{border-left-color:var(--line-strong);padding:12px 14px}
 .opt.n b{font-size:.95rem}
 .opt[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
@@ -523,6 +532,12 @@ var USAGES={principale:"Résidence principale",secondaire:"Résidence secondaire
 var CHAUFFAGES={fioul:"Fioul",gaz:"Gaz",elec:"Électrique",bois:"Bois ou granulés",pac:"Pompe à chaleur",inconnu:"Je ne sais pas"};
 var DPES={ab:"A ou B",cd:"C ou D",e:"E",fg:"F ou G, passoire",inconnu:"Je ne sais pas"};
 var REVENUS={r1:"moins de 22 000 €",r2:"22 000 à 30 000 €",r3:"30 000 à 45 000 €",r4:"45 000 à 65 000 €",r5:"plus de 65 000 €",np:"Je préfère ne pas répondre"};
+var BLOC_DEFI='<div class="defi">'
+ +'<p><strong>Qui paie ?</strong> Les vendeurs d\'énergie. Le dispositif des certificats d\'économies d\'énergie les oblige à financer les travaux qui font baisser la consommation de leurs propres clients.</p>'
+ +'<p>Carburants, fioul, gaz, électricité : TotalEnergies, EDF, Engie et les enseignes qui vendent du carburant sont ce qu\'on appelle les obligés. S\'ils ne financent pas assez de travaux, ils versent une pénalité à l\'État.</p>'
+ +'<p>Ce financement se cumule avec les aides publiques à la rénovation. Le montant dépend des travaux, du logement et des revenus du foyer : il se calcule au cas par cas, avant la signature du devis.</p>'
+ +'<p class="loi">Loi n° 2005-781 du 13 juillet 2005, articles L. 221-1 et suivants du code de l\'énergie.</p>'
+ +'</div>';
 var STATUTS=[
  {id:"occupant",l:"Propriétaire occupant"},
  {id:"locataire",l:"Locataire"},
@@ -553,7 +568,7 @@ var CRENEAUX={asap:"Dès que possible",matin:"Le matin",aprem:"L'après-midi",so
 
 var S,step,t0,tick,taps;
 function init(){
-  S={intent:null,projet:null,trades:[],presta:[],gestes:[],entite:null,organisme:"",service:"",fonction:"",nature:null,site:"",nbDevis:null,montant:null,dateLimite:"",pieces:[],refInterne:"",logement:null,anciennete:null,occupation:null,usage:null,personnes:null,revenus:null,chauffage:null,dpe:null,devisSigne:null,lieu:null,statut:null,residence:"",adresse:"",precision:"",ag:null,delai:null,budget:null,description:"",nom:"",tel:"",photo:false,creneau:null,consent:false};
+  S={intent:null,defi:false,projet:null,trades:[],presta:[],gestes:[],entite:null,organisme:"",service:"",fonction:"",nature:null,site:"",nbDevis:null,montant:null,dateLimite:"",pieces:[],refInterne:"",logement:null,anciennete:null,occupation:null,usage:null,personnes:null,revenus:null,chauffage:null,dpe:null,devisSigne:null,lieu:null,statut:null,residence:"",adresse:"",precision:"",ag:null,delai:null,budget:null,description:"",nom:"",tel:"",photo:false,creneau:null,consent:false};
   step="intent"; taps=0; t0=null;
   if(tick){clearInterval(tick);tick=null}
   document.getElementById("clock").textContent="00:00";
@@ -624,13 +639,16 @@ function render(){
   var keep=(lastStep===step)?sc.scrollTop:0;
   if(step==="intent"){
     h+=dots();
+    h+='<div class="marque"><strong>VD SERVICES</strong><span>Consultation · Pilotage · Maîtrise d\'œuvre</span></div>';
     h+='<p class="q">Que se passe-t-il ?</p><p class="qs">Une seule réponse. Si c\'est grave, vous n\'aurez rien à remplir.</p>';
     h+='<div class="col">'
       +'<button class="opt u" data-intent="urgence"><b>C\'est une urgence</b><span>Fuite qui coule, plus d\'électricité, porte bloquée, dégât en cours</span></button>'
       +'<button class="opt d" data-intent="depannage"><b>J\'ai besoin d\'un dépannage</b><span>Ça fonctionne mal, ça peut attendre demain ou après-demain</span></button>'
       +'<button class="opt p" data-intent="projet"><b>J\'ai un projet de travaux</b><span>Rénovation, mise aux normes, embellissement, devis à comparer</span></button>'
-      +'<button class="opt e" data-intent="energie"><b>Travaux aidés</b><span>Pompe à chaleur, isolation, fenêtres, solaire. On calcule vos aides avant de chiffrer.</span></button>'
+      +'<button class="opt e" data-intent="energie"><b>Travaux énergétiques financés <sup>*</sup></b><span>Pompe à chaleur, isolation, fenêtres, solaire. On calcule votre financement avant de chiffrer.</span></button>'
       +'</div>';
+    h+='<button class="etoile" data-defi="1">* Financés par qui ? Comprendre le dispositif</button>';
+    if(S.defi)h+=BLOC_DEFI;
     h+='<div class="col" style="margin-top:20px">'
       +'<button class="opt a" data-intent="public"><b>Je suis une entité publique</b><span>Commune, intercommunalité, bailleur social, établissement. Consultation et mise en concurrence à trois devis ou plus.</span></button>'
       +'</div>';
@@ -639,7 +657,7 @@ function render(){
   else if(step==="trade"){
     h+=dots()+back("intent");
     if(S.intent==="energie"){
-      h+='<p class="q">Travaux aidés</p><p class="qs">Cochez ce qui vous tente, même sans être sûr. On vérifie ensuite ce qui ouvre droit à une aide, et ce que ça vous laisse à payer.</p>';
+      h+='<p class="q">Travaux énergétiques financés</p><p class="qs">Cochez ce qui vous tente, même sans être sûr. On vérifie ensuite ce qui est financé, et ce que ça vous laisse à payer.</p>';
       h+='<div class="grid">'+GESTES.map(function(g){
         return '<button class="tile'+(g.w?" wide":"")+'" data-geste="'+g.id+'" aria-pressed="'+(S.gestes.indexOf(g.id)>=0)+'">'+g.l+'</button>';
       }).join("")+'</div>';
@@ -661,10 +679,13 @@ function render(){
     h+=dots()+back("trade");
     h+='<div class="banner"><b>N\'écrivez rien, appelez.</b><p>Vous êtes mis en relation directe avec l\'entreprise de dépannage la plus proche. Coupez l\'eau ou l\'électricité si vous le pouvez sans risque, puis appelez.</p></div>';
     h+='<a class="cta urg" href="tel:+33400000010">Appeler l\'entreprise d\'astreinte</a>';
-    h+='<p class="qn">Pas de réponse dans la minute ?</p>';
+    h+='<p class="qn">Personne ne décroche ?</p>';
+    h+='<a class="cta" style="margin-top:0;background:var(--ink)" href="tel:+33400000011">Appeler le second contact</a>';
+    h+='<p class="note" style="margin-top:8px">Deux entreprises d\'astreinte sont prévues sur chaque métier. Si aucune ne répond, laissez votre numéro ci-dessous.</p>';
+    h+='<p class="qn">Toujours personne ?</p>';
     h+='<input class="fld" id="u-tel" type="tel" inputmode="tel" placeholder="Votre numéro" value="'+esc(S.tel)+'" data-set="tel">';
     h+='<button class="cta" data-go="done" '+(S.tel.length>=8?"":"disabled")+'>Je veux être rappelé tout de suite</button>';
-    h+='<p class="note">Le numéro affiché est celui de l\'entreprise d\'astreinte du métier choisi, la plus proche de la résidence. La demande remonte à la maîtrise d\'œuvre comme mise en relation directe.</p>';
+    h+='<p class="note">Les numéros affichés sont ceux des deux entreprises d\'astreinte du métier choisi, les plus proches de la résidence. La demande remonte à VD Services comme mise en relation directe.</p>';
   }
   else if(step==="where"){
     h+=dots()+back("trade");
@@ -921,6 +942,7 @@ document.getElementById("screen").addEventListener("click",function(e){
       if(g)g.t.forEach(function(t){if(S.trades.indexOf(t)<0)S.trades.push(t)});
     });
   }
+  else if(d.defi){S.defi=!S.defi}
   else if(d.entite){S.entite=d.entite;S.statut="pro";S.lieu="commun"}
   else if(d.fonction){S.fonction=S.fonction===d.fonction?"":d.fonction}
   else if(d.nature){S.nature=d.nature}
