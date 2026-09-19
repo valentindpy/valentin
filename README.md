@@ -1,6 +1,6 @@
 # VD SERVICES — QR Copropriété
 
-Consultation · Pilotage · Maîtrise d'œuvre
+Consultation · Pilotage · Coordination et assistance
 Mandelieu-la-Napoule, secteur Fréjus / Nice
 
 Deux pièces, qui se parlent : la page publique qui qualifie une demande, et le
@@ -9,7 +9,7 @@ back-office qui la traite.
 ## `docs/parcours-qr.html` — la page de destination du QR code
 
 Note de conception du parcours : schéma des trois parcours (urgence, dépannage,
-projet), règle de routage entreprise / maîtrise d'œuvre, prototype cliquable du
+projet), règle de routage entreprise / coordination, prototype cliquable du
 formulaire avec chronomètre, décisions à arbitrer avant l'implémentation.
 
 | Parcours  | Taps | Durée  | Sortie                  |

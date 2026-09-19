@@ -290,7 +290,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 
 <div class="shell">
   <aside class="rail">
-    <div class="brand">VD SERVICES<span>Consultation · Pilotage<br>Maîtrise d'œuvre</span></div>
+    <div class="brand">VD SERVICES<span>Consultation · Pilotage<br>Coordination et assistance</span></div>
     <nav id="nav"></nav>
     <div class="railfoot" id="railfoot"></div>
   </aside>
@@ -570,7 +570,7 @@ function aides(d){
     r.push("Sortie d'énergie fossile vers pompe à chaleur ou granulés : cas le mieux aidé, primes majorées.");
   if(d.revenus==="r1"||d.revenus==="r2")r.push("Revenus modestes : taux majorés et avance de frais possible.");
   if(g.length>=2||g.indexOf("ampleur")>=0||d.dpe==="fg")
-    r.push("Rénovation d'ampleur : audit et accompagnateur obligatoires, mission de maîtrise d'œuvre complète.");
+    r.push("Rénovation d'ampleur : audit et accompagnateur obligatoires, mission de coordination complète.");
   if(vieux)r.push("TVA réduite, et prêt à taux zéro en résidence principale.");
   r.push("Aides locales région, département, commune : à vérifier au cas par cas.");
   return r;
@@ -831,7 +831,7 @@ function supportsQR(code,nom){
   var v=societe(),lien=lienRes(code),res=nom||"VD Services";
   var menu='<div class="menu"><span><b></b>Urgence</span><span><b></b>Dépannage</span>'
     +'<span><b></b>Projet de travaux</span><span><b></b>Travaux aidés</span></div>';
-  var sign='Consultation · Pilotage · Maîtrise d\'œuvre';
+  var sign='Consultation · Pilotage · Coordination et assistance';
   var tel=v.tel?E(v.tel):"";
   var html='<div class="board sticker"><div class="rule"><i></i><i></i><i></i><i></i></div><div class="body">'
     +'<p class="kicker">Un souci dans l\'immeuble ?</p>'
@@ -917,7 +917,7 @@ function texteFacture(pid){
   L.push("Période : "+moisLong(flt.mois));
   L.push("");
   L.push("Émetteur : VD SERVICES — Valentin Dupuy");
-  L.push("Consultation, pilotage, maîtrise d'œuvre");
+  L.push("Consultation, pilotage, coordination et assistance");
   L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
   L.push("Destinataire : "+p.nom+(p.contact?" — "+p.contact:""));
   L.push("");
@@ -979,7 +979,7 @@ function vDemandes(){
       +'</span><span class="end">'
       +quiBadge(d.statutDemandeur)
       +'<span class="tag '+it.c+'">'+it.l+'</span>'
-      +'<span class="tag '+(r==="moe"?"p":"n")+'">'+(r==="moe"?"Maîtrise d\'œuvre":"Envoi direct")+'</span>'
+      +'<span class="tag '+(r==="moe"?"p":"n")+'">'+(r==="moe"?"Coordination":"Envoi direct")+'</span>'
       +'<span class="tag '+et.c+'">'+et.l+'</span>'+(d.exemple?'<span class="tag ex">exemple</span>':"")
       +'</span></button>';
   }).join("")+'</div>';
@@ -1012,7 +1012,7 @@ function vDemande(){
   h+='<div class="head"><div><p class="eyebrow">'+E(d.ref)+' · reçue le '+dt(d.recu)+'</p>'
     +'<h1>'+E(prestaLabels(d).slice(0,2).join(" · ")||metiersOf(d).join(" · ")||"Demande")+'</h1>'
     +'<p><span class="tag '+it.c+'">'+it.l+'</span> <span class="tag '+(r==="moe"?"p":"n")+'">'
-    +(r==="moe"?"Maîtrise d\'œuvre conseillée":"Envoi direct possible")+'</span>'
+    +(r==="moe"?"Coordination conseillée":"Envoi direct possible")+'</span>'
     +' '+quiBadge(d.statutDemandeur)
     +(d.exemple?' <span class="tag ex">exemple</span>':"")+'</p></div>'
     +'<select class="sel" id="etat" data-act="etat" data-id="'+E(d.id)+'">'
@@ -1868,7 +1868,7 @@ function mailConvention(p){
     +"Il n'y a ni exclusivité, ni volume minimum, ni engagement de ma part sur un chiffre d'affaires.\n\n"
     +"Merci de me retourner la convention signée, accompagnée de votre attestation d'assurance en cours de validité.\n\n"
     +"Je reste disponible pour en discuter.\n\n"
-    +"Cordialement,\n"+v.repnom+"\n"+v.nom+" — consultation, pilotage, maîtrise d'œuvre\n"
+    +"Cordialement,\n"+v.repnom+"\n"+v.nom+" — consultation, pilotage, coordination et assistance\n"
     +(v.tel?v.tel+"\n":"")+(v.email||"");
 }
 function accuseReception(d){
@@ -1922,7 +1922,7 @@ function accuseReception(d){
   L.push("");
   L.push("Cordialement,");
   L.push(v.repnom);
-  L.push(v.nom+" — consultation, pilotage, maîtrise d'œuvre");
+  L.push(v.nom+" — consultation, pilotage, coordination et assistance");
   L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
   if(v.tel)L.push(v.tel);
   if(v.email)L.push(v.email);
@@ -1970,12 +1970,12 @@ function texteMail(d,ents){
   L.push(d.intent==="urgence"
     ? "Intervention urgente : merci de me rappeler avant tout déplacement."
     : "Merci de me retourner votre devis détaillé poste par poste"+(d.intent==="depannage"?" sous 72 heures.":" sous 8 jours."));
-  L.push("J'interviens en maîtrise d'œuvre : le devis m'est adressé et n'est pas transmis tel quel au client.");
+  L.push("J'interviens en coordination pour le compte du client : le devis m'est adressé et n'est pas transmis tel quel.");
   L.push("Merci de joindre votre attestation de responsabilité décennale à jour.");
   L.push("");
   L.push("Cordialement,");
   L.push("Valentin Dupuy");
-  L.push("VD SERVICES — consultation, pilotage, maîtrise d'œuvre");
+  L.push("VD SERVICES — consultation, pilotage, coordination et assistance");
   L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
   return L.join("\n");
 }
@@ -1997,7 +1997,7 @@ function texteBordereau(d,avecPrix){
   if(avecPrix){
     L.push("TOTAL HT : "+eur(totClient()));
     L.push("");
-    L.push("Devis établi par VD SERVICES, Valentin Dupuy, maître d'œuvre, Mandelieu-la-Napoule.");
+    L.push("Devis établi par VD SERVICES, Valentin Dupuy, Mandelieu-la-Napoule.");
     L.push("Validité 30 jours.");
   }else{
     L.push("Merci de compléter la colonne prix unitaire et de me retourner le document.");
