@@ -56,7 +56,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 .railfoot button{background:none;border:1px solid var(--line-strong);border-radius:5px;color:var(--ink-2);font:inherit;font-size:.68rem;padding:3px 8px;margin-top:6px;cursor:pointer}
 .dotlive{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pro);margin-right:6px}
 .dotoff{background:var(--urg)}
-main{padding:26px clamp(16px,3vw,34px) 60px;min-width:0}
+main{padding:0 clamp(16px,3vw,34px) 60px;min-width:0}
+.topbar{position:sticky;top:env(safe-area-inset-top, 0px);z-index:5;display:flex;align-items:center;
+  justify-content:flex-end;gap:12px;padding:12px 0;margin-bottom:14px;background:var(--ground);
+  border-bottom:1px solid var(--line)}
+.tb-info{font-family:var(--mono);font-size:.68rem;letter-spacing:.05em;color:var(--ink-3);
+  margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-info.alerte{color:var(--urg)}
+@media (max-width:520px){.tb-long{display:none}}
 @media (max-width:840px){
   .shell{grid-template-columns:1fr}
   .rail{position:static;height:auto;flex-direction:row;align-items:center;gap:12px;overflow-x:auto;padding:12px 16px}
@@ -287,7 +294,13 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
     <nav id="nav"></nav>
     <div class="railfoot" id="railfoot"></div>
   </aside>
-  <main><div id="view"></div></main>
+  <main>
+    <div class="topbar">
+      <span class="tb-info" id="tb-info"></span>
+      <button class="btn sm" data-act="sauv-json">Télécharger <span class="tb-long">la sauvegarde</span></button>
+    </div>
+    <div id="view"></div>
+  </main>
 </div>
 <dialog id="dlg"></dialog>
 <div id="printable"><pre id="printable-txt"></pre><div id="printable-html"></div></div>
@@ -619,6 +632,16 @@ boot();
 
 /* ---------- navigation ---------- */
 function navigate(v,id){route={v:v,id:id||null};if(v!=="bordereau")BD=null;window.scrollTo(0,0);paint()}
+function paintBarre(){
+  var el=document.getElementById("tb-info");
+  if(!el)return;
+  var js=joursDepuisSauvegarde();
+  el.className="tb-info"+(js===null||js>30?" alerte":"");
+  el.textContent= js===null ? "Aucune sauvegarde prise depuis ce navigateur"
+    : js===0 ? "Sauvegarde du jour"
+    : js===1 ? "Dernière sauvegarde hier"
+    : "Dernière sauvegarde il y a "+js+" jours";
+}
 function paintNav(){
   var nouvelles=DATA.demandes.filter(function(d){return d.etat==="nouvelle"}).length;
   document.getElementById("nav").innerHTML=NAV.map(function(n){
@@ -1597,6 +1620,7 @@ function vInterventions(){
 /* ---------- rendu ---------- */
 function paint(){
   paintNav();
+  paintBarre();
   var el=document.getElementById("view");
   var a=document.activeElement,fid=a&&a.id?a.id:null,pos=null;
   try{pos=a&&a.selectionStart}catch(e){}
