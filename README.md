@@ -140,6 +140,15 @@ L'état du dossier apparaît sur chaque fiche du répertoire : complet, pièces
 manquantes, ou attestation expirée. Les quatre premières pièces sont traitées
 comme obligatoires, avec alerte soixante jours avant échéance.
 
+La **sauvegarde** se prend depuis le tableau de bord : un fichier unique au
+format JSON contenant toutes les collections, plus trois exports tableur pour les
+interventions, le répertoire et les clients. Le même écran restaure une
+sauvegarde. Un avertissement apparaît au-delà de trente jours sans copie.
+
+Les **accusés de réception** sont générés par la fiche de chaque demande, dans le
+texte exact que l'automatisation enverra. La spécification complète est dans
+`docs/modeles/mails-automatiques.md`.
+
 ### Reste à brancher
 
 - L'envoi réel du formulaire vers la base de la plateforme.

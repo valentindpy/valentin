@@ -432,6 +432,90 @@ function barres(items){
   }).join("")+'</div>';
 }
 function interDe(d){return DATA.interventions.filter(function(i){return i.demandeId===d.id})[0]}
+
+/* ---------- sauvegarde et restauration ---------- */
+var COLLS=["demandes","prestataires","clients","interventions","bordereaux","documents","residences","reglages"];
+function derniereSauvegarde(){
+  try{return localStorage.getItem("vd-sauvegarde")||""}catch(e){return ""}
+}
+function marquerSauvegarde(){
+  try{localStorage.setItem("vd-sauvegarde",new Date().toISOString())}catch(e){}
+}
+function joursDepuisSauvegarde(){
+  var d=derniereSauvegarde();
+  if(!d)return null;
+  return Math.floor((new Date()-new Date(d))/86400000);
+}
+function paquetSauvegarde(){
+  var o={format:"vd-services-sauvegarde",version:1,date:new Date().toISOString(),collections:{}};
+  COLLS.forEach(function(c){o.collections[c]=(DATA[c]||[]).map(function(x){return x})});
+  return o;
+}
+function enregistrerFichier(nom,contenu,type){
+  var blob=new Blob([contenu],{type:type||"application/json;charset=utf-8"});
+  return (window.claude&&window.claude.use?window.claude.use("downloads"):Promise.resolve(null))
+    .then(function(dl){
+      if(dl)return dl.save({filename:nom,data:blob}).then(function(){return true});
+      var w=window.open("","_blank");
+      if(w){
+        w.document.write('<pre style="white-space:pre-wrap;font:12px monospace">'
+          +String(contenu).replace(/&/g,"&amp;").replace(/</g,"&lt;")+'</pre>');
+        w.document.close();
+        return true;
+      }
+      return false;
+    });
+}
+function versCSV(lignes,colonnes){
+  function q(v){
+    if(v==null)return "";
+    if(typeof v==="object")v=JSON.stringify(v);
+    v=String(v).replace(/"/g,'""');
+    return '"'+v+'"';
+  }
+  var out=[colonnes.map(q).join(";")];
+  lignes.forEach(function(l){out.push(colonnes.map(function(c){return q(l[c])}).join(";"))});
+  return "\ufeff"+out.join("\r\n");
+}
+function csvInterventions(){
+  var l=DATA.interventions.slice().sort(function(a,b){return String(a.date||"").localeCompare(String(b.date||""))})
+    .map(function(i){
+      var p=DATA.prestataires.filter(function(x){return x.id===i.prestataireId})[0]||{};
+      var c=commission(i.montant);
+      return {date:i.date||"",reference:i.ref||"",entreprise:p.nom||"",client:i.client||"",
+        ville:i.ville||"",metier:MET[i.metier]||i.metier||"",montant_ht:i.montant||0,
+        base_commission:c.base,commission_ht:c.accord?"":Math.round((c.v||0)*100)/100,
+        facture_entreprise:i.factureNum||"",qualite:i.noteQualite||"",reactivite:i.noteReactivite||"",
+        notes:i.notes||""};
+    });
+  return versCSV(l,["date","reference","entreprise","client","ville","metier","montant_ht",
+    "base_commission","commission_ht","facture_entreprise","qualite","reactivite","notes"]);
+}
+function csvPrestataires(){
+  var l=DATA.prestataires.slice().sort(function(a,b){return String(a.nom||"").localeCompare(String(b.nom||""))})
+    .map(function(p){
+      return {nom:p.nom||"",forme:p.forme||"",siren:p.siren||"",activite:p.activite||"",
+        contact:p.contact||"",tel:p.tel||"",email:p.email||"",adresse:p.adresse||"",
+        villes:(p.villes||[]).join(" | "),metiers:(p.metiers||[]).map(function(m){return MET[m]||m}).join(" | "),
+        qualite:p.qualite||0,reactivite:p.reactivite||0,decennale:p.dec||"",
+        attestation_jusqu_au:p.assurance||"",convention:(p.convention||{}).statut||"",remarques:p.remarques||""};
+    });
+  return versCSV(l,["nom","forme","siren","activite","contact","tel","email","adresse","villes","metiers",
+    "qualite","reactivite","decennale","attestation_jusqu_au","convention","remarques"]);
+}
+function csvClients(){
+  var l=[];
+  DATA.clients.forEach(function(c){
+    var base={type:c.type||"",role:STATUTS[c.role]||c.role||"",nom:c.nom||"",contact:c.contactNom||"",
+      tel:c.tel||"",email:c.email||"",ville:c.ville||""};
+    if(!(c.copros||[]).length){l.push(Object.assign({},base,{copropriete:"",copro_adresse:"",copro_ville:"",lots:"",charge:""}));return}
+    (c.copros||[]).forEach(function(k){
+      l.push(Object.assign({},base,{copropriete:k.nom||"",copro_adresse:k.adresse||"",
+        copro_ville:k.ville||"",lots:k.lots||"",charge:k.chargeNom||""}));
+    });
+  });
+  return versCSV(l,["type","role","nom","contact","tel","email","ville","copropriete","copro_adresse","copro_ville","lots","charge"]);
+}
 function convTag(p){
   var c=p.convention||{};
   if(c.statut==="signee")return '<span class="tag p">Convention signée'+(c.dateSignature?" le "+E(jour(c.dateSignature)):"")+'</span>';
@@ -622,7 +706,23 @@ function vDashboard(){
         +'<span class="tag '+it.c+'">'+it.l+'</span>'
         +'<button class="btn sm ghost" data-open="'+E(d.id)+'">Ouvrir</button></div>';
     }).join("")+'</div>':'<p class="note">Rien en attente. Tout est traité.</p>';
-  h+='</div></div></div>';
+  h+='</div>';
+  var js=joursDepuisSauvegarde();
+  h+='<div class="card" style="border-color:'+(js===null||js>30?"var(--urg)":"var(--line)")+'">'
+    +'<h3>Sauvegarde de la base</h3>'
+    +'<p class="sub">'+(js===null?"Aucune sauvegarde enregistrée depuis ce navigateur."
+      :js===0?"Dernière sauvegarde aujourd'hui."
+      :"Dernière sauvegarde il y a "+js+" jour(s).")+'</p>';
+  if(js===null||js>30)h+='<p class="note" style="color:var(--urg)">Tout vit dans une seule base. Téléchargez une copie, rangez-la ailleurs que sur cet ordinateur.</p>';
+  h+='<div class="actions" style="margin-top:14px">'
+    +'<button class="btn sm" data-act="sauv-json">Télécharger la sauvegarde</button>'
+    +'<button class="btn sm ghost" data-act="sauv-csv-i">Interventions en tableur</button>'
+    +'<button class="btn sm ghost" data-act="sauv-csv-p">Répertoire en tableur</button>'
+    +'<button class="btn sm ghost" data-act="sauv-csv-c">Clients en tableur</button>'
+    +'<button class="btn sm ghost" data-act="sauv-restaurer">Restaurer</button>'
+    +'</div>';
+  h+='<p class="note" style="margin-top:12px">La sauvegarde est un fichier unique qui contient tout : demandes, répertoire, clients, historique, bordereaux, pièces et réglages. Les fichiers déposés ne sont pas dedans, seuls leurs liens le sont.</p>';
+  h+='</div></div>';
   return h;
 }
 function tile(k,v,u){
@@ -1026,6 +1126,7 @@ function vDemande(){
   h+='<h3>Traiter la demande</h3><p class="sub">Appelez, ou consultez les entreprises du secteur. Rien ne part sans que vous le déclenchiez.</p>';
   h+='<div class="actions">'
     +(d.tel?'<a class="btn" href="tel:'+E(tel(d.tel))+'">Appeler '+E(d.nom||"le demandeur")+'</a>':"")
+    +'<button class="btn ghost" data-act="accuse" data-id="'+E(d.id)+'">Accusé de réception</button>'
     +'<button class="btn ghost" data-act="note" data-id="'+E(d.id)+'">Ajouter une note</button>'
     +'<button class="btn ghost" data-act="bordereau" data-id="'+E(d.id)+'">'+(bd?"Ouvrir le bordereau de prix":"Créer un bordereau de prix")+'</button>'
     +'<button class="btn ghost" data-act="cloturer" data-id="'+E(d.id)+'">Clôturer l\'intervention</button>'
@@ -1746,6 +1847,71 @@ function mailConvention(p){
     +"Cordialement,\n"+v.repnom+"\n"+v.nom+" — consultation, pilotage, maîtrise d'œuvre\n"
     +(v.tel?v.tel+"\n":"")+(v.email||"");
 }
+function accuseReception(d){
+  var v=societe(),L=[],ligne1,delai;
+  var lieu=[d.residence,d.adresse,[d.cp,d.ville].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+  var ast=null;
+  if(d.intent==="urgence"){
+    ast=(d.assignes||[]).map(function(id){return DATA.prestataires.filter(function(x){return x.id===id})[0]}).filter(Boolean)[0];
+  }
+  if(d.intent==="urgence"){
+    ligne1="Votre demande urgente est enregistrée.";
+    delai=ast?("Vous avez été mis en relation avec "+ast.nom+(ast.tel?" au "+ast.tel:"")+". Si personne ne décroche, rappelez-moi directement.")
+      :"Je vous rappelle dans les minutes qui viennent.";
+  }else if(d.intent==="depannage"){
+    ligne1="Votre demande de dépannage est enregistrée.";
+    delai="Je vous rappelle aujourd'hui pour confirmer le créneau. L'intervention est programmée sous 72 heures.";
+  }else if(d.intent==="projet"){
+    ligne1="Votre projet de travaux est enregistré.";
+    delai="Je vous rappelle sous 48 heures pour convenir d'une visite sur place. Vous recevrez ensuite des devis comparables, établis sur le même descriptif.";
+  }else if(d.intent==="energie"){
+    ligne1="Votre demande de travaux énergétiques est enregistrée.";
+    delai="Je vous rappelle sous 48 heures avec le point sur le financement mobilisable. Important : ne signez aucun devis avant cet échange, la plupart des aides doivent être demandées avant la signature.";
+  }else if(d.intent==="public"){
+    ligne1="Votre consultation est enregistrée.";
+    delai="Je lance la mise en concurrence auprès des entreprises du secteur et je vous reviens avec "
+      +(d.nbDevis||"plusieurs")+" devis comparables"+(d.dateLimite?", avant le "+jour(d.dateLimite):"")+".";
+  }else{
+    ligne1="Votre demande est enregistrée.";
+    delai="Je vous rappelle rapidement.";
+  }
+  L.push("Objet : "+v.nom+" — votre demande "+d.ref+" est bien arrivée");
+  L.push("");
+  L.push("Bonjour"+(d.nom?" "+d.nom:"")+",");
+  L.push("");
+  L.push(ligne1+" Elle porte la référence "+d.ref+", à rappeler si vous m'écrivez.");
+  L.push("");
+  L.push(delai);
+  L.push("");
+  L.push("CE QUE J'AI NOTÉ");
+  L.push("  Nature : "+((INTENT[d.intent]||{}).l||"—"));
+  if((d.trades||[]).length)L.push("  Corps de métier : "+metiersOf(d).join(", "));
+  if(prestaLabels(d).length)L.push("  Prestations : "+prestaLabels(d).join(", "));
+  if(lieu)L.push("  Adresse : "+lieu+(d.precision?" ("+d.precision+")":""));
+  L.push("  Situation : "+(d.lieu==="commun"?"parties communes":d.lieu==="privatif"?"partie privative":"à déterminer sur place"));
+  if(d.description)L.push("  Votre description : « "+d.description+" »");
+  if((d.photos||[]).length)L.push("  Photos reçues : "+(d.photos||[]).length);
+  L.push("");
+  L.push("Si l'une de ces informations est inexacte, répondez simplement à ce message.");
+  L.push("");
+  L.push("Ce que je fais pour vous : je cherche l'entreprise qui convient parmi celles de mon réseau, toutes assurées et vérifiées, je vous transmets le devis et je suis l'intervention jusqu'à la fin. Vous n'avez qu'un seul interlocuteur.");
+  L.push("");
+  L.push("Cordialement,");
+  L.push(v.repnom);
+  L.push(v.nom+" — consultation, pilotage, maîtrise d'œuvre");
+  L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
+  if(v.tel)L.push(v.tel);
+  if(v.email)L.push(v.email);
+  L.push("");
+  L.push("--");
+  L.push("Vos coordonnées ne servent qu'au traitement de cette demande et ne sont transmises qu'à l'entreprise retenue. Elles sont conservées trois ans. Pour les faire supprimer, répondez à ce message.");
+  var sms=v.nom+" : demande "+d.ref+" bien reçue. "
+    +(d.intent==="urgence"?(ast?"Appelez "+ast.nom+(ast.tel?" au "+ast.tel:""):"Je vous rappelle tout de suite")
+      :d.intent==="depannage"?"Je vous rappelle aujourd'hui"
+      :"Je vous rappelle sous 48 h")
+    +". "+(v.tel||"");
+  return {corps:L.join("\n"),sms:sms};
+}
 function texteMail(d,ents){
   var lieu=[d.residence,d.adresse,[d.cp,d.ville].filter(Boolean).join(" ")].filter(Boolean).join(", ");
   var L=[];
@@ -1954,6 +2120,43 @@ document.addEventListener("click",function(ev){
 
   if(act==="dlg-close"){closeDlg();return}
   if(act==="reconnecter"){boot();return}
+  if(act==="accuse"){
+    var ac=accuseReception(d);
+    openDlg("Accusé de réception",E(d.ref)+" · "+E(d.nom||""),
+      '<div class="field"><label>Destinataire</label><input id="ar-dest" value="'+E(d.email||d.tel||"")+'"></div>'
+      +'<div class="field"><label for="ar-corps">Message</label><textarea class="mail" id="ar-corps">'+E(ac.corps)+'</textarea></div>'
+      +'<div class="field"><label for="ar-sms">Version SMS</label><textarea class="fld" id="ar-sms" rows="3">'+E(ac.sms)+'</textarea></div>'
+      +'<p class="note">Tant que le site public n\'envoie rien, c\'est vous qui l\'envoyez. Le texte est identique à celui que l\'automatisation enverra.</p>',
+      '<button class="btn ghost" data-act="ar-sms">Copier le SMS</button>'
+      +'<button class="btn ghost" data-act="ar-copy">Copier le mail</button>'
+      +'<button class="btn" data-act="ar-envoye" data-id="'+E(d.id)+'">Marquer comme envoyé</button>');
+    return;
+  }
+  if(act==="ar-copy"){copier(val("ar-dest")+"\n\n"+val("ar-corps"),"Message copié");return}
+  if(act==="ar-sms"){copier(val("ar-sms"),"SMS copié");return}
+  if(act==="ar-envoye"){
+    maj(d.id,{journal:journalise(d,"Accusé de réception envoyé au demandeur.")});
+    closeDlg();toast("Envoi enregistré dans le suivi");return;
+  }
+  if(act==="sauv-json"){
+    var nomf="vd-services-sauvegarde-"+new Date().toISOString().slice(0,10)+".json";
+    enregistrerFichier(nomf,JSON.stringify(paquetSauvegarde(),null,1))
+      .then(function(ok){if(ok){marquerSauvegarde();toast("Sauvegarde enregistrée");paint()}})
+      .catch(function(){toast("Enregistrement refusé")});
+    return;
+  }
+  if(act==="sauv-csv-i"){enregistrerFichier("interventions-"+new Date().toISOString().slice(0,10)+".csv",csvInterventions(),"text/csv;charset=utf-8").then(function(){toast("Export terminé")});return}
+  if(act==="sauv-csv-p"){enregistrerFichier("prestataires-"+new Date().toISOString().slice(0,10)+".csv",csvPrestataires(),"text/csv;charset=utf-8").then(function(){toast("Export terminé")});return}
+  if(act==="sauv-csv-c"){enregistrerFichier("clients-"+new Date().toISOString().slice(0,10)+".csv",csvClients(),"text/csv;charset=utf-8").then(function(){toast("Export terminé")});return}
+  if(act==="sauv-restaurer"){
+    openDlg("Restaurer une sauvegarde","Le fichier remplace les fiches portant le même identifiant. Rien n\'est supprimé.",
+      '<label class="depot" for="rest"><strong>Choisir le fichier de sauvegarde</strong>'
+      +'<span>Le fichier .json téléchargé depuis cet écran.</span>'
+      +'<input type="file" id="rest" accept="application/json,.json" hidden></label>'
+      +'<p class="note" id="rest-etat" style="margin-top:12px"></p>',
+      '<button class="btn ghost" data-act="dlg-close">Fermer</button>');
+    return;
+  }
   if(act==="qr-copy"){copier(lienRes(b.dataset.v),"Lien copié");return}
   if(act==="qr-print"){
     var rr=DATA.residences.filter(function(x){return x.code===b.dataset.v})[0];
@@ -2444,7 +2647,40 @@ async function televerser(files,pid,type){
     }
   }
 }
+async function restaurer(file){
+  var etat=document.getElementById("rest-etat");
+  function dire(t){if(etat)etat.textContent=t}
+  if(!db){dire("Base indisponible.");return}
+  var paquet;
+  try{paquet=JSON.parse(await file.text())}
+  catch(e){dire("Ce fichier n'est pas une sauvegarde lisible.");return}
+  if(!paquet||paquet.format!=="vd-services-sauvegarde"||!paquet.collections){
+    dire("Ce fichier n'est pas une sauvegarde VD Services.");return;
+  }
+  var total=0;
+  COLLS.forEach(function(c){total+=(paquet.collections[c]||[]).length});
+  dire("Restauration de "+total+" fiche(s)…");
+  var faits=0,echecs=0;
+  for(var ci=0;ci<COLLS.length;ci++){
+    var c=COLLS[ci],lst=paquet.collections[c]||[];
+    for(var li=0;li<lst.length;li++){
+      var doc=Object.assign({},lst[li]),id=doc.id;
+      delete doc.id;delete doc.local;
+      if(!id){echecs++;continue}
+      try{await db.doc(c+"/"+id).set(doc);faits++}catch(e){echecs++}
+      if(faits%10===0)dire("Restauration… "+faits+" sur "+total);
+    }
+  }
+  dire("Terminé : "+faits+" fiche(s) restaurée(s)"+(echecs?", "+echecs+" en échec":"")+".");
+  toast("Restauration terminée");
+}
 document.addEventListener("change",function(ev){
+  if(ev.target.id==="rest"){
+    var fr=ev.target.files;
+    if(fr&&fr.length)restaurer(fr[0]);
+    ev.target.value="";
+    return;
+  }
   if(ev.target.id!=="up")return;
   var f=ev.target.files;
   if(f&&f.length)televerser(f,route.id,docTab);
