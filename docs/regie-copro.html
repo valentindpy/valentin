@@ -286,9 +286,78 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 .qrref{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:center}
 @media (max-width:560px){.qrref{grid-template-columns:1fr}.qrline{grid-template-columns:auto minmax(0,1fr)}}
 .qrref canvas{border:1px solid var(--line);border-radius:6px;background:#fff;width:150px;height:150px}
+/* ----- connexion ----- */
+.gate{position:fixed;inset:0;z-index:40;background:var(--ground);display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow:auto}
+.gate[hidden]{display:none}
+.gbox{width:min(900px,100%);background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+.grule{height:5px;display:flex}
+.grule i{flex:1}
+.grule i:nth-child(1){background:var(--urg)}
+.grule i:nth-child(2){background:var(--dep)}
+.grule i:nth-child(3){background:var(--pro)}
+.grule i:nth-child(4){background:var(--ene)}
+.gbody{padding:clamp(22px,4vw,38px)}
+.gbody h1{font-size:clamp(1.5rem,3.4vw,2.1rem);margin-top:8px}
+.gsub{color:var(--ink-2);font-size:.95rem;margin-top:8px;max-width:58ch;line-height:1.55}
+.gcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(262px,1fr));gap:14px;margin-top:26px}
+.gcard{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column}
+.gcard h2{font-size:1.02rem}
+.gcard .gs{font-size:.83rem;color:var(--ink-3);margin:5px 0 14px;line-height:1.5}
+.gcard .field{margin-bottom:10px}
+.gcard .field input{background:var(--surface);text-transform:none}
+.gcard .btn{align-self:flex-start;margin-top:4px}
+.gerr{color:var(--urg);font-size:.84rem;margin-top:12px}
+.gatt{color:var(--ink-3);font-size:.8rem;margin-top:22px;line-height:1.55;border-top:1px solid var(--line);padding-top:16px}
+.tb-act{display:flex;gap:8px;align-items:center}
+.tb-who{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--ink-3);white-space:nowrap}
+.apercu{background:var(--dep-soft);border:1px solid var(--dep);color:var(--dep);border-radius:6px;padding:10px 14px;font-size:.84rem;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+
+/* ----- espace syndic ----- */
+.smap{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(282px,.95fr);gap:16px;align-items:start}
+@media (max-width:900px){.smap{grid-template-columns:1fr}}
+.carte{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px}
+.carte svg{width:100%;height:auto;display:block;border-radius:4px;background:var(--surface-2)}
+.carte .mer{fill:var(--sunk)}
+.carte .terre{fill:var(--surface-2)}
+.carte .trait{fill:none;stroke:var(--line-strong);stroke-width:1.7;stroke-linejoin:round}
+.carte .ville{font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;fill:var(--ink-3);opacity:.55;text-anchor:middle}
+.carte .mk{cursor:pointer}
+.carte .mk .pt{stroke:var(--surface);stroke-width:2.5}
+.carte .mk .nb{font-family:var(--mono);font-size:11px;fill:#fff;text-anchor:middle}
+.carte .mk .lb{font-family:var(--display);font-size:13px;font-weight:600;fill:var(--ink);text-anchor:middle;
+  paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;opacity:0;pointer-events:none}
+.carte .mk:hover .lb,.carte .mk.on .lb,.carte .mk:focus-visible .lb{opacity:1}
+.carte .mk .halo{fill:none;stroke:var(--accent);stroke-width:2;opacity:0}
+.carte .mk:hover .pt{stroke:var(--accent)}
+.carte .mk.on .halo{opacity:1}
+.legende{display:flex;flex-wrap:wrap;gap:7px 18px;margin-top:11px;padding:0 4px 2px;font-size:.8rem;color:var(--ink-3)}
+.legende span{display:inline-flex;align-items:center;gap:7px}
+.legende i{width:9px;height:9px;border-radius:50%;display:block;flex:none}
+.slist{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;max-height:520px;overflow-y:auto}
+.slist button{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:11px;align-items:center;background:var(--surface);border:0;padding:11px 13px;text-align:left;cursor:pointer;width:100%}
+.slist button:hover{background:var(--surface-2)}
+.slist button[aria-pressed="true"]{background:var(--accent-soft)}
+.slist i{width:10px;height:10px;border-radius:50%;display:block}
+.slist .nm{font-family:var(--display);font-weight:600;font-size:.92rem;display:block;overflow-wrap:anywhere}
+.slist .ct{font-size:.78rem;color:var(--ink-3);display:block;margin-top:1px;overflow-wrap:anywhere}
+.slist .cnt{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+.st{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;border-radius:4px;padding:3px 7px;white-space:nowrap;border:1px solid}
+.st.n{color:var(--accent-ink);border-color:var(--accent);background:var(--accent-soft)}
+.st.e{color:var(--dep);border-color:var(--dep);background:var(--dep-soft)}
+.st.t{color:var(--pro);border-color:var(--pro);background:var(--pro-soft)}
+.sgroup{margin-top:24px}
+.sgroup .gt{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.sgroup .gt i{width:9px;height:9px;border-radius:50%;display:block;flex:none}
+.qrcopro{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center}
+.qrcopro canvas{border:1px solid var(--line);border-radius:6px;background:#fff;width:118px;height:118px}
+@media (max-width:520px){.qrcopro{grid-template-columns:1fr}}
+.acces{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:13px;padding-top:13px;border-top:1px solid var(--line)}
+.acces code{font-family:var(--mono);font-size:.84rem;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:5px 10px;letter-spacing:.09em}
 </style>
 
-<div class="shell">
+<div class="gate" id="gate" hidden></div>
+
+<div class="shell" id="shell">
   <aside class="rail">
     <div class="brand">VD SERVICES<span>Consultation · Pilotage<br>Coordination et assistance</span></div>
     <nav id="nav"></nav>
@@ -297,7 +366,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
   <main>
     <div class="topbar">
       <span class="tb-info" id="tb-info"></span>
-      <button class="btn sm" data-act="sauv-json">Télécharger <span class="tb-long">la sauvegarde</span></button>
+      <span class="tb-act" id="tb-act"></span>
     </div>
     <div id="view"></div>
   </main>
@@ -312,6 +381,7 @@ var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:
 var ETATS={nouvelle:{l:"Nouvelle",c:"a"},devis:{l:"Devis demandé",c:"d"},chiffre:{l:"Chiffrée",c:"d"},planifiee:{l:"Planifiée",c:"p"},close:{l:"Clôturée",c:"n"}};
 var STATUTS={occupant:"Propriétaire occupant",locataire:"Locataire",bailleur:"Propriétaire bailleur",syndic:"Syndic ou gestionnaire",conseil:"Conseil syndical",pro:"Commerce ou entreprise"};
 var NAV=[{id:"dashboard",l:"Tableau de bord"},{id:"demandes",l:"Demandes"},{id:"prestataires",l:"Prestataires"},{id:"clients",l:"Clients"},{id:"interventions",l:"Historique"},{id:"qrcodes",l:"QR codes"},{id:"facturation",l:"Facturation"}];
+var NAV_SYNDIC=[{id:"syndic",l:"Carte"},{id:"sdemandes",l:"Demandes"},{id:"sqr",l:"QR codes"}];
 var PRO_ROLES=["syndic","bailleur","pro"];
 var GRILLE=[
  {max:300,forfait:30,l:"Jusqu'à 300 €",c:"30 € HT"},
@@ -596,9 +666,13 @@ function metiersOf(d){return (d.trades||[]).map(function(t){return MET[t]||t})}
 
 /* ---------- état ---------- */
 var db=null,ready=false,etatCx="attente",cxErr="";
+/* déclaré ici, et pas plus bas avec le reste de l'espace syndic : boot()
+   appelle paint() dès la première ligne du script, donc avant l'affectation. */
+var SESS={role:null,clientId:null,apercu:false},gateErr="",selK=null;
+try{var _s0=sessionStorage.getItem("vds-sess");if(_s0)SESS=JSON.parse(_s0)||SESS}catch(e){}
 var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[],reglages:[],documents:[],residences:[]};
 var route={v:"dashboard",id:null};
-var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note",type:"tous",per:"semaine",mois:"",cq:"",ctype:"tous",cville:"",crole:""};
+var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note",type:"tous",per:"semaine",mois:"",cq:"",ctype:"tous",cville:"",crole:"",setat:"tous"};
 var BD=null,bdTimer=null,qTimer=null;
 
 function coll(name){
@@ -633,16 +707,39 @@ boot();
 /* ---------- navigation ---------- */
 function navigate(v,id){route={v:v,id:id||null};if(v!=="bordereau")BD=null;window.scrollTo(0,0);paint()}
 function paintBarre(){
-  var el=document.getElementById("tb-info");
-  if(!el)return;
+  var el=document.getElementById("tb-info"),ac=document.getElementById("tb-act");
+  if(!el||!ac)return;
+  if(SESS.role==="syndic"){
+    var c=clientCourant();
+    el.className="tb-info";
+    el.textContent=(c?c.nom:"Espace syndic")+" — espace syndic, lecture seule";
+    ac.innerHTML= SESS.apercu
+      ? '<button class="btn sm" data-act="fin-apercu">Revenir au back-office</button>'
+      : '<button class="btn sm ghost" data-act="deconnexion">Se déconnecter</button>';
+    return;
+  }
   var js=joursDepuisSauvegarde();
   el.className="tb-info"+(js===null||js>30?" alerte":"");
   el.textContent= js===null ? "Aucune sauvegarde prise depuis ce navigateur"
     : js===0 ? "Sauvegarde du jour"
     : js===1 ? "Dernière sauvegarde hier"
     : "Dernière sauvegarde il y a "+js+" jours";
+  ac.innerHTML='<button class="btn sm" data-act="sauv-json">Télécharger <span class="tb-long">la sauvegarde</span></button>'
+    +'<button class="btn sm ghost" data-act="deconnexion">Quitter</button>';
 }
 function paintNav(){
+  if(SESS.role==="syndic"){
+    var c=clientCourant(),mes=c?toutesDemandesSyndic(c.id):[],nv=compte(mes).nouvelle;
+    document.getElementById("nav").innerHTML=NAV_SYNDIC.map(function(n){
+      var cur=(route.v===n.id)||(n.id==="syndic"&&(route.v==="scopro"||route.v==="sdemande"));
+      return '<button data-nav="'+n.id+'" aria-current="'+cur+'">'+n.l+(n.id==="sdemandes"&&nv?' <b>'+nv+'</b>':"")+'</button>';
+    }).join("");
+    document.getElementById("railfoot").innerHTML= etatCx==="ok"
+      ? '<span class="dotlive"></span>'+E(c?c.nom:"—")+'<br>'+(c?coprosDe(c.id).length:0)+' copropriétés · '+mes.length+' demandes'
+        +'<br>Suivi assuré par VD Services'
+      : '<span class="dotlive dotoff"></span>Base injoignable<br><button data-act="reconnecter">Réessayer</button>';
+    return;
+  }
   var nouvelles=DATA.demandes.filter(function(d){return d.etat==="nouvelle"}).length;
   document.getElementById("nav").innerHTML=NAV.map(function(n){
     var cur=(route.v===n.id)||(n.id==="demandes"&&(route.v==="demande"||route.v==="bordereau"))
@@ -1534,6 +1631,9 @@ function fiClient(c){
         +'<button class="btn sm ghost" style="margin-top:8px" data-act="copro-edit" data-id="'+E(c.id)+'" data-v="'+ix+'">Modifier la copropriété</button></div>';
     }).join("")
     +(c.type==="pro"?'<button class="btn sm ghost" style="margin-top:12px" data-act="copro-new" data-id="'+E(c.id)+'">+ Ajouter une copropriété</button>':"")
+    +(c.type==="pro"?'<div class="acces"><span class="eyebrow">Accès syndic</span><code>'+E(codeSyndic(c))+'</code>'
+      +'<button class="btn sm ghost" data-act="code-copy" data-id="'+E(c.id)+'">Copier</button>'
+      +'<button class="btn sm ghost" data-act="voir-syndic" data-id="'+E(c.id)+'">Voir son espace</button></div>':"")
     +'</div>';
 }
 function vClients(){
@@ -1619,13 +1719,16 @@ function vInterventions(){
 
 /* ---------- rendu ---------- */
 function paint(){
+  paintGate();
+  if(!SESS.role)return;
   paintNav();
   paintBarre();
   var el=document.getElementById("view");
   var a=document.activeElement,fid=a&&a.id?a.id:null,pos=null;
   try{pos=a&&a.selectionStart}catch(e){}
   try{
-    el.innerHTML= route.v==="qrcodes"?vQR()
+    el.innerHTML= SESS.role==="syndic" ? (SESS.apercu?apercuBandeau():"")+vueSyndic()
+      : route.v==="qrcodes"?vQR()
       : route.v==="documents"?vDocuments()
       : route.v==="dashboard"?vDashboard()
       : route.v==="facturation"?vFacturation()
@@ -1638,16 +1741,535 @@ function paint(){
   }catch(err){
     el.innerHTML='<div class="empty"><h3>Cette vue n\'a pas pu s\'afficher</h3><p>'+E(err&&err.message||err)
       +'</p><div class="actions" style="justify-content:center;margin:16px 0 0">'
-      +'<button class="btn" data-nav="demandes">Revenir aux demandes</button></div></div>';
+      +'<button class="btn" data-nav="'+(SESS.role==="syndic"?"syndic":"demandes")+'">Revenir</button></div></div>';
     console.error(err);
   }
   if(fid){var n=document.getElementById(fid);if(n&&n.focus){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
-  if(route.v==="qrcodes"){
-    dessineQR(document.getElementById("qr-ref"),lienRes(""),512);
-    [].slice.call(document.querySelectorAll(".qr-mini")).forEach(function(c){
-      dessineQR(c,lienRes(c.dataset.code),256);
-    });
+  var qref=document.getElementById("qr-ref");
+  if(qref)dessineQR(qref,lienRes(""),512);
+  [].slice.call(document.querySelectorAll(".qr-mini")).forEach(function(c){
+    dessineQR(c,lienRes(c.dataset.code),256);
+  });
+}
+
+/* ---------- session et comptes ---------- */
+function sessSave(){try{sessionStorage.setItem("vds-sess",JSON.stringify(SESS))}catch(e){}}
+function motdepasse(){
+  var r=DATA.reglages.filter(function(x){return x.id==="societe"})[0]||{};
+  return String(r.mdp||"");
+}
+function hash36(s){
+  var h=2166136261;
+  for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h*16777619)>>>0}
+  return ("0000"+h.toString(36).toUpperCase()).slice(-4);
+}
+function codeSyndic(c){
+  if(c.code)return String(c.code).toUpperCase();
+  var a=slug(c.nom).replace(/-/g,"").toUpperCase().slice(0,4)||"COPR";
+  return a+"-"+hash36(String(c.id||c.nom));
+}
+function clientCourant(){return DATA.clients.filter(function(x){return x.id===SESS.clientId})[0]||null}
+function connexion(role){
+  if(role==="admin"){
+    var mdp=motdepasse(),saisi=document.getElementById("g-mdp");saisi=saisi?saisi.value.trim():"";
+    if(mdp&&saisi!==mdp){gateErr="Mot de passe incorrect.";paintGate();return}
+    SESS={role:"admin",clientId:null,apercu:false};route={v:"dashboard",id:null};
+  }else{
+    var e=document.getElementById("g-code");
+    var code=(e?e.value:"").trim().toUpperCase().replace(/\s+/g,"");
+    var c=DATA.clients.filter(function(x){return codeSyndic(x)===code})[0];
+    if(!c){gateErr="Ce code ne correspond à aucun compte. Demandez-le à VD Services.";paintGate();return}
+    SESS={role:"syndic",clientId:c.id,apercu:false};route={v:"syndic",id:null};selK=null;
   }
+  gateErr="";sessSave();window.scrollTo(0,0);paint();
+}
+function deconnexion(){
+  SESS={role:null,clientId:null,apercu:false};selK=null;gateErr="";sessSave();paint();
+}
+function paintGate(){
+  var g=document.getElementById("gate"),sh=document.getElementById("shell");
+  if(!g)return;
+  if(SESS.role){g.hidden=true;g.innerHTML="";if(sh)sh.style.display="";return}
+  if(sh)sh.style.display="none";
+  g.hidden=false;
+  var pret=(etatCx==="ok"&&ready),hs=(etatCx!=="ok"&&etatCx!=="attente");
+  var mdp=motdepasse();
+  var h='<div class="gbox"><div class="grule"><i></i><i></i><i></i><i></i></div><div class="gbody">'
+    +'<p class="eyebrow">VD Services</p><h1>Connexion</h1>'
+    +'<p class="gsub">Deux espaces sur la même base : le back-office qui pilote les demandes, et l\'espace syndic '
+    +'où chaque gestionnaire suit ses copropriétés en temps réel.</p>'
+    +'<div class="gcards">';
+  h+='<form class="gcard" data-gate="admin"><h2>Espace gestionnaire</h2>'
+    +'<p class="gs">Demandes, prestataires, clients, facturation. Réservé à VD Services.</p>'
+    +'<div class="field"><label for="g-mdp">Mot de passe</label>'
+    +'<input id="g-mdp" type="password" autocomplete="current-password"'+(mdp?"":' placeholder="aucun mot de passe défini"')+'></div>'
+    +'<button class="btn" type="submit"'+(pret||hs?"":" disabled")+'>Entrer</button>'
+    +(pret&&!mdp?'<p class="note" style="margin-top:10px">Aucun mot de passe n\'est défini : l\'accès est ouvert. Réglez-le dans Facturation &rsaquo; Mes coordonnées.</p>':"")
+    +'</form>';
+  h+='<form class="gcard" data-gate="syndic"><h2>Espace syndic</h2>'
+    +'<p class="gs">La carte de vos copropriétés, l\'état de chaque demande, l\'entreprise, le devis et les photos.</p>'
+    +'<div class="field"><label for="g-code">Code d\'accès</label>'
+    +'<input id="g-code" autocomplete="off" spellcheck="false" placeholder="AAAA-0000"'+(pret?"":" disabled")+'></div>'
+    +'<button class="btn" type="submit"'+(pret?"":" disabled")+'>Ouvrir mon espace</button></form>';
+  h+='</div>';
+  if(!pret)h+='<p class="gerr">'+(etatCx==="attente"?"Connexion à la base en cours…"
+    :hs?"Base injoignable ("+E(cxErr||etatCx)+"). L\'espace syndic sera indisponible tant que la base ne répond pas."
+    :"Chargement des données…")+'</p>';
+  if(gateErr)h+='<p class="gerr">'+E(gateErr)+'</p>';
+  h+='<p class="gatt">Cet écran trie les accès, il ne protège pas la page : toute personne qui possède l\'adresse '
+    +'de cette application peut l\'ouvrir. Ne diffusez ce lien qu\'aux syndics concernés, et changez les codes '
+    +'si l\'un d\'eux quitte votre portefeuille.</p>';
+  h+='</div></div>';
+  g.innerHTML=h;
+}
+
+/* ---------- copropriétés d'un syndic ---------- */
+function coprosDe(clientId){
+  var c=DATA.clients.filter(function(x){return x.id===clientId})[0];
+  if(!c)return [];
+  var out=(c.copros||[]).map(function(k){
+    var r=DATA.residences.filter(function(x){return x.nom===k.nom||x.code===slug(k.nom)})[0]||{};
+    return {key:r.code||slug(k.nom),nom:k.nom,adresse:k.adresse||r.adresse||"",ville:k.ville||r.ville||c.ville||"",
+      lots:Number(k.lots||r.lots)||0,chargeNom:k.chargeNom||"",chargeTel:k.chargeTel||"",chargeEmail:k.chargeEmail||"",
+      client:c.nom,clientId:c.id};
+  });
+  DATA.residences.forEach(function(r){
+    if(r.client!==c.nom)return;
+    if(out.some(function(o){return o.key===r.code||o.nom===r.nom}))return;
+    out.push({key:r.code||slug(r.nom),nom:r.nom,adresse:r.adresse||"",ville:r.ville||"",
+      lots:Number(r.lots)||0,chargeNom:"",chargeTel:"",chargeEmail:"",client:c.nom,clientId:c.id});
+  });
+  return out.sort(function(a,b){return String(a.nom).localeCompare(String(b.nom))});
+}
+function demandesCopro(k){
+  return DATA.demandes.filter(function(d){
+    return (d.resCode&&d.resCode===k.key)||(d.residence&&d.residence===k.nom);
+  }).sort(function(a,b){return String(b.recu||"").localeCompare(String(a.recu||""))});
+}
+function demandesHorsCopro(cid){
+  var vus={};
+  coprosDe(cid).forEach(function(k){demandesCopro(k).forEach(function(d){vus[d.id]=1})});
+  return DATA.demandes.filter(function(d){return d.clientId===cid&&!vus[d.id]})
+    .sort(function(a,b){return String(b.recu||"").localeCompare(String(a.recu||""))});
+}
+function toutesDemandesSyndic(cid){
+  var l=[],vus={};
+  coprosDe(cid).forEach(function(k){demandesCopro(k).forEach(function(d){if(!vus[d.id]){vus[d.id]=1;l.push(d)}})});
+  demandesHorsCopro(cid).forEach(function(d){if(!vus[d.id]){vus[d.id]=1;l.push(d)}});
+  return l.sort(function(a,b){return String(b.recu||"").localeCompare(String(a.recu||""))});
+}
+function aMoi(d){
+  if(!SESS.clientId)return false;
+  if(d.clientId===SESS.clientId)return true;
+  return coprosDe(SESS.clientId).some(function(k){
+    return (d.resCode&&d.resCode===k.key)||(d.residence&&d.residence===k.nom);
+  });
+}
+
+/* ---------- code couleur ---------- */
+var SETAT={
+  nouvelle:{l:"Nouvelle",c:"n",col:"var(--accent)",r:"var(--accent-ink)"},
+  encours:{l:"En cours",c:"e",col:"var(--dep)",r:"var(--dep)"},
+  termine:{l:"Terminée",c:"t",col:"var(--pro)",r:"var(--pro)"}
+};
+var ORD=["nouvelle","encours","termine"];
+function etatS(d){return d.etat==="close"?"termine":d.etat==="nouvelle"?"nouvelle":"encours"}
+function compte(l){
+  var o={nouvelle:0,encours:0,termine:0,total:0,urgence:0};
+  (l||[]).forEach(function(d){o[etatS(d)]++;o.total++;if(d.intent==="urgence"&&d.etat!=="close")o.urgence++});
+  return o;
+}
+function domin(o){return o.nouvelle?"nouvelle":o.encours?"encours":o.total?"termine":null}
+function couleurCopro(o){var k=domin(o);return k?SETAT[k].col:"var(--line-strong)"}
+
+/* ---------- entreprise, devis, montant ---------- */
+function entrepriseDe(d){
+  var i=interDe(d);
+  if(i&&i.prestataireId){
+    var p=DATA.prestataires.filter(function(x){return x.id===i.prestataireId})[0];
+    if(p)return p;
+  }
+  return null;
+}
+function consultees(d){
+  return (d.assignes||[]).map(function(id){return DATA.prestataires.filter(function(p){return p.id===id})[0]}).filter(Boolean);
+}
+function bdDe(d){return DATA.bordereaux.filter(function(b){return b.id===d.id})[0]||null}
+function totalClientBd(b){
+  if(!b||!b.lignes||!b.lignes.length)return 0;
+  var prix=b.prix||{},s=0;
+  b.lignes.forEach(function(l,i){
+    var vals=Object.keys(prix).map(function(pid){return Number((prix[pid]||[])[i])}).filter(function(v){return v>0});
+    if(!vals.length)return;
+    s+=Math.min.apply(null,vals)*Number(l.q||0);
+  });
+  return s*(1+Number(b.marge||0)/100);
+}
+function montantSyndic(d){
+  var t=totalClientBd(bdDe(d));
+  if(t>0)return t;
+  var i=interDe(d);
+  return i&&Number(i.montant)?Number(i.montant):null;
+}
+function titreDemande(d){
+  return prestaLabels(d).slice(0,2).join(" · ")||metiersOf(d).join(" · ")||"Demande";
+}
+function coproDe(d){
+  return coprosDe(SESS.clientId).filter(function(k){
+    return (d.resCode&&d.resCode===k.key)||(d.residence&&d.residence===k.nom);
+  })[0]||null;
+}
+
+/* ---------- carte du secteur ---------- */
+var CARTE={lon0:6.62,lon1:7.34,lat0:43.40,lat1:43.79,w:1000,h:748};
+function proj(lat,lon){
+  return {x:(lon-CARTE.lon0)/(CARTE.lon1-CARTE.lon0)*CARTE.w,
+          y:(CARTE.lat1-lat)/(CARTE.lat1-CARTE.lat0)*CARTE.h};
+}
+var COTE=[
+ [43.385,6.620],[43.393,6.680],[43.418,6.722],[43.433,6.745],[43.424,6.768],
+ [43.420,6.797],[43.407,6.828],[43.418,6.855],[43.432,6.868],[43.447,6.890],
+ [43.470,6.910],[43.495,6.928],[43.512,6.940],[43.528,6.944],[43.542,6.960],
+ [43.545,6.995],[43.548,7.018],[43.542,7.038],[43.534,7.056],[43.556,7.070],
+ [43.565,7.090],[43.566,7.108],[43.556,7.122],[43.541,7.128],[43.552,7.135],
+ [43.578,7.132],[43.594,7.128],[43.612,7.130],[43.632,7.140],[43.652,7.155],
+ [43.660,7.178],[43.663,7.205],[43.678,7.235],[43.691,7.265],[43.695,7.290],
+ [43.700,7.310],[43.706,7.340]
+];
+var ANCRES=[
+ ["Fréjus",43.433,6.737,-6,-20],["Grasse",43.659,6.925,0,-20],["Mandelieu",43.546,6.938,-52,-6],
+ ["Cannes",43.551,7.013,-40,26],["Antibes",43.581,7.125,52,10],["Vence",43.722,7.112,0,-20],
+ ["Nice",43.701,7.268,-10,-22]
+];
+var COMMUNES={
+ "frejus":[43.433,6.737],"saint-raphael":[43.425,6.768],"saint-aygulf":[43.393,6.722],
+ "puget-sur-argens":[43.456,6.685],"roquebrune-sur-argens":[43.444,6.636],
+ "les-adrets-de-l-esterel":[43.510,6.800],"tanneron":[43.557,6.857],
+ "theoule-sur-mer":[43.508,6.940],"mandelieu-la-napoule":[43.546,6.938],"mandelieu":[43.546,6.938],
+ "la-napoule":[43.530,6.940],"la-roquette-sur-siagne":[43.573,6.943],"pegomas":[43.595,6.931],
+ "auribeau-sur-siagne":[43.589,6.908],"cannes":[43.5513,7.0128],"cannes-la-bocca":[43.549,6.980],
+ "le-cannet":[43.5769,7.0193],"rocheville":[43.583,7.000],"mougins":[43.6003,7.0060],
+ "mouans-sartoux":[43.6206,6.9714],"grasse":[43.6591,6.9250],"vallauris":[43.5806,7.0553],
+ "golfe-juan":[43.567,7.076],"antibes":[43.5808,7.1251],"juan-les-pins":[43.568,7.105],
+ "biot":[43.628,7.0955],"valbonne":[43.6406,7.0075],"sophia-antipolis":[43.625,7.048],
+ "villeneuve-loubet":[43.658,7.122],"cagnes-sur-mer":[43.664,7.149],"cros-de-cagnes":[43.660,7.162],
+ "saint-laurent-du-var":[43.668,7.187],"la-colle-sur-loup":[43.687,7.098],
+ "saint-paul-de-vence":[43.696,7.122],"vence":[43.722,7.112],"nice":[43.7009,7.2683],
+ "villefranche-sur-mer":[43.704,7.311],"la-gaude":[43.706,7.153],"saint-jeannet":[43.737,7.145],
+ "carros":[43.790,7.187],"le-broc":[43.813,7.153],"roquefort-les-pins":[43.660,7.053],
+ "opio":[43.672,6.995],"chateauneuf-grasse":[43.666,6.982],"le-rouret":[43.665,7.025],
+ "peymeinade":[43.644,6.872],"le-tignet":[43.630,6.850],"cabris":[43.656,6.872],
+ "speracedes":[43.647,6.865],"saint-cezaire-sur-siagne":[43.652,6.789],
+ "montauroux":[43.618,6.771],"callian":[43.627,6.756],"fayence":[43.626,6.694],
+ "bar-sur-loup":[43.702,6.985],"le-bar-sur-loup":[43.702,6.985],"tourrettes-sur-loup":[43.712,7.058],
+ "gattieres":[43.760,7.178],"saint-vallier-de-thiey":[43.698,6.845]
+};
+function positions(ks){
+  var g={},out=[];
+  ks.forEach(function(k){var c=slug(k.ville);(g[c]=g[c]||[]).push(k)});
+  Object.keys(g).forEach(function(c){
+    var pt=COMMUNES[c],arr=g[c];
+    arr.forEach(function(k,i){
+      if(!pt){out.push({k:k,x:null,y:null});return}
+      var p=proj(pt[0],pt[1]);
+      if(arr.length>1){
+        var a=-Math.PI/2+i*2*Math.PI/arr.length,r=arr.length>5?26:18;
+        p={x:p.x+Math.cos(a)*r,y:p.y+Math.sin(a)*r};
+      }
+      out.push({k:k,x:p.x,y:p.y});
+    });
+  });
+  return out;
+}
+function carteSVG(pos){
+  var d=COTE.map(function(p,i){var q=proj(p[0],p[1]);return (i?"L":"M")+q.x.toFixed(1)+" "+q.y.toFixed(1)}).join(" ");
+  var h='<svg viewBox="0 0 '+CARTE.w+' '+CARTE.h+'" role="img" aria-label="Carte des copropriétés, de Fréjus à Nice">';
+  h+='<rect class="terre" x="0" y="0" width="'+CARTE.w+'" height="'+CARTE.h+'"/>';
+  h+='<path class="mer" d="'+d+' L'+CARTE.w+' '+CARTE.h+' L0 '+CARTE.h+' Z"/>';
+  h+='<path class="trait" d="'+d+'"/>';
+  [[43.521,7.048,15,6],[43.506,7.047,12,5]].forEach(function(i){
+    var q=proj(i[0],i[1]);
+    h+='<ellipse class="terre" cx="'+q.x.toFixed(1)+'" cy="'+q.y.toFixed(1)+'" rx="'+i[2]+'" ry="'+i[3]+'" stroke="var(--line-strong)" stroke-width="1.4"/>';
+  });
+  ANCRES.forEach(function(a){
+    var q=proj(a[1],a[2]);
+    h+='<text class="ville" x="'+(q.x+(a[3]||0)).toFixed(1)+'" y="'+(q.y+(a[4]||0)).toFixed(1)+'">'+E(a[0])+'</text>';
+  });
+  pos.filter(function(p){return p.x!=null}).forEach(function(p){
+    var o=compte(demandesCopro(p.k)),col=couleurCopro(o),act=o.nouvelle+o.encours;
+    h+='<g class="mk'+(selK===p.k.key?" on":"")+'" data-act="s-pin" data-v="'+E(p.k.key)+'" '
+      +'transform="translate('+p.x.toFixed(1)+','+p.y.toFixed(1)+')" tabindex="0" role="button">'
+      +'<title>'+E(p.k.nom)+' — '+(o.total?o.total+" demande(s)":"aucune demande")+'</title>'
+      +'<circle class="halo" r="16"/>'
+      +'<circle class="pt" r="'+(selK===p.k.key?11:9.5)+'" fill="'+col+'"/>'
+      +(act?'<text class="nb" y="3.8">'+act+'</text>':"")
+      +'<text class="lb" y="28">'+E(p.k.nom.length>26?p.k.nom.slice(0,25)+"…":p.k.nom)+'</text>'
+      +'</g>';
+  });
+  h+='</svg>';
+  return h;
+}
+function legende(){
+  return '<div class="legende">'
+    +ORD.map(function(k){return '<span><i style="background:'+SETAT[k].col+'"></i>'+SETAT[k].l+'</span>'}).join("")
+    +'<span><i style="background:var(--line-strong)"></i>Aucune demande</span>'
+    +'<span>Le chiffre compte les demandes en cours. Survolez une pastille pour lire le nom.</span></div>';
+}
+
+/* ---------- espace syndic : vues ---------- */
+function vSCarte(){
+  var c=clientCourant();
+  if(!c)return '<div class="empty"><h3>Compte introuvable</h3><p>Ce code n\'est plus rattaché à un client. Contactez VD Services.</p></div>';
+  var ks=coprosDe(c.id),pos=positions(ks);
+  var hors=pos.filter(function(p){return p.x==null});
+  var tout=compte(toutesDemandesSyndic(c.id));
+  var lots=ks.reduce(function(a,k){return a+(k.lots||0)},0);
+  var h='<div class="head"><div><p class="eyebrow">'+E(c.nom)+'</p><h1>Vos copropriétés</h1>'
+    +'<p>Chaque immeuble équipé d\'un QR code apparaît sur la carte. La couleur donne l\'état le plus avancé du dossier.</p></div></div>';
+  h+='<dl class="tiles">'
+    +'<div class="tile"><dt>Copropriétés</dt><dd>'+ks.length+'</dd></div>'
+    +'<div class="tile"><dt>Lots suivis</dt><dd>'+lots+'</dd></div>'
+    +'<div class="tile"><dt>Nouvelles</dt><dd>'+tout.nouvelle+'</dd></div>'
+    +'<div class="tile"><dt>En cours</dt><dd>'+tout.encours+'</dd></div>'
+    +'<div class="tile"><dt>Terminées</dt><dd>'+tout.termine+'</dd></div>'
+    +'</dl>';
+  if(!ks.length)return h+'<div class="empty"><h3>Aucune copropriété enregistrée</h3><p>VD Services n\'a pas encore rattaché d\'immeuble à votre compte.</p></div>';
+  h+='<div class="smap"><div><div class="carte">'+carteSVG(pos)+'</div>'+legende();
+  if(hors.length)h+='<p class="note" style="margin-top:10px">Hors carte, commune non reconnue : '
+    +hors.map(function(p){return E(p.k.nom)+(p.k.ville?" ("+E(p.k.ville)+")":"")}).join(", ")+'.</p>';
+  h+='</div><div>'+panneauCopro(ks)+'</div></div>';
+  var orph=demandesHorsCopro(c.id);
+  if(orph.length)h+='<div class="sgroup"><p class="eyebrow gt"><i style="background:var(--line-strong)"></i>'
+    +'Demandes non rattachées à un immeuble — '+orph.length+'</p>'
+    +'<div class="rows">'+orph.map(ligneDemande).join("")+'</div>'
+    +'<p class="note" style="margin-top:9px">Signalements arrivés par le code de référence plutôt que par le QR code d\'un hall.</p></div>';
+  return h;
+}
+function panneauCopro(ks){
+  var sel=ks.filter(function(k){return k.key===selK})[0];
+  if(!sel){
+    return '<p class="eyebrow" style="margin-bottom:9px">Les '+ks.length+' immeubles</p>'
+      +'<div class="slist">'+ks.map(ligneCopro).join("")+'</div>'
+      +'<p class="note" style="margin-top:10px">Cliquez une pastille sur la carte ou une ligne ici : l\'état des demandes s\'affiche aussitôt.</p>';
+  }
+  var l=demandesCopro(sel),o=compte(l);
+  var h='<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
+    +'<div><h3>'+E(sel.nom)+'</h3><p class="sub" style="margin-bottom:0">'+E([sel.adresse,sel.ville].filter(Boolean).join(", ")||"Adresse non renseignée")+'</p></div>'
+    +'<button class="btn sm ghost" data-act="s-fermer">Fermer</button></div>';
+  h+='<dl style="margin-top:12px">'
+    +kv("Lots",E(sel.lots||"—"))
+    +kv("Chargé de copro",E(sel.chargeNom||"—")+(sel.chargeTel?" · "+E(sel.chargeTel):""))
+    +kv("Demandes",o.total?ORD.filter(function(k){return o[k]}).map(function(k){
+        return '<span class="st '+SETAT[k].c+'">'+o[k]+" "+SETAT[k].l.toLowerCase()+'</span>'}).join(" "):"aucune à ce jour")
+    +'</dl>';
+  h+='<div class="actions" style="margin:14px 0 0">'
+    +'<button class="btn sm" data-act="s-copro" data-v="'+E(sel.key)+'">Ouvrir la fiche complète</button></div></div>';
+  if(l.length){
+    h+='<p class="eyebrow" style="margin:20px 0 9px">Les demandes de cet immeuble</p>'
+      +'<div class="rows">'+l.slice(0,8).map(function(d){return ligneDemande(d,true)}).join("")+'</div>';
+    if(l.length>8)h+='<p class="note" style="margin-top:9px">et '+(l.length-8)+' autre(s), dans la fiche complète.</p>';
+  }
+  return h;
+}
+function ligneCopro(k){
+  var o=compte(demandesCopro(k));
+  return '<button data-act="s-pin" data-v="'+E(k.key)+'" aria-pressed="'+(selK===k.key)+'">'
+    +'<i style="background:'+couleurCopro(o)+'"></i>'
+    +'<span><span class="nm">'+E(k.nom)+'</span>'
+    +'<span class="ct">'+E([k.ville,k.lots?k.lots+" lots":""].filter(Boolean).join(" · ")||"—")+'</span></span>'
+    +'<span class="cnt">'+(o.total?(o.nouvelle+o.encours)+" / "+o.total:"—")+'</span></button>';
+}
+function ligneDemande(d){
+  var e=etatS(d),s=SETAT[e],k=coproDe(d),mt=montantSyndic(d);
+  var cls=d.intent==="urgence"&&d.etat!=="close"?"u":e==="nouvelle"?"a":e==="encours"?"d":"p";
+  var ent=entrepriseDe(d),cs=consultees(d);
+  var meta=[dt(d.recu),k?k.nom:(d.residence||d.ville||""),
+    ent?"Entreprise : "+ent.nom:(cs.length?cs.length+" entreprise(s) consultée(s)":"entreprise à désigner")].filter(Boolean).join(" · ");
+  return '<button class="row '+cls+'" data-act="s-dem" data-v="'+E(d.id)+'">'
+    +'<span class="stripe"></span>'
+    +'<span class="mid"><span class="t">'+E(titreDemande(d))+'</span>'
+    +'<span class="meta">'+E(meta)+'</span></span>'
+    +'<span class="end"><span class="st '+s.c+'">'+s.l+'</span>'
+    +(d.intent==="urgence"?'<span class="tag u">Urgence</span>':"")
+    +(mt?'<span class="ref">'+E(eur(mt))+'</span>':"")+'</span></button>';
+}
+function blocGroupes(l){
+  var h="";
+  ORD.forEach(function(e){
+    var sous=l.filter(function(d){return etatS(d)===e});
+    if(!sous.length)return;
+    h+='<div class="sgroup"><p class="eyebrow gt"><i style="background:'+SETAT[e].col+'"></i>'
+      +SETAT[e].l+' — '+sous.length+'</p><div class="rows">'+sous.map(ligneDemande).join("")+'</div></div>';
+  });
+  return h||'<div class="empty"><h3>Aucune demande</h3><p>Rien n\'est encore remonté par le QR code de cet immeuble.</p></div>';
+}
+function vSCopro(){
+  var ks=coprosDe(SESS.clientId),k=ks.filter(function(x){return x.key===route.id})[0];
+  if(!k)return '<button class="back" data-act="s-retour">← La carte</button>'
+    +'<div class="empty"><h3>Copropriété introuvable</h3></div>';
+  var l=demandesCopro(k),o=compte(l);
+  var h='<button class="back" data-act="s-retour">← La carte</button>';
+  h+='<div class="head"><div><p class="eyebrow">'+E(k.ville||"")+'</p><h1>'+E(k.nom)+'</h1>'
+    +'<p>'+E([k.adresse,k.lots?k.lots+" lots":""].filter(Boolean).join(" · ")||"Adresse non renseignée")+'</p></div></div>';
+  h+='<div class="split"><div>'+blocGroupes(l)+'</div><div>';
+  h+='<div class="card"><h3>Le QR code de l\'immeuble</h3>'
+    +'<p class="sub">Affiché dans le hall. Toute demande scannée ici arrive marquée de cette résidence.</p>'
+    +'<div class="qrcopro"><canvas class="qr-mini" data-code="'+E(k.key)+'" width="256" height="256"></canvas>'
+    +'<div><p class="note" style="overflow-wrap:anywhere;font-family:var(--mono);font-size:.72rem">'+E(lienRes(k.key))+'</p>'
+    +'<div class="actions" style="margin:12px 0 0">'
+    +'<button class="btn sm ghost" data-act="qr-print" data-v="'+E(k.key)+'">Imprimer l\'affiche</button>'
+    +'<button class="btn sm ghost" data-act="qr-png" data-v="'+E(k.key)+'">PNG</button>'
+    +'<button class="btn sm ghost" data-act="qr-copy" data-v="'+E(k.key)+'">Copier le lien</button>'
+    +'</div></div></div></div>';
+  h+='<div class="card"><h3>Le dossier en chiffres</h3><dl style="margin-top:8px">'
+    +kv("Demandes reçues",o.total)
+    +kv("Nouvelles",'<span class="st n">'+o.nouvelle+'</span>')
+    +kv("En cours",'<span class="st e">'+o.encours+'</span>')
+    +kv("Terminées",'<span class="st t">'+o.termine+'</span>')
+    +kv("Chargé de copro",E(k.chargeNom||"—")+(k.chargeTel?" · "+E(k.chargeTel):""))
+    +'</dl></div>';
+  h+='</div></div>';
+  return h;
+}
+function vSDemandes(){
+  var c=clientCourant();
+  if(!c)return '<div class="empty"><h3>Compte introuvable</h3></div>';
+  var l=toutesDemandesSyndic(c.id),o=compte(l);
+  if(flt.setat!=="tous")l=l.filter(function(d){return etatS(d)===flt.setat});
+  var h='<div class="head"><div><p class="eyebrow">'+E(c.nom)+'</p><h1>Toutes les demandes</h1>'
+    +'<p>Tout ce qui est remonté de votre portefeuille, du signalement à la réception.</p></div></div>';
+  h+='<div class="bar" style="display:flex">'
+    +[["tous","Tout "+o.total]].concat(ORD.map(function(k){return [k,SETAT[k].l+" "+o[k]]}))
+      .map(function(x){return '<button class="pill" data-flt="setat" data-v="'+x[0]+'" aria-pressed="'+(flt.setat===x[0])+'">'+E(x[1])+'</button>'}).join("")
+    +'</div>';
+  h+=l.length?'<div class="rows">'+l.map(ligneDemande).join("")+'</div>'
+    :'<div class="empty"><h3>Rien dans ce filtre</h3><p>Changez de filtre pour voir le reste.</p></div>';
+  return h;
+}
+function vSQR(){
+  var ks=coprosDe(SESS.clientId);
+  var h='<div class="head"><div><p class="eyebrow">Signalétique</p><h1>Vos QR codes</h1>'
+    +'<p>Un code par immeuble. Collé dans le hall, il évite à vos occupants d\'appeler l\'agence pour un robinet qui fuit.</p></div></div>';
+  if(!ks.length)return h+'<div class="empty"><h3>Aucune copropriété</h3></div>';
+  h+='<div class="qrgrid">'+ks.map(function(k){
+    var o=compte(demandesCopro(k));
+    return '<div class="qrline"><canvas class="qr-mini" data-code="'+E(k.key)+'" width="256" height="256"></canvas>'
+      +'<div><span class="nm">'+E(k.nom)+'</span>'
+      +'<span class="ln">'+E(lienRes(k.key))+'</span>'
+      +'<span class="ln">'+E([k.ville,k.lots?k.lots+" lots":""].filter(Boolean).join(" · "))+' · '+o.total+' demande(s) reçue(s)</span></div>'
+      +'<span class="actions" style="margin:0">'
+      +'<button class="btn sm" data-act="qr-print" data-v="'+E(k.key)+'">Imprimer</button>'
+      +'<button class="btn sm ghost" data-act="qr-png" data-v="'+E(k.key)+'">PNG</button>'
+      +'<button class="btn sm ghost" data-act="qr-copy" data-v="'+E(k.key)+'">Lien</button></span></div>';
+  }).join("")+'</div>';
+  h+='<div class="card" style="margin-top:24px"><h3>Comment s\'en servir</h3>'
+    +'<p class="note" style="margin-top:8px">Imprimer sort deux supports : l\'autocollant carré de 100 mm pour la porte du hall '
+    +'et l\'affiche A5 pour le panneau d\'affichage. Choisissez « Enregistrer en PDF » dans la fenêtre d\'impression pour l\'envoyer à un imprimeur.</p></div>';
+  return h;
+}
+function vSDemande(){
+  var d=DATA.demandes.filter(function(x){return x.id===route.id})[0];
+  var back='<button class="back" data-act="s-retour">← La carte</button>';
+  if(!d||!aMoi(d))return back+'<div class="empty"><h3>Demande introuvable</h3><p>Elle ne concerne pas votre portefeuille.</p></div>';
+  var e=etatS(d),s=SETAT[e],k=coproDe(d),i=interDe(d),ent=entrepriseDe(d),cs=consultees(d);
+  var it=INTENT[d.intent]||{l:"Demande",c:"n"},mt=montantSyndic(d),bd=bdDe(d);
+  var h=back;
+  h+='<div class="head"><div><p class="eyebrow">'+E(d.ref||"")+' · reçue le '+E(dt(d.recu))+'</p>'
+    +'<h1>'+E(titreDemande(d))+'</h1>'
+    +'<p><span class="st '+s.c+'">'+s.l+'</span> <span class="tag '+it.c+'">'+it.l+'</span> '
+    +'<span class="tag '+(d.lieu==="commun"?"a":"n")+'">'
+    +(d.lieu==="commun"?"Parties communes":d.lieu==="privatif"?"Partie privative":"Lieu à préciser")+'</span></p></div></div>';
+  if(k)h+='<div class="crumb"><button data-act="s-copro" data-v="'+E(k.key)+'">'+E(k.nom)+'</button>'
+    +'<span>'+E([k.adresse,k.ville].filter(Boolean).join(", "))+'</span></div>';
+
+  h+='<div class="split"><div>';
+  h+='<div class="card"><h3>Ce qui a été signalé</h3><p class="sub">Tel que l\'occupant l\'a rempli en scannant le QR code.</p>';
+  h+='<div class="chips">'+(prestaLabels(d).map(function(l){return '<span class="chip on">'+E(l)+'</span>'}).join("")
+    ||'<span class="chip">Rien de coché, voir la description</span>')+'</div>';
+  if(d.description)h+='<dl class="kv" style="margin-top:14px"><dt>Sa description</dt><dd>« '+E(d.description)+' »</dd></dl>';
+  h+='<dl style="margin-top:6px">'
+    +kv("Corps de métier",E(metiersOf(d).join(" · ")||"—"))
+    +kv("Signalé par",E([d.nom,STATUTS[d.statutDemandeur]].filter(Boolean)
+        .filter(function(x,i,a){return a.indexOf(x)===i}).join(" · ")||"—"))
+    +(d.delai?kv("Échéance",E([d.delai,d.ag?"vote AG : "+d.ag:""].filter(Boolean).join(" · "))):"")
+    +'</dl></div>';
+
+  h+='<div class="card"><h3>Photos du signalement</h3><p class="sub">'+((d.photos||[]).length||"Aucune")+' pièce(s) jointe(s).</p>';
+  h+=(d.photos||[]).length?'<div class="photos">'+(d.photos||[]).map(function(x){
+      return '<div class="photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">'
+        +'<path d="M3 8.5A1.5 1.5 0 014.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0121 8.5v9A1.5 1.5 0 0119.5 19h-15A1.5 1.5 0 013 17.5z"/>'
+        +'<circle cx="12" cy="13" r="3.2"/></svg>'+E(x.nom||x)+'<span>'+E(x.h||"")+'</span></div>';
+    }).join("")+'</div>':'<p class="note">Aucune photo jointe au signalement.</p>';
+  h+='</div>';
+
+  if(i){
+    h+='<div class="card" style="border-color:var(--pro)"><h3>Travaux réceptionnés</h3>'
+      +'<p class="sub">Ce que l\'entreprise a fait, et quand.</p><dl>'
+      +kv("Date d\'intervention",E(i.date?jour(i.date):"—"))
+      +kv("Entreprise",E(ent?ent.nom:"—"))
+      +kv("Facture entreprise",E(i.factureNum||"—"))
+      +'</dl>';
+    h+=(i.photosApres||[]).length?'<p class="eyebrow" style="margin:16px 0 9px">Photos après travaux</p><div class="photos">'
+      +(i.photosApres||[]).map(function(x){
+        return '<div class="photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">'
+          +'<path d="M3 8.5A1.5 1.5 0 014.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0121 8.5v9A1.5 1.5 0 0119.5 19h-15A1.5 1.5 0 013 17.5z"/>'
+          +'<circle cx="12" cy="13" r="3.2"/></svg>'+E(x.nom||x)+'</div>';
+      }).join("")+'</div>':'<p class="note" style="margin-top:12px">Pas encore de photo de fin de chantier.</p>';
+    h+='</div>';
+  }
+
+  if((d.journal||[]).length){
+    h+='<div class="card"><h3>Suivi du dossier</h3><p class="sub">Chaque étape, horodatée.</p><ul class="journal">'
+      +(d.journal||[]).slice().reverse().map(function(j){
+        return '<li><time>'+E(dt(j.t))+'</time><span>'+E(j.texte)+'</span></li>';
+      }).join("")+'</ul></div>';
+  }
+  h+='</div><div>';
+
+  h+='<div class="card"><h3>'+(ent?"Entreprise retenue":"Entreprises consultées")+'</h3>';
+  if(ent){
+    var dos=dossier(ent);
+    h+='<p class="sub">Assurances vérifiées par VD Services avant tout envoi sur site.</p><dl>'
+      +kv("Raison sociale",E(ent.nom))
+      +kv("Métier",E((ent.metiers||[]).map(function(m){return MET[m]||m}).join(", ")||"—"))
+      +kv("Contact",E(ent.tel||"—"))
+      +kv("Dossier",dos.ok?'<span class="tag p">Assurances à jour</span>'
+        :dos.alerte.length?'<span class="tag u">'+E(dos.alerte[0])+'</span>'
+        :'<span class="tag d">'+dos.manque.length+' pièce(s) en attente</span>')
+      +'</dl>';
+  }else if(cs.length){
+    h+='<p class="sub">Mise en concurrence en cours.</p><div class="chips">'
+      +cs.map(function(p){return '<span class="chip on">'+E(p.nom)+'</span>'}).join("")+'</div>';
+  }else{
+    h+='<p class="note">Aucune entreprise désignée pour l\'instant. VD Services sélectionne dans son réseau.</p>';
+  }
+  h+='</div>';
+
+  h+='<div class="card"><h3>Montant</h3>';
+  if(mt)h+='<p class="sub">Montant du devis retenu, hors taxes.</p>'
+    +'<p style="font-family:var(--display);font-weight:700;font-size:1.6rem;letter-spacing:-.02em">'+E(eur(mt))+' <small style="font-size:.8rem;font-weight:500;color:var(--ink-3)">HT</small></p>'
+    +(bd&&bd.envoye?'<p class="note" style="margin-top:8px">Chiffrage établi sur bordereau de prix, poste par poste.</p>':"");
+  else h+='<p class="note">Pas encore de chiffrage. Le devis vous parviendra dès que l\'entreprise aura répondu.</p>';
+  h+='</div>';
+
+  h+='<div class="card"><h3>Besoin d\'une précision ?</h3>'
+    +'<p class="note" style="margin-top:6px">VD Services suit ce dossier de bout en bout. Appelez'
+    +(societe().tel?" le "+E(societe().tel):"")+' en rappelant la référence '+E(d.ref||"")+'.</p></div>';
+  h+='</div></div>';
+  return h;
+}
+function apercuBandeau(){
+  var c=clientCourant();
+  return '<div class="apercu"><span>Aperçu de l\'espace de <strong>'+E(c?c.nom:"—")
+    +'</strong>. Vous voyez exactement ce que ce syndic voit.</span>'
+    +'<button class="btn sm" data-act="fin-apercu">Revenir au back-office</button></div>';
+}
+function vueSyndic(){
+  return route.v==="scopro"?vSCopro()
+    : route.v==="sdemande"?vSDemande()
+    : route.v==="sdemandes"?vSDemandes()
+    : route.v==="sqr"?vSQR()
+    : vSCarte();
 }
 
 /* ---------- boîte de dialogue ---------- */
@@ -2129,10 +2751,34 @@ function formCopro(k){
 
 /* ---------- actions ---------- */
 var editId=null,editIx=null,convId=null;
+var ACTS_SYNDIC=["deconnexion","fin-apercu","dlg-close","reconnecter","s-pin","s-fermer",
+  "s-copro","s-dem","s-retour","qr-print","qr-png","qr-copy"];
 document.addEventListener("click",function(ev){
   var b=ev.target.closest("[data-act],[data-nav],[data-open],[data-flt]");
   if(!b)return;
   var id=b.dataset.id,act=b.dataset.act;
+  if(SESS.role==="syndic"){
+    /* l'espace syndic ne rend aucun bouton du back-office : ce garde-fou
+       ferme la porte au cas où un rendu partagé en laisserait passer un. */
+    if(b.dataset.open)return;
+    if(b.dataset.nav&&["syndic","sdemandes","sqr"].indexOf(b.dataset.nav)<0)return;
+    if(act&&ACTS_SYNDIC.indexOf(act)<0)return;
+  }
+  if(act==="deconnexion"){deconnexion();return}
+  if(act==="fin-apercu"){SESS={role:"admin",clientId:null,apercu:false};sessSave();selK=null;navigate("clients");return}
+  if(act==="s-pin"){selK=(selK===b.dataset.v?null:b.dataset.v);paint();return}
+  if(act==="s-fermer"){selK=null;paint();return}
+  if(act==="s-copro"){selK=b.dataset.v;navigate("scopro",b.dataset.v);return}
+  if(act==="s-dem"){navigate("sdemande",b.dataset.v);return}
+  if(act==="s-retour"){navigate("syndic");return}
+  if(act==="code-copy"){
+    var cc=DATA.clients.filter(function(x){return x.id===id})[0];
+    if(cc)copier(codeSyndic(cc),"Code d'accès copié");
+    return;
+  }
+  if(act==="voir-syndic"){
+    SESS={role:"syndic",clientId:id,apercu:true};sessSave();selK=null;navigate("syndic");return;
+  }
   if(b.dataset.nav){navigate(b.dataset.nav,b.dataset.id);return}
   if(b.dataset.open){navigate("demande",b.dataset.open);return}
   if(b.dataset.flt&&b.tagName==="BUTTON"){
@@ -2184,6 +2830,7 @@ document.addEventListener("click",function(ev){
   if(act==="qr-copy"){copier(lienRes(b.dataset.v),"Lien copié");return}
   if(act==="qr-print"){
     var rr=DATA.residences.filter(function(x){return x.code===b.dataset.v})[0];
+    if(!rr&&SESS.clientId)rr=coprosDe(SESS.clientId).filter(function(x){return x.key===b.dataset.v})[0];
     document.getElementById("printable-txt").textContent="";
     var zone=document.getElementById("printable-html");
     zone.innerHTML=supportsQR(b.dataset.v,rr?rr.nom:"");
@@ -2343,7 +2990,9 @@ document.addEventListener("click",function(ev){
       +'<div class="two">'+fld("v-rcsville","Ville du RCS",v2.rcsville)+fld("v-repnom","Représentant",v2.repnom)+'</div>'
       +'<div class="two">'+dl("v-repqualite","Qualité",v2.repqualite,QUALITES,"Président")+fld("v-tel","Téléphone",v2.tel,"tel")+'</div>'
       +fld("v-email","E-mail",v2.email,"email")
-      +fld("v-url","Adresse du formulaire QR",baseUrl(),"text","https://vdservices.fr/copro"),
+      +fld("v-url","Adresse du formulaire QR",baseUrl(),"text","https://vdservices.fr/copro")
+      +fld("v-mdp","Mot de passe du back-office",motdepasse(),"text","laissez vide pour un accès ouvert")
+      +'<p class="note">Ce mot de passe filtre l\'entrée du back-office. Les syndics, eux, entrent avec le code d\'accès affiché sur leur fiche client.</p>',
       '<button class="btn ghost" data-act="dlg-close">Annuler</button><button class="btn" data-act="reglages-save">Enregistrer</button>');
     return;
   }
@@ -2352,7 +3001,7 @@ document.addEventListener("click",function(ev){
     db.doc("reglages/societe").set({nom:val("v-nom"),forme:val("v-forme"),capital:val("v-capital"),
       siren:val("v-siren"),adresse:val("v-adresse"),rcsville:val("v-rcsville"),
       repnom:val("v-repnom"),repqualite:val("v-repqualite"),tel:val("v-tel"),email:val("v-email"),
-      urlForm:val("v-url")})
+      urlForm:val("v-url"),mdp:val("v-mdp")})
       .then(function(){closeDlg();toast("Coordonnées enregistrées")})
       .catch(function(){toast("Écriture refusée")});
     return;
@@ -2747,6 +3396,19 @@ document.addEventListener("change",function(ev){
     var d=DATA.demandes.filter(function(x){return x.id===t.dataset.id})[0];
     maj(t.dataset.id,{etat:t.value,journal:journalise(d,"État passé à « "+ETATS[t.value].l+" ».")});
   }
+});
+document.addEventListener("submit",function(ev){
+  var f=ev.target.closest?ev.target.closest("[data-gate]"):null;
+  if(!f)return;
+  ev.preventDefault();
+  connexion(f.dataset.gate);
+});
+document.addEventListener("keydown",function(ev){
+  if(ev.key!=="Enter"&&ev.key!==" ")return;
+  var g=ev.target.closest?ev.target.closest("g.mk"):null;
+  if(!g)return;
+  ev.preventDefault();
+  selK=(selK===g.dataset.v?null:g.dataset.v);paint();
 });
 dlg.addEventListener("click",function(e){if(e.target===dlg)closeDlg()});
 </script>

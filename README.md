@@ -65,7 +65,12 @@ en PDF, et export du code seul en PNG pour l'imprimeur.
 ## `docs/regie-copro.html` — la plateforme VD Services
 
 Back-office publié comme artifact, avec base de données persistante (capacité
-`db`). Six vues :
+`db`). Deux espaces sur la même base, séparés par un écran de connexion :
+le back-office de VD Services, et l'espace syndic.
+
+### Le back-office
+
+Sept vues :
 
 - **Tableau de bord** — chiffres du jour, des 7 jours, du mois en cours ou des
   90 jours : demandes reçues, urgences, en attente, interventions, volume de
@@ -101,6 +106,38 @@ Back-office publié comme artifact, avec base de données persistante (capacité
   s'affiche en face de chaque résidence.
 - **Facturation** — une facture de commissions par entreprise et par mois,
   ligne par intervention, calculée sur la grille d'apport d'affaires.
+
+### L'espace syndic
+
+Chaque client professionnel dispose d'un code d'accès affiché sur sa fiche,
+avec un bouton « Voir son espace » qui ouvre un aperçu de ce que ce syndic
+voit exactement. Trois vues en lecture seule :
+
+- **Carte** — les copropriétés du portefeuille placées sur une carte du
+  littoral, de Fréjus à Nice, tracée en interne sans service de cartographie
+  externe. Chaque immeuble est une pastille dont la couleur donne l'état le
+  plus avancé du dossier : bleu une demande nouvelle, ambre une intervention
+  en cours, vert tout est terminé, gris aucune demande. Le chiffre dans la
+  pastille compte les demandes en cours. Les immeubles d'une même commune sont
+  écartés en couronne pour rester distincts ; ceux dont la commune n'est pas
+  reconnue sont listés sous la carte. Un clic ouvre le volet de droite :
+  compteurs par état et demandes récentes de cet immeuble.
+- **Demandes** — la liste complète du portefeuille, filtrable par état, puis la
+  fiche : ce qui a été signalé, les photos, l'entreprise retenue avec l'état de
+  ses assurances, le montant du devis retenu, le suivi horodaté et, une fois le
+  chantier réceptionné, la date, le numéro de facture et les photos de fin de
+  travaux.
+- **QR codes** — un code par immeuble, à imprimer en autocollant de hall ou en
+  affiche A5.
+
+Deux choses ne franchissent jamais la frontière : les colonnes de prix des
+entreprises consultées, dont le syndic ne voit que le prix retenu, et les notes
+internes de fin de chantier, qui restent au back-office. La sauvegarde complète
+et toutes les actions d'écriture sont hors de portée de l'espace syndic.
+
+L'écran de connexion trie les accès, il ne protège pas la page : toute personne
+qui possède l'adresse de l'application peut l'ouvrir. Le mot de passe du
+back-office se règle dans « Mes coordonnées ».
 
 En urgence, la page publique ne renvoie pas vers le maître d'œuvre : elle met
 l'habitant en relation avec l'entreprise d'astreinte la plus proche pour ce
