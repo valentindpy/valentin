@@ -1,0 +1,429 @@
+<title>VD Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#E9EBEF; --surface:#FFFFFF; --surface-2:#F2F4F7; --sunk:#DCE0E7;
+  --ink:#131A24; --ink-2:#414B59; --ink-3:#6C7686;
+  --line:#CDD3DC; --line-strong:#A7B0BE;
+  --accent:#2E4E77; --accent-soft:#DCE5F1; --accent-ink:#2E4E77;
+  --urg:#BC2F26; --urg-soft:#F8DFDB;
+  --dep:#8E6206; --dep-soft:#F6E9C9;
+  --pro:#20654A; --pro-soft:#D5E9DF;
+  --ene:#1D6A82; --ene-soft:#D2E7ED;
+  --shadow:0 1px 2px rgba(19,26,36,.05), 0 14px 38px -22px rgba(19,26,36,.34);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630; --sunk:#0A0F16;
+  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
+  --line:#28313D; --line-strong:#3E4A59;
+  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
+  --urg:#EE8F84; --urg-soft:#37201D;
+  --dep:#DCB25C; --dep-soft:#312818;
+  --pro:#78C8A0; --pro-soft:#142B21;
+  --ene:#74BCD4; --ene-soft:#122A33;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 16px 40px -24px rgba(0,0,0,.9);
+}}
+:root[data-theme="dark"]{
+  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630; --sunk:#0A0F16;
+  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
+  --line:#28313D; --line-strong:#3E4A59;
+  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
+  --urg:#EE8F84; --urg-soft:#37201D;
+  --dep:#DCB25C; --dep-soft:#312818;
+  --pro:#78C8A0; --pro-soft:#142B21;
+  --ene:#74BCD4; --ene-soft:#122A33;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 16px 40px -24px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;margin:0;letter-spacing:-.018em;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+*:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.wrap{max-width:1080px;margin-inline:auto;padding-inline:20px}
+.prose{max-width:62ch}
+.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ----- en-tête ----- */
+.entete{position:sticky;top:env(safe-area-inset-top, 0px);z-index:20;background:var(--ground);border-bottom:1px solid var(--line)}
+.entete .bande{height:4px;display:flex}
+.entete .bande i{flex:1}
+.entete .bande i:nth-child(1){background:var(--urg)}
+.entete .bande i:nth-child(2){background:var(--dep)}
+.entete .bande i:nth-child(3){background:var(--pro)}
+.entete .bande i:nth-child(4){background:var(--ene)}
+.nav{display:flex;align-items:center;gap:18px;padding-block:14px;flex-wrap:wrap}
+.marque{display:flex;flex-direction:column;margin-right:auto}
+.marque b{font-family:var(--display);font-weight:800;font-size:1.22rem;letter-spacing:-.025em}
+.marque span{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-top:2px}
+.nav a.lien{font-size:.92rem;color:var(--ink-2);text-decoration:none}
+.nav a.lien:hover{color:var(--ink)}
+@media (max-width:760px){.nav a.lien{display:none}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--surface);
+  border:0;border-radius:9px;padding:12px 20px;font-family:var(--display);font-weight:600;font-size:.95rem;
+  cursor:pointer;text-decoration:none;text-align:center}
+.btn:hover{filter:brightness(1.08)}
+.btn.sm{padding:9px 15px;font-size:.88rem}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line-strong)}
+.btn.ghost:hover{background:var(--surface);filter:none}
+
+/* ----- hero ----- */
+.hero{padding-block:clamp(44px,8vw,86px) clamp(32px,5vw,54px)}
+.hero h1{font-size:clamp(2.1rem,6vw,4rem);line-height:1.02;font-weight:800;letter-spacing:-.035em;max-width:15ch}
+.hero .sous{font-size:clamp(1.05rem,2.2vw,1.28rem);color:var(--ink-2);max-width:54ch;margin-top:20px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero .rass{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:28px;font-size:.88rem;color:var(--ink-3)}
+.hero .rass span{display:inline-flex;align-items:center;gap:8px}
+.hero .rass b{width:5px;height:5px;border-radius:50%;background:var(--accent);display:block;flex:none}
+
+/* ----- sections ----- */
+section{padding-block:clamp(40px,7vw,70px);border-top:1px solid var(--line)}
+.stitre{display:flex;flex-direction:column;gap:9px;margin-bottom:26px}
+.stitre h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:700}
+.stitre p{color:var(--ink-2);max-width:60ch}
+
+.besoins{display:grid;grid-template-columns:repeat(auto-fit,minmax(224px,1fr));gap:14px}
+.besoin{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--line-strong);border-radius:6px;
+  padding:20px;display:flex;flex-direction:column;gap:8px;text-decoration:none}
+.besoin:hover{box-shadow:var(--shadow)}
+.besoin.u{border-top-color:var(--urg)} .besoin.d{border-top-color:var(--dep)}
+.besoin.p{border-top-color:var(--pro)} .besoin.e{border-top-color:var(--ene)}
+.besoin .q{font-family:var(--mono);font-size:.63rem;letter-spacing:.13em;text-transform:uppercase}
+.besoin.u .q{color:var(--urg)} .besoin.d .q{color:var(--dep)}
+.besoin.p .q{color:var(--pro)} .besoin.e .q{color:var(--ene)}
+.besoin h3{font-size:1.08rem}
+.besoin p{font-size:.92rem;color:var(--ink-2)}
+.besoin .go{margin-top:auto;padding-top:12px;font-size:.88rem;font-weight:600;font-family:var(--display);color:var(--accent-ink)}
+
+.etapes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.etape{background:var(--surface);padding:20px}
+.etape .n{font-family:var(--mono);font-size:.72rem;color:var(--accent-ink);letter-spacing:.1em}
+.etape h3{font-size:1rem;margin-top:8px}
+.etape p{font-size:.91rem;color:var(--ink-2);margin-top:5px}
+
+.pour{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.pour div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px}
+.pour h3{font-size:1rem}
+.pour p{font-size:.91rem;color:var(--ink-2);margin-top:6px}
+
+.moi{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(240px,.8fr);gap:26px;align-items:start}
+@media (max-width:760px){.moi{grid-template-columns:1fr}}
+.moi p+p{margin-top:14px}
+.carte{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px}
+.carte dl{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;margin:0;font-size:.92rem}
+.carte dt{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding-top:4px}
+.carte dd{margin:0}
+.nefait{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:16px 18px;margin-top:18px}
+.nefait h3{font-size:.98rem}
+.nefait p{font-size:.9rem;color:var(--ink-2);margin-top:6px}
+
+/* ----- partenaires ----- */
+.part{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:clamp(20px,3vw,30px)}
+.deux{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px}
+.liste{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
+.liste li{padding-left:22px;position:relative;font-size:.93rem;color:var(--ink-2)}
+.liste li::before{content:"";position:absolute;left:0;top:.55em;width:9px;height:2px;background:var(--accent)}
+.grille{display:grid;grid-template-columns:1fr auto;gap:0 20px;margin-top:14px;font-size:.9rem}
+.grille div{padding:8px 0;border-top:1px solid var(--line)}
+.grille div:nth-child(-n+2){border-top:0;font-family:var(--mono);font-size:.61rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.grille div:nth-child(even){text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ----- formulaires ----- */
+form{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+.champ{display:flex;flex-direction:column;gap:5px}
+.champ label{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.champ input,.champ select,.champ textarea{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px;font-size:.94rem;width:100%}
+.champ textarea{min-height:88px;resize:vertical}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.duo{grid-template-columns:1fr}}
+.note{font-size:.82rem;color:var(--ink-3);line-height:1.5}
+.sortie{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:13px;font-family:var(--mono);
+  font-size:.78rem;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;display:none}
+.sortie.on{display:block}
+
+/* ----- contact ----- */
+.coord{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.coord a,.coord div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;text-decoration:none;display:block}
+.coord .l{font-family:var(--mono);font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.coord .v{font-family:var(--display);font-weight:600;font-size:1.02rem;margin-top:5px}
+.acompleter{color:var(--urg);border-bottom:1px dotted var(--urg)}
+
+footer{border-top:1px solid var(--line);padding-block:26px 46px;font-size:.85rem;color:var(--ink-3);line-height:1.65}
+footer .fl{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:12px}
+footer a{text-decoration:none;color:var(--ink-2)}
+</style>
+
+<header class="entete">
+  <div class="bande"><i></i><i></i><i></i><i></i></div>
+  <div class="wrap nav">
+    <span class="marque"><b>VD SERVICES</b><span>Consultation · Pilotage · Coordination</span></span>
+    <a class="lien" href="#besoins">Vos besoins</a>
+    <a class="lien" href="#methode">Comment ça marche</a>
+    <a class="lien" href="#partenaires">Devenir partenaire</a>
+    <a class="lien" href="#contact">Contact</a>
+    <a class="btn sm" id="cta-haut" href="#besoins">Déclarer un besoin</a>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <section class="hero" style="border-top:0">
+    <p class="eyebrow">Copropriétés, particuliers et collectivités · de Fréjus à Nice</p>
+    <h1>Un souci dans l'immeuble. Un seul interlocuteur.</h1>
+    <p class="sous">Vous décrivez le problème en trente secondes. Je trouve l'entreprise qui convient parmi celles de mon réseau, je récupère les devis, je compare, et je suis l'intervention jusqu'à la fin.</p>
+    <div class="cta">
+      <a class="btn" id="cta-form" href="#besoins">Déclarer un besoin</a>
+      <a class="btn ghost" href="#partenaires">Je suis une entreprise</a>
+    </div>
+    <div class="rass">
+      <span><b></b>Entreprises assurées et vérifiées</span>
+      <span><b></b>Devis gratuit et sans engagement</span>
+      <span><b></b>Réponse le jour même</span>
+    </div>
+  </section>
+
+  <section id="besoins">
+    <div class="stitre">
+      <p class="eyebrow">Vos besoins</p>
+      <h2>Quatre portes d'entrée, une seule adresse</h2>
+      <p>Choisissez la situation qui ressemble le plus à la vôtre. Le formulaire s'adapte, et il ne demande jamais plus que nécessaire.</p>
+    </div>
+    <div class="besoins">
+      <a class="besoin u" data-form="urgence">
+        <span class="q">Tout de suite</span>
+        <h3>Urgence</h3>
+        <p>Fuite qui coule, plus d'électricité, porte bloquée, dégât en cours. Vous êtes mis en relation directe avec l'entreprise d'astreinte la plus proche.</p>
+        <span class="go">Appeler maintenant →</span>
+      </a>
+      <a class="besoin d" data-form="depannage">
+        <span class="q">Sous 72 heures</span>
+        <h3>Dépannage</h3>
+        <p>Ça fonctionne mal, ça peut attendre demain. Je vous rappelle le jour même pour caler le passage.</p>
+        <span class="go">Décrire la panne →</span>
+      </a>
+      <a class="besoin p" data-form="projet">
+        <span class="q">Devis comparés</span>
+        <h3>Projet de travaux</h3>
+        <p>Rénovation, salle de bains, cuisine, ravalement, parties communes. Plusieurs entreprises chiffrent sur le même descriptif.</p>
+        <span class="go">Décrire le projet →</span>
+      </a>
+      <a class="besoin e" data-form="energie">
+        <span class="q">Financement étudié</span>
+        <h3>Travaux énergétiques financés</h3>
+        <p>Pompe à chaleur, isolation, fenêtres, solaire. On calcule votre financement avant de chiffrer, jamais après.</p>
+        <span class="go">Étudier mon financement →</span>
+      </a>
+    </div>
+    <p class="note" style="margin-top:16px">Vous êtes une commune, une intercommunalité, un bailleur social ou un établissement public ? Le formulaire prévoit une entrée dédiée, avec mise en concurrence à trois devis ou plus.</p>
+  </section>
+
+  <section id="methode">
+    <div class="stitre">
+      <p class="eyebrow">Comment ça marche</p>
+      <h2>Vous dites ce qui ne va pas, je m'occupe du reste</h2>
+    </div>
+    <div class="etapes">
+      <div class="etape"><p class="n">01</p><h3>Vous décrivez</h3><p>Trente secondes sur votre téléphone, avec une photo si vous en avez une. Aucun compte à créer.</p></div>
+      <div class="etape"><p class="n">02</p><h3>Je qualifie</h3><p>Je vous rappelle pour vérifier, et je choisis dans mon réseau les entreprises du métier concerné sur votre commune.</p></div>
+      <div class="etape"><p class="n">03</p><h3>Vous comparez</h3><p>Les entreprises chiffrent sur le même descriptif. Vous recevez des devis lisibles, avec les écarts expliqués.</p></div>
+      <div class="etape"><p class="n">04</p><h3>Je suis le chantier</h3><p>Prise de rendez-vous, relances, réception, photos de fin de travaux. Vous n'appelez qu'une personne.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="stitre">
+      <p class="eyebrow">Pour qui</p>
+      <h2>Quatre publics, une même méthode</h2>
+    </div>
+    <div class="pour">
+      <div><h3>Particuliers</h3><p>Propriétaires et locataires, en appartement comme en maison. Du robinet qui fuit à la rénovation complète.</p></div>
+      <div><h3>Syndics et gestionnaires</h3><p>Je prends les appels techniques de vos copropriétés, je trouve les entreprises et je vous rends un tableau chaque mois.</p></div>
+      <div><h3>Conseils syndicaux</h3><p>Ravalement, cage d'escalier, toiture, chaufferie. Des devis comparables à présenter en assemblée générale.</p></div>
+      <div><h3>Collectivités et bailleurs</h3><p>Mise en concurrence organisée, devis au même format, pièces administratives vérifiées et jointes.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="stitre">
+      <p class="eyebrow">Qui je suis</p>
+      <h2>VD Services</h2>
+    </div>
+    <div class="moi">
+      <div>
+        <p>Je m'appelle Valentin Dupuy. J'ai monté VD Services à Mandelieu-la-Napoule pour régler un problème que tout le monde connaît : trouver la bonne entreprise, obtenir un devis, et s'assurer que le travail est fait correctement.</p>
+        <p>Mon métier, c'est le réseau et la méthode. Je travaille avec des plombiers, électriciens, chauffagistes, climaticiens, serruriers, couvreurs, peintres, plaquistes, carreleurs, menuisiers, paysagistes et entreprises de nettoyage, de Fréjus à Nice. Chacun a un dossier à jour chez moi : assurance décennale, responsabilité civile, attestation de vigilance.</p>
+        <p>Quand une demande arrive, je choisis celui qui convient au métier, à la commune et au délai. Je fais chiffrer sur un descriptif unique pour que les devis soient comparables. Et je reste joignable jusqu'à la fin du chantier.</p>
+        <div class="nefait">
+          <h3>Ce que je ne fais pas</h3>
+          <p>Je ne réalise pas les travaux et je ne vends rien au client. Le devis et la facture sont établis par l'entreprise, directement à votre nom. Vous restez maître de votre choix, et vous ne me payez rien.</p>
+        </div>
+      </div>
+      <div class="carte">
+        <dl>
+          <dt>Siège</dt><dd>Mandelieu-la-Napoule</dd>
+          <dt>Secteur</dt><dd>De Fréjus à Nice, arrière-pays inclus</dd>
+          <dt>Métiers</dt><dd>Treize corps de métier couverts</dd>
+          <dt>Astreinte</dt><dd>Deux entreprises par métier</dd>
+          <dt>Devis</dt><dd>Gratuit, sans engagement</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="partenaires">
+    <div class="stitre">
+      <p class="eyebrow">Entreprises</p>
+      <h2>Devenir partenaire</h2>
+      <p>Vous êtes artisan ou entreprise du bâtiment sur le secteur. Vous cherchez des chantiers qualifiés, pas des enchères au moins-disant.</p>
+    </div>
+    <div class="part">
+      <div class="deux">
+        <div>
+          <h3 style="font-size:1.05rem">Ce que vous recevez</h3>
+          <ul class="liste">
+            <li>Des demandes qualifiées de votre métier, sur votre commune, avec l'adresse, la nature du besoin et les photos.</li>
+            <li>Un interlocuteur unique qui a déjà parlé au client et vérifié que la demande est sérieuse.</li>
+            <li>Un descriptif clair pour chiffrer, au lieu d'un appel vague et d'un déplacement perdu.</li>
+            <li>Aucun droit d'entrée, aucun abonnement, aucune exclusivité imposée.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="font-size:1.05rem">Ce que je vous demande</h3>
+          <ul class="liste">
+            <li>Assurances à jour, décennale et responsabilité civile, attestation de vigilance URSSAF.</li>
+            <li>Une réponse sous quarante-huit heures, même pour dire non.</li>
+            <li>Les rendez-vous tenus et le client prévenu en cas de retard.</li>
+            <li>Un chantier laissé propre, et une photo de fin de travaux.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 style="font-size:1.05rem;margin-top:26px">Comment je me rémunère</h3>
+      <p class="note" style="margin-top:6px">Une commission d'apport d'affaires, payée par vous, uniquement sur les affaires réellement réalisées et encaissées. Rien à payer pour entrer dans le réseau, rien d'avance, rien si l'affaire ne se fait pas. La grille est publique et figure dans la convention.</p>
+      <div class="grille">
+        <div>Montant HT facturé au client</div><div>Commission</div>
+        <div>Jusqu'à 300 €</div><div>30 €</div>
+        <div>301 à 750 €</div><div>50 €</div>
+        <div>751 à 1 500 €</div><div>100 €</div>
+        <div>1 501 à 5 000 €</div><div>10 %</div>
+        <div>5 001 à 20 000 €</div><div>7 %</div>
+        <div>20 001 à 50 000 €</div><div>5 %</div>
+        <div>Plus de 50 000 €</div><div>Sur accord</div>
+      </div>
+
+      <h3 style="font-size:1.05rem;margin-top:28px">Rejoindre le réseau</h3>
+      <form id="f-part">
+        <div class="duo">
+          <div class="champ"><label for="p-soc">Raison sociale</label><input id="p-soc" name="societe" required></div>
+          <div class="champ"><label for="p-nom">Votre nom</label><input id="p-nom" name="nom" required></div>
+        </div>
+        <div class="duo">
+          <div class="champ"><label for="p-tel">Téléphone</label><input id="p-tel" name="tel" type="tel" required></div>
+          <div class="champ"><label for="p-mail">E-mail</label><input id="p-mail" name="email" type="email" required></div>
+        </div>
+        <div class="duo">
+          <div class="champ"><label for="p-met">Corps de métier</label><input id="p-met" name="metier" placeholder="Plomberie, chauffage" required></div>
+          <div class="champ"><label for="p-vil">Communes couvertes</label><input id="p-vil" name="villes" placeholder="Cannes, Mandelieu, Le Cannet" required></div>
+        </div>
+        <div class="duo">
+          <div class="champ"><label for="p-siren">SIREN</label><input id="p-siren" name="siren"></div>
+          <div class="champ"><label for="p-astr">Astreinte soir et week-end</label>
+            <select id="p-astr" name="astreinte"><option>Non</option><option>Oui, en semaine</option><option>Oui, 7j/7</option></select></div>
+        </div>
+        <div class="champ"><label for="p-msg">Ce qu'il faut savoir sur vous</label><textarea id="p-msg" name="message" placeholder="Spécialités, références, délai d'intervention habituel."></textarea></div>
+        <button class="btn" type="submit">Envoyer ma candidature</button>
+        <p class="note">Je réponds sous quarante-huit heures. Si le profil correspond, je vous envoie la convention d'apport d'affaires et je vous demande vos attestations.</p>
+        <div class="sortie" id="s-part"></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="stitre">
+      <p class="eyebrow">Contact</p>
+      <h2>Parler à quelqu'un</h2>
+      <p>Pour une urgence, passez par le formulaire : il vous met en relation directe avec l'entreprise d'astreinte, c'est plus rapide.</p>
+    </div>
+    <div class="coord">
+      <a href="tel:+33400000000"><span class="l">Téléphone</span><span class="v acompleter" data-champ="tel">04 00 00 00 00</span></a>
+      <a href="mailto:contact@vdservices.fr"><span class="l">E-mail</span><span class="v acompleter" data-champ="mail">contact@vdservices.fr</span></a>
+      <div><span class="l">Secteur</span><span class="v">Fréjus → Nice</span></div>
+      <div><span class="l">Horaires</span><span class="v">8 h – 19 h, 6j/7</span></div>
+    </div>
+
+    <form id="f-contact" style="max-width:640px">
+      <div class="duo">
+        <div class="champ"><label for="c-nom">Votre nom</label><input id="c-nom" name="nom" required></div>
+        <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="tel" type="tel" required></div>
+      </div>
+      <div class="champ"><label for="c-mail">E-mail</label><input id="c-mail" name="email" type="email"></div>
+      <div class="champ"><label for="c-msg">Votre message</label><textarea id="c-msg" name="message" required></textarea></div>
+      <button class="btn" type="submit">Envoyer</button>
+      <p class="note">Vos coordonnées ne servent qu'à traiter votre demande et ne sont transmises qu'à l'entreprise retenue. Conservation trois ans.</p>
+      <div class="sortie" id="s-contact"></div>
+    </form>
+  </section>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fl">
+      <a href="#besoins">Vos besoins</a>
+      <a href="#methode">Comment ça marche</a>
+      <a href="#partenaires">Devenir partenaire</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <p><strong>VD SERVICES</strong> — SAS au capital de 1 000 € — RCS Nice — SIREN <span class="acompleter">à compléter</span> — siège <span class="acompleter">adresse à compléter</span>, Mandelieu-la-Napoule. Directeur de la publication : Valentin Dupuy. Hébergeur : <span class="acompleter">à compléter</span>.</p>
+    <p style="margin-top:10px">VD Services intervient comme apporteur d'affaires et coordinateur. Les travaux sont réalisés, facturés et garantis par les entreprises partenaires, qui restent seules responsables de leur exécution. Les devis et factures sont établis par elles, directement au nom du client.</p>
+  </div>
+</footer>
+
+<script>
+/* Adresse du formulaire de demande. À remplacer par l'adresse définitive
+   le jour de la mise en ligne, par exemple https://vdservices.fr/demande */
+var FORMULAIRE="https://claude.ai/artifact/S1hvTF1fVn4QCeM41UTFoo";
+var MAIL_CONTACT="contact@vdservices.fr";
+
+function lienForm(parcours){
+  return FORMULAIRE+(FORMULAIRE.indexOf("?")>=0?"&":"?")+"depuis=site"+(parcours?"&besoin="+encodeURIComponent(parcours):"");
+}
+document.getElementById("cta-form").href=lienForm("");
+document.getElementById("cta-haut").href=lienForm("");
+[].slice.call(document.querySelectorAll("[data-form]")).forEach(function(a){
+  a.href=lienForm(a.dataset.form);
+});
+
+function texteFormulaire(form,titre){
+  var L=[titre,""];
+  [].slice.call(form.elements).forEach(function(el){
+    if(!el.name)return;
+    var lab=form.querySelector('label[for="'+el.id+'"]');
+    L.push((lab?lab.textContent:el.name)+" : "+el.value);
+  });
+  return L.join("\n");
+}
+function brancher(idForm,idSortie,objet){
+  var form=document.getElementById(idForm),sortie=document.getElementById(idSortie);
+  form.addEventListener("submit",function(ev){
+    ev.preventDefault();
+    var corps=texteFormulaire(form,objet);
+    var url="mailto:"+MAIL_CONTACT+"?subject="+encodeURIComponent(objet)+"&body="+encodeURIComponent(corps);
+    var ouvert=false;
+    try{ouvert=!!window.open(url,"_self")}catch(e){ouvert=false}
+    sortie.className="sortie on";
+    sortie.textContent="Votre messagerie devrait s'ouvrir avec ce message. Si rien ne se passe, copiez le texte ci-dessous et envoyez-le à "
+      +MAIL_CONTACT+".\n\n"+corps;
+  });
+}
+brancher("f-part","s-part","Candidature partenaire VD Services");
+brancher("f-contact","s-contact","Message depuis le site VD Services");
+</script>

@@ -38,6 +38,16 @@ vérifiés à la visite.
 Quatre données suffisent au routage : l'intention, le ou les corps de métier, la
 nature de la partie concernée et le statut du demandeur.
 
+## `docs/site-accueil.html` — la page d'accueil publique
+
+Page d'accueil de VD Services, destinée à être hébergée sur le domaine de la
+société. Elle présente les quatre besoins, la méthode, les publics, l'identité,
+le recrutement des entreprises partenaires avec la grille de commission
+publique, et le contact. Les deux formulaires fonctionnent sans serveur, par
+ouverture de la messagerie, et sont prêts à être branchés sur un point de
+réception. Trois valeurs sont à compléter avant mise en ligne : le téléphone,
+l'adresse du siège et le SIREN, signalées en rouge sur la page.
+
 ## `docs/audit.html` — la revue avant lancement
 
 Vingt-deux points relevés sur la plateforme, le parcours client et le modèle de
