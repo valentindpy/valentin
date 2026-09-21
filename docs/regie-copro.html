@@ -333,7 +333,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 .legende{display:flex;flex-wrap:wrap;gap:7px 18px;margin-top:11px;padding:0 4px 2px;font-size:.8rem;color:var(--ink-3)}
 .legende span{display:inline-flex;align-items:center;gap:7px}
 .legende i{width:9px;height:9px;border-radius:50%;display:block;flex:none}
-.slist{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;max-height:520px;overflow-y:auto}
+.slist{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;max-height:660px;overflow-y:auto}
 .slist button{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:11px;align-items:center;background:var(--surface);border:0;padding:11px 13px;text-align:left;cursor:pointer;width:100%}
 .slist button:hover{background:var(--surface-2)}
 .slist button[aria-pressed="true"]{background:var(--accent-soft)}
@@ -672,7 +672,7 @@ var SESS={role:null,clientId:null,apercu:false},gateErr="",selK=null;
 try{var _s0=sessionStorage.getItem("vds-sess");if(_s0)SESS=JSON.parse(_s0)||SESS}catch(e){}
 var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[],reglages:[],documents:[],residences:[]};
 var route={v:"dashboard",id:null};
-var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note",type:"tous",per:"semaine",mois:"",cq:"",ctype:"tous",cville:"",crole:"",setat:"tous"};
+var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note",type:"tous",per:"semaine",mois:"",cq:"",ctype:"tous",cville:"",crole:"",setat:"tous",sq:"",sville:"",setatc:"tous"};
 var BD=null,bdTimer=null,qTimer=null;
 
 function coll(name){
@@ -2017,15 +2017,46 @@ function legende(){
 }
 
 /* ---------- espace syndic : vues ---------- */
+function filtresActifs(){
+  return !!((flt.sq||"").trim()||flt.sville||(flt.setatc&&flt.setatc!=="tous"));
+}
+function filtrerCopros(ks){
+  var q=(flt.sq||"").trim().toLowerCase();
+  return ks.filter(function(k){
+    if(flt.sville&&k.ville!==flt.sville)return false;
+    if(flt.setatc&&flt.setatc!=="tous"){
+      var d=domin(compte(demandesCopro(k)));
+      if(flt.setatc==="aucune"?!!d:d!==flt.setatc)return false;
+    }
+    if(q&&[k.nom,k.ville,k.adresse,k.chargeNom].filter(Boolean).join(" ").toLowerCase().indexOf(q)<0)return false;
+    return true;
+  });
+}
+function barreCopros(ks,vis){
+  var villes={};
+  ks.forEach(function(k){if(k.ville)villes[k.ville]=1});
+  var etats=[["tous","Tous les états"],["nouvelle","Nouvelle demande"],["encours","Intervention en cours"],
+    ["termine","Tout est terminé"],["aucune","Aucune demande"]];
+  return '<div class="bar" style="display:flex">'
+    +'<input class="search" id="sq" placeholder="Chercher un immeuble, une adresse, un chargé de copro…" value="'+E(flt.sq||"")+'">'
+    +'<select class="sel" data-flt="sville"><option value="">Toutes les villes</option>'
+    +Object.keys(villes).sort().map(function(v){
+      return '<option value="'+E(v)+'"'+(flt.sville===v?" selected":"")+'>'+E(v)+'</option>'}).join("")+'</select>'
+    +'<select class="sel" data-flt="setatc">'
+    +etats.map(function(x){return '<option value="'+x[0]+'"'+((flt.setatc||"tous")===x[0]?" selected":"")+'>'+x[1]+'</option>'}).join("")
+    +'</select>'
+    +'<span class="note">'+vis.length+' immeuble(s)'+(vis.length!==ks.length?" sur "+ks.length:"")+'</span>'
+    +(filtresActifs()?'<button class="pill" data-act="s-reset">Effacer les filtres</button>':"")
+    +'</div>';
+}
 function vSCarte(){
   var c=clientCourant();
   if(!c)return '<div class="empty"><h3>Compte introuvable</h3><p>Ce code n\'est plus rattaché à un client. Contactez VD Services.</p></div>';
-  var ks=coprosDe(c.id),pos=positions(ks);
-  var hors=pos.filter(function(p){return p.x==null});
+  var ks=coprosDe(c.id);
   var tout=compte(toutesDemandesSyndic(c.id));
   var lots=ks.reduce(function(a,k){return a+(k.lots||0)},0);
   var h='<div class="head"><div><p class="eyebrow">'+E(c.nom)+'</p><h1>Vos copropriétés</h1>'
-    +'<p>Chaque immeuble équipé d\'un QR code apparaît sur la carte. La couleur donne l\'état le plus avancé du dossier.</p></div></div>';
+    +'<p>Chaque immeuble équipé d\'un QR code apparaît sur la carte et dans la liste. La couleur donne l\'état le plus avancé du dossier.</p></div></div>';
   h+='<dl class="tiles">'
     +'<div class="tile"><dt>Copropriétés</dt><dd>'+ks.length+'</dd></div>'
     +'<div class="tile"><dt>Lots suivis</dt><dd>'+lots+'</dd></div>'
@@ -2034,10 +2065,23 @@ function vSCarte(){
     +'<div class="tile"><dt>Terminées</dt><dd>'+tout.termine+'</dd></div>'
     +'</dl>';
   if(!ks.length)return h+'<div class="empty"><h3>Aucune copropriété enregistrée</h3><p>VD Services n\'a pas encore rattaché d\'immeuble à votre compte.</p></div>';
+
+  var vis=filtrerCopros(ks),pos=positions(vis);
+  var hors=pos.filter(function(p){return p.x==null});
+  h+=barreCopros(ks,vis);
   h+='<div class="smap"><div><div class="carte">'+carteSVG(pos)+'</div>'+legende();
   if(hors.length)h+='<p class="note" style="margin-top:10px">Hors carte, commune non reconnue : '
     +hors.map(function(p){return E(p.k.nom)+(p.k.ville?" ("+E(p.k.ville)+")":"")}).join(", ")+'.</p>';
-  h+='</div><div>'+panneauCopro(ks)+'</div></div>';
+  h+='</div><div>'
+    +'<p class="eyebrow" style="margin-bottom:9px">'+(filtresActifs()?"Immeubles retenus":"Tous vos immeubles")+' — ordre alphabétique</p>'
+    +(vis.length?'<div class="slist">'+vis.map(ligneCopro).join("")+'</div>'
+      :'<div class="empty"><h3>Aucun immeuble</h3><p>Aucun ne correspond à cette recherche.</p></div>')
+    +'<p class="note" style="margin-top:10px">Cliquez une ligne, ou une pastille sur la carte : le détail s\'affiche dessous. '
+    +'Les deux chiffres à droite : demandes en cours sur le total reçu.</p>'
+    +'</div></div>';
+
+  var sel=ks.filter(function(k){return k.key===selK})[0];
+  if(sel)h+=detailCopro(sel);
   var orph=demandesHorsCopro(c.id);
   if(orph.length)h+='<div class="sgroup"><p class="eyebrow gt"><i style="background:var(--line-strong)"></i>'
     +'Demandes non rattachées à un immeuble — '+orph.length+'</p>'
@@ -2045,31 +2089,27 @@ function vSCarte(){
     +'<p class="note" style="margin-top:9px">Signalements arrivés par le code de référence plutôt que par le QR code d\'un hall.</p></div>';
   return h;
 }
-function panneauCopro(ks){
-  var sel=ks.filter(function(k){return k.key===selK})[0];
-  if(!sel){
-    return '<p class="eyebrow" style="margin-bottom:9px">Les '+ks.length+' immeubles</p>'
-      +'<div class="slist">'+ks.map(ligneCopro).join("")+'</div>'
-      +'<p class="note" style="margin-top:10px">Cliquez une pastille sur la carte ou une ligne ici : l\'état des demandes s\'affiche aussitôt.</p>';
-  }
+function detailCopro(sel){
   var l=demandesCopro(sel),o=compte(l);
-  var h='<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
-    +'<div><h3>'+E(sel.nom)+'</h3><p class="sub" style="margin-bottom:0">'+E([sel.adresse,sel.ville].filter(Boolean).join(", ")||"Adresse non renseignée")+'</p></div>'
-    +'<button class="btn sm ghost" data-act="s-fermer">Fermer</button></div>';
+  var h='<div class="sgroup"><div class="card" style="border-color:var(--accent)">'
+    +'<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap">'
+    +'<div><h3>'+E(sel.nom)+'</h3><p class="sub" style="margin-bottom:0">'
+    +E([sel.adresse,sel.ville].filter(Boolean).join(", ")||"Adresse non renseignée")+'</p></div>'
+    +'<span class="actions" style="margin:0">'
+    +'<button class="btn sm" data-act="s-copro" data-v="'+E(sel.key)+'">Ouvrir la fiche complète</button>'
+    +'<button class="btn sm ghost" data-act="s-fermer">Fermer</button></span></div>';
   h+='<dl style="margin-top:12px">'
     +kv("Lots",E(sel.lots||"—"))
     +kv("Chargé de copro",E(sel.chargeNom||"—")+(sel.chargeTel?" · "+E(sel.chargeTel):""))
     +kv("Demandes",o.total?ORD.filter(function(k){return o[k]}).map(function(k){
         return '<span class="st '+SETAT[k].c+'">'+o[k]+" "+SETAT[k].l.toLowerCase()+'</span>'}).join(" "):"aucune à ce jour")
-    +'</dl>';
-  h+='<div class="actions" style="margin:14px 0 0">'
-    +'<button class="btn sm" data-act="s-copro" data-v="'+E(sel.key)+'">Ouvrir la fiche complète</button></div></div>';
+    +'</dl></div>';
   if(l.length){
-    h+='<p class="eyebrow" style="margin:20px 0 9px">Les demandes de cet immeuble</p>'
-      +'<div class="rows">'+l.slice(0,8).map(function(d){return ligneDemande(d,true)}).join("")+'</div>';
+    h+='<p class="eyebrow" style="margin:18px 0 9px">Les demandes de cet immeuble</p>'
+      +'<div class="rows">'+l.slice(0,8).map(ligneDemande).join("")+'</div>';
     if(l.length>8)h+='<p class="note" style="margin-top:9px">et '+(l.length-8)+' autre(s), dans la fiche complète.</p>';
   }
-  return h;
+  return h+'</div>';
 }
 function ligneCopro(k){
   var o=compte(demandesCopro(k));
@@ -2077,7 +2117,8 @@ function ligneCopro(k){
     +'<i style="background:'+couleurCopro(o)+'"></i>'
     +'<span><span class="nm">'+E(k.nom)+'</span>'
     +'<span class="ct">'+E([k.ville,k.lots?k.lots+" lots":""].filter(Boolean).join(" · ")||"—")+'</span></span>'
-    +'<span class="cnt">'+(o.total?(o.nouvelle+o.encours)+" / "+o.total:"—")+'</span></button>';
+    +'<span class="cnt" title="demandes en cours sur le total re\u00e7u">'
+    +(o.total?(o.nouvelle+o.encours)+" / "+o.total:"—")+'</span></button>';
 }
 function ligneDemande(d){
   var e=etatS(d),s=SETAT[e],k=coproDe(d),mt=montantSyndic(d);
@@ -2752,7 +2793,7 @@ function formCopro(k){
 /* ---------- actions ---------- */
 var editId=null,editIx=null,convId=null;
 var ACTS_SYNDIC=["deconnexion","fin-apercu","dlg-close","reconnecter","s-pin","s-fermer",
-  "s-copro","s-dem","s-retour","qr-print","qr-png","qr-copy"];
+  "s-copro","s-dem","s-retour","s-reset","qr-print","qr-png","qr-copy"];
 document.addEventListener("click",function(ev){
   var b=ev.target.closest("[data-act],[data-nav],[data-open],[data-flt]");
   if(!b)return;
@@ -2768,6 +2809,7 @@ document.addEventListener("click",function(ev){
   if(act==="fin-apercu"){SESS={role:"admin",clientId:null,apercu:false};sessSave();selK=null;navigate("clients");return}
   if(act==="s-pin"){selK=(selK===b.dataset.v?null:b.dataset.v);paint();return}
   if(act==="s-fermer"){selK=null;paint();return}
+  if(act==="s-reset"){flt.sq="";flt.sville="";flt.setatc="tous";paint();return}
   if(act==="s-copro"){selK=b.dataset.v;navigate("scopro",b.dataset.v);return}
   if(act==="s-dem"){navigate("sdemande",b.dataset.v);return}
   if(act==="s-retour"){navigate("syndic");return}
@@ -3379,6 +3421,7 @@ document.addEventListener("input",function(ev){
   var t=ev.target;
   if(t.id==="q"){flt.q=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
   if(t.id==="cq"){flt.cq=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
+  if(t.id==="sq"){flt.sq=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
   if(t.dataset.act==="bd-marge"){BD.marge=Number(t.value)||0;bdRefresh();return}
   if(t.dataset.bd){
     var i=Number(t.dataset.i);

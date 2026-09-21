@@ -120,8 +120,14 @@ voit exactement. Trois vues en lecture seule :
   en cours, vert tout est terminé, gris aucune demande. Le chiffre dans la
   pastille compte les demandes en cours. Les immeubles d'une même commune sont
   écartés en couronne pour rester distincts ; ceux dont la commune n'est pas
-  reconnue sont listés sous la carte. Un clic ouvre le volet de droite :
-  compteurs par état et demandes récentes de cet immeuble.
+  reconnue sont listés sous la carte.
+  À droite de la carte, la liste complète des immeubles par ordre
+  alphabétique, avec leur pastille d'état et le compte des demandes en cours
+  sur le total reçu. Au-dessus, une recherche sur le nom, l'adresse, la
+  commune et le chargé de copropriété, un filtre par ville et un filtre par
+  état ; la carte et la liste se restreignent ensemble. Un clic sur une ligne
+  ou sur une pastille ouvre le détail sous la carte — compteurs par état et
+  demandes récentes — sans faire disparaître la liste.
 - **Demandes** — la liste complète du portefeuille, filtrable par état, puis la
   fiche : ce qui a été signalé, les photos, l'entreprise retenue avec l'état de
   ses assurances, le montant du devis retenu, le suivi horodaté et, une fois le
