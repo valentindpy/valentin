@@ -79,6 +79,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .hero h1{font-size:clamp(2.1rem,6vw,4rem);line-height:1.02;font-weight:800;letter-spacing:-.035em;max-width:15ch}
 .promesse{counter-reset:pr;list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:12px;max-width:50ch}
 .promesse li{counter-increment:pr;position:relative;padding-left:38px;font-size:clamp(1rem,2vw,1.14rem);color:var(--ink-2);line-height:1.45}
+.promesse .lienf{color:var(--accent-ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;
+  cursor:pointer;font-weight:600}
+.promesse .lienf:hover{text-decoration-thickness:3px}
 .promesse li::before{content:counter(pr);position:absolute;left:0;top:.06em;width:24px;height:24px;border-radius:50%;
   background:var(--accent-soft);color:var(--accent-ink);font-family:var(--mono);font-size:.72rem;
   display:flex;align-items:center;justify-content:center}
@@ -172,7 +175,7 @@ footer a{text-decoration:none;color:var(--ink-2)}
     <p class="eyebrow">Copropriétés, particuliers et collectivités · de Fréjus à Nice</p>
     <h1>Un souci ? On s'en occupe.</h1>
     <ol class="promesse">
-      <li>Décrivez le problème à l'aide de notre formulaire, en quelques secondes.</li>
+      <li>Décrivez le problème à l'aide de notre <a class="lienf" id="lien-form">formulaire</a> en seulement quelques secondes.</li>
       <li>Je choisis dans mon réseau les meilleures entreprises locales et certifiées.</li>
       <li>Je compare les devis pour vous.</li>
       <li>Je suis l'avancée et la réception des travaux.</li>
@@ -372,6 +375,7 @@ function lienForm(parcours){
   return FORMULAIRE+(FORMULAIRE.indexOf("?")>=0?"&":"?")+"depuis=site"+(parcours?"&besoin="+encodeURIComponent(parcours):"");
 }
 document.getElementById("cta-form").href=lienForm("");
+document.getElementById("lien-form").href=lienForm("");
 document.getElementById("cta-haut").href=lienForm("");
 [].slice.call(document.querySelectorAll("[data-form]")).forEach(function(a){
   a.href=lienForm(a.dataset.form);
