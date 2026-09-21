@@ -130,10 +130,6 @@ section{padding-block:clamp(40px,7vw,70px);border-top:1px solid var(--line)}
 .liste{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
 .liste li{padding-left:22px;position:relative;font-size:.93rem;color:var(--ink-2)}
 .liste li::before{content:"";position:absolute;left:0;top:.55em;width:9px;height:2px;background:var(--accent)}
-.grille{display:grid;grid-template-columns:1fr auto;gap:0 20px;margin-top:14px;font-size:.9rem}
-.grille div{padding:8px 0;border-top:1px solid var(--line)}
-.grille div:nth-child(-n+2){border-top:0;font-family:var(--mono);font-size:.61rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
-.grille div:nth-child(even){text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 /* ----- formulaires ----- */
 form{display:flex;flex-direction:column;gap:12px;margin-top:18px}
@@ -177,7 +173,7 @@ footer a{text-decoration:none;color:var(--ink-2)}
 
   <section class="hero" style="border-top:0">
     <p class="eyebrow">Copropriétés, particuliers et collectivités · de Fréjus à Nice</p>
-    <h1>Un souci dans l'immeuble. Un seul interlocuteur.</h1>
+    <h1>Un souci ? On s'en occupe.</h1>
     <p class="sous">Vous décrivez le problème en trente secondes. Je trouve l'entreprise qui convient parmi celles de mon réseau, je récupère les devis, je compare, et je suis l'intervention jusqu'à la fin.</p>
     <div class="cta">
       <a class="btn" id="cta-form" href="#besoins">Déclarer un besoin</a>
@@ -307,17 +303,8 @@ footer a{text-decoration:none;color:var(--ink-2)}
       </div>
 
       <h3 style="font-size:1.05rem;margin-top:26px">Comment je me rémunère</h3>
-      <p class="note" style="margin-top:6px">Une commission d'apport d'affaires, payée par vous, uniquement sur les affaires réellement réalisées et encaissées. Rien à payer pour entrer dans le réseau, rien d'avance, rien si l'affaire ne se fait pas. La grille est publique et figure dans la convention.</p>
-      <div class="grille">
-        <div>Montant HT facturé au client</div><div>Commission</div>
-        <div>Jusqu'à 300 €</div><div>30 €</div>
-        <div>301 à 750 €</div><div>50 €</div>
-        <div>751 à 1 500 €</div><div>100 €</div>
-        <div>1 501 à 5 000 €</div><div>10 %</div>
-        <div>5 001 à 20 000 €</div><div>8 %</div>
-        <div>20 001 à 50 000 €</div><div>6 %</div>
-        <div>Plus de 50 000 €</div><div>Sur accord</div>
-      </div>
+      <p class="note" style="margin-top:6px">Une commission d'apport d'affaires, payée par vous, uniquement sur les affaires réellement réalisées et encaissées. Rien à payer pour entrer dans le réseau, rien d'avance, et rien du tout si l'affaire ne se fait pas.</p>
+      <p class="note" style="margin-top:10px">Le taux se fixe ensemble au moment de la convention, selon votre métier, vos marges et le volume que je vous apporte. Nous en parlons au premier rendez-vous, avant que vous ne signiez quoi que ce soit.</p>
 
       <h3 style="font-size:1.05rem;margin-top:28px">Rejoindre le réseau</h3>
       <form id="f-part">

@@ -42,8 +42,8 @@ nature de la partie concernée et le statut du demandeur.
 
 Page d'accueil de VD Services, destinée à être hébergée sur le domaine de la
 société. Elle présente les quatre besoins, la méthode, les publics, l'identité,
-le recrutement des entreprises partenaires avec la grille de commission
-publique, et le contact. Les deux formulaires fonctionnent sans serveur, par
+le recrutement des entreprises partenaires et le contact. Le taux de
+commission n'est pas affiché : il se négocie au premier rendez-vous. Les deux formulaires fonctionnent sans serveur, par
 ouverture de la messagerie, et sont prêts à être branchés sur un point de
 réception. Trois valeurs sont à compléter avant mise en ligne : le téléphone,
 l'adresse du siège et le SIREN, signalées en rouge sur la page.
