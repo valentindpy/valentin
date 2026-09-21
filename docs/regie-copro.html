@@ -318,8 +318,8 @@ var GRILLE=[
  {max:750,forfait:50,l:"301 € à 750 €",c:"50 € HT"},
  {max:1500,forfait:100,l:"751 € à 1 500 €",c:"100 € HT"},
  {max:5000,taux:0.10,l:"1 501 € à 5 000 €",c:"10 % du montant HT"},
- {max:20000,taux:0.07,l:"5 001 € à 20 000 €",c:"7 % du montant HT"},
- {max:50000,taux:0.05,l:"20 001 € à 50 000 €",c:"5 % du montant HT"},
+ {max:20000,taux:0.08,l:"5 001 € à 20 000 €",c:"8 % du montant HT"},
+ {max:50000,taux:0.06,l:"20 001 € à 50 000 €",c:"6 % du montant HT"},
  {max:Infinity,accord:true,l:"Plus de 50 000 €",c:"Sur accord préalable"}
 ];
 function commission(m){
@@ -1755,7 +1755,7 @@ function texteConvention(p){
   T("En contrepartie de l'apport d'affaires, le Partenaire versera à l'Apporteur une commission déterminée selon le montant total hors taxes effectivement facturé et encaissé auprès du client :");
   GRILLE.forEach(function(g){T("  "+g.l+" ".repeat(Math.max(1,26-g.l.length))+g.c)});
   T("Sauf accord contraire écrit, la tranche correspondant au montant total HT de l'affaire détermine le taux applicable à l'intégralité de ce montant.");
-  T("Exemples : pour une intervention de 2 500 € HT, la commission est de 250 € HT. Pour une intervention de 10 000 € HT, la commission est de 700 € HT.");
+  T("Exemples : pour une intervention de 2 500 € HT, la commission est de 250 € HT. Pour une intervention de 10 000 € HT, la commission est de 800 € HT.");
   T("");
   T("ARTICLE 6 - BASE DE CALCUL");
   T("La commission est calculée sur le montant total HT effectivement encaissé par le Partenaire au titre de l'Affaire Apportée. Sont notamment inclus, lorsqu'ils sont directement rattachables à l'affaire, la prestation initiale, les travaux complémentaires, les avenants, les prestations supplémentaires demandées par le client et les extensions de l'intervention initiale.");

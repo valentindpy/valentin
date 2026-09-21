@@ -119,8 +119,8 @@ commission.
 | 301 € à 750 € | 50 € HT |
 | 751 € à 1 500 € | 100 € HT |
 | 1 501 € à 5 000 € | 10 % |
-| 5 001 € à 20 000 € | 7 % |
-| 20 001 € à 50 000 € | 5 % |
+| 5 001 € à 20 000 € | 8 % |
+| 20 001 € à 50 000 € | 6 % |
 | Plus de 50 000 € | Sur accord préalable |
 
 Le **bordereau de prix** est accessible depuis chaque demande : les postes sont
