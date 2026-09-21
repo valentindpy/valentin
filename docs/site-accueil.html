@@ -77,7 +77,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* ----- hero ----- */
 .hero{padding-block:clamp(44px,8vw,86px) clamp(32px,5vw,54px)}
 .hero h1{font-size:clamp(2.1rem,6vw,4rem);line-height:1.02;font-weight:800;letter-spacing:-.035em;max-width:15ch}
-.hero .sous{font-size:clamp(1.05rem,2.2vw,1.28rem);color:var(--ink-2);max-width:54ch;margin-top:20px}
+.promesse{counter-reset:pr;list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:12px;max-width:50ch}
+.promesse li{counter-increment:pr;position:relative;padding-left:38px;font-size:clamp(1rem,2vw,1.14rem);color:var(--ink-2);line-height:1.45}
+.promesse li::before{content:counter(pr);position:absolute;left:0;top:.06em;width:24px;height:24px;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent-ink);font-family:var(--mono);font-size:.72rem;
+  display:flex;align-items:center;justify-content:center}
 .hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
 .hero .rass{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:28px;font-size:.88rem;color:var(--ink-3)}
 .hero .rass span{display:inline-flex;align-items:center;gap:8px}
@@ -101,12 +105,6 @@ section{padding-block:clamp(40px,7vw,70px);border-top:1px solid var(--line)}
 .besoin h3{font-size:1.08rem}
 .besoin p{font-size:.92rem;color:var(--ink-2)}
 .besoin .go{margin-top:auto;padding-top:12px;font-size:.88rem;font-weight:600;font-family:var(--display);color:var(--accent-ink)}
-
-.etapes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
-.etape{background:var(--surface);padding:20px}
-.etape .n{font-family:var(--mono);font-size:.72rem;color:var(--accent-ink);letter-spacing:.1em}
-.etape h3{font-size:1rem;margin-top:8px}
-.etape p{font-size:.91rem;color:var(--ink-2);margin-top:5px}
 
 .pour{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
 .pour div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px}
@@ -161,7 +159,6 @@ footer a{text-decoration:none;color:var(--ink-2)}
   <div class="wrap nav">
     <span class="marque"><b>VD SERVICES</b><span>Consultation · Pilotage · Coordination</span></span>
     <a class="lien" href="#besoins">Vos besoins</a>
-    <a class="lien" href="#methode">Comment ça marche</a>
     <a class="lien" href="#partenaires">Devenir partenaire</a>
     <a class="lien" href="#contact">Contact</a>
     <a class="btn sm" id="cta-haut" href="#besoins">Déclarer un besoin</a>
@@ -174,7 +171,12 @@ footer a{text-decoration:none;color:var(--ink-2)}
   <section class="hero" style="border-top:0">
     <p class="eyebrow">Copropriétés, particuliers et collectivités · de Fréjus à Nice</p>
     <h1>Un souci ? On s'en occupe.</h1>
-    <p class="sous">Vous décrivez le problème en trente secondes. Je trouve l'entreprise qui convient parmi celles de mon réseau, je récupère les devis, je compare, et je suis l'intervention jusqu'à la fin.</p>
+    <ol class="promesse">
+      <li>Décrivez le problème à l'aide de notre formulaire, en quelques secondes.</li>
+      <li>Je choisis dans mon réseau les meilleures entreprises locales et certifiées.</li>
+      <li>Je compare les devis pour vous.</li>
+      <li>Je suis l'avancée et la réception des travaux.</li>
+    </ol>
     <div class="cta">
       <a class="btn" id="cta-form" href="#besoins">Déclarer un besoin</a>
       <a class="btn ghost" href="#partenaires">Je suis une entreprise</a>
@@ -219,19 +221,6 @@ footer a{text-decoration:none;color:var(--ink-2)}
       </a>
     </div>
     <p class="note" style="margin-top:16px">Vous êtes une commune, une intercommunalité, un bailleur social ou un établissement public ? Le formulaire prévoit une entrée dédiée, avec mise en concurrence à trois devis ou plus.</p>
-  </section>
-
-  <section id="methode">
-    <div class="stitre">
-      <p class="eyebrow">Comment ça marche</p>
-      <h2>Vous dites ce qui ne va pas, je m'occupe du reste</h2>
-    </div>
-    <div class="etapes">
-      <div class="etape"><p class="n">01</p><h3>Vous décrivez</h3><p>Trente secondes sur votre téléphone, avec une photo si vous en avez une. Aucun compte à créer.</p></div>
-      <div class="etape"><p class="n">02</p><h3>Je qualifie</h3><p>Je vous rappelle pour vérifier, et je choisis dans mon réseau les entreprises du métier concerné sur votre commune.</p></div>
-      <div class="etape"><p class="n">03</p><h3>Vous comparez</h3><p>Les entreprises chiffrent sur le même descriptif. Vous recevez des devis lisibles, avec les écarts expliqués.</p></div>
-      <div class="etape"><p class="n">04</p><h3>Je suis le chantier</h3><p>Prise de rendez-vous, relances, réception, photos de fin de travaux. Vous n'appelez qu'une personne.</p></div>
-    </div>
   </section>
 
   <section>
@@ -365,7 +354,6 @@ footer a{text-decoration:none;color:var(--ink-2)}
   <div class="wrap">
     <div class="fl">
       <a href="#besoins">Vos besoins</a>
-      <a href="#methode">Comment ça marche</a>
       <a href="#partenaires">Devenir partenaire</a>
       <a href="#contact">Contact</a>
     </div>
