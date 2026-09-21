@@ -77,8 +77,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* ----- hero ----- */
 .hero{padding-block:clamp(44px,8vw,86px) clamp(32px,5vw,54px)}
 .hero h1{font-size:clamp(2.1rem,6vw,4rem);line-height:1.02;font-weight:800;letter-spacing:-.035em;max-width:15ch}
-.promesse{counter-reset:pr;list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:12px;max-width:50ch}
-.promesse li{counter-increment:pr;position:relative;padding-left:38px;font-size:clamp(1rem,2vw,1.14rem);color:var(--ink-2);line-height:1.45}
+.promesse{counter-reset:pr;list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.promesse li{counter-increment:pr;position:relative;padding-left:38px;font-size:clamp(1rem,2vw,1.14rem);color:var(--ink-2);line-height:1.45;max-width:50ch}
+.promesse li.uneligne{max-width:none}
 .promesse .lienf{color:var(--accent-ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;
   cursor:pointer;font-weight:600}
 .promesse .lienf:hover{text-decoration-thickness:3px}
@@ -179,7 +180,7 @@ footer a{text-decoration:none;color:var(--ink-2)}
       <li>Je choisis dans mon réseau les meilleures entreprises locales et certifiées, adaptées à votre projet.</li>
       <li>Je compare et négocie les devis pour vous.</li>
       <li>Je suis l'avancée et la réception des travaux.</li>
-      <li>Vous êtes satisfait(e). L'artisan est satisfait. Je suis satisfait.</li>
+      <li class="uneligne">Vous êtes satisfait(e). L'artisan est satisfait. Je suis satisfait.</li>
     </ol>
     <div class="cta">
       <a class="btn" id="cta-form" href="#besoins">Déclarer un besoin</a>
