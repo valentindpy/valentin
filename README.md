@@ -207,3 +207,50 @@ texte exact que l'automatisation enverra. La spécification complète est dans
 - L'envoi réel du formulaire vers la base de la plateforme.
 - Le stockage des photos jointes.
 - L'envoi des mails depuis la plateforme, aujourd'hui préparés puis copiés.
+
+## `site/` — le site public, à déposer sur Vercel
+
+Dossier prêt à déployer, produit par `outils/construire-site.py` à partir des
+pages de `docs/`. Ne modifiez pas `site/` à la main : changez `docs/`, puis
+
+```
+python3 outils/construire-site.py
+```
+
+| Fichier | Adresse servie | Contenu |
+|---|---|---|
+| `site/index.html` | `/` | la page d'accueil, avec les liens du formulaire en relatif |
+| `site/formulaire/index.html` | `/formulaire` | le formulaire du QR code, seul et plein écran |
+| `site/vercel.json` | — | URLs propres, en-têtes de sécurité, redirections `/copro` et `/demande` |
+| `site/robots.txt` | `/robots.txt` | indexation ouverte |
+
+Le formulaire est le prototype de `docs/parcours-qr.html`, sans le chronomètre
+ni la fiche de démonstration, avec l'envoi réel au bout. Il lit trois
+paramètres dans l'adresse : `res` préremplit la résidence (c'est ce que les QR
+codes par immeuble ajoutent), `besoin` présélectionne le parcours depuis les
+cartes de la page d'accueil, `depuis` note la provenance.
+
+### Déployer
+
+Sur vercel.com, *Add New* › *Project* › *Import* le dépôt, puis **Root
+Directory : `site`**, framework *Other*, aucune commande de build. Ou, sans
+dépôt, glisser le dossier `site/` dans l'écran de déploiement. Le domaine se
+branche ensuite dans *Settings* › *Domains*.
+
+### Avant la mise en ligne
+
+Trois valeurs en tête du script de `site/formulaire/index.html` :
+
+- `endpoint` — l'adresse qui reçoit la demande. **Tant qu'elle est vide**, la
+  demande ne part pas toute seule : le dernier écran ouvre la messagerie du
+  visiteur avec le récapitulatif déjà rédigé, et le lui dit franchement. Dès
+  qu'une adresse est renseignée, la page l'appelle en POST JSON et affiche
+  « Demande enregistrée ».
+- `mail` — l'adresse de repli utilisée dans ce cas.
+- `telAstreinte` et `telSecond` — les numéros affichés sur le parcours urgence.
+
+Et dans `site/index.html`, par `docs/site-accueil.html` : le téléphone,
+l'adresse du siège, le SIREN et l'hébergeur, signalés en rouge sur la page.
+
+La plateforme `docs/regie-copro.html` **ne peut pas** aller sur Vercel : sa base
+de données est celle de l'artifact claude.ai. Elle reste là où elle est.
