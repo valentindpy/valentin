@@ -345,6 +345,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 .st.n{color:var(--accent-ink);border-color:var(--accent);background:var(--accent-soft)}
 .st.e{color:var(--dep);border-color:var(--dep);background:var(--dep-soft)}
 .st.t{color:var(--pro);border-color:var(--pro);background:var(--pro-soft)}
+.st.s{color:var(--ink-3);border-color:var(--line-strong);background:var(--surface-2)}
 .sgroup{margin-top:24px}
 .sgroup .gt{display:flex;align-items:center;gap:9px;margin-bottom:10px}
 .sgroup .gt i{width:9px;height:9px;border-radius:50%;display:block;flex:none}
@@ -353,6 +354,38 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 @media (max-width:520px){.qrcopro{grid-template-columns:1fr}}
 .acces{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:13px;padding-top:13px;border-top:1px solid var(--line)}
 .acces code{font-family:var(--mono);font-size:.84rem;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:5px 10px;letter-spacing:.09em}
+
+/* ----- devis imprimé ----- */
+/* le padding est porté par la feuille : une largeur de 100 % sur le tableau
+   et un margin-left:auto sur les totaux tombent alors juste. */
+.papier{background:#fff;color:#131A24;width:210mm;min-height:297mm;padding:0 18mm 18mm;margin:0 auto;
+  font-family:var(--body);font-size:10pt;line-height:1.45;display:flex;flex-direction:column}
+.papier .rule{height:4mm;flex:none;display:flex;margin:0 -18mm 14mm}
+.papier .rule i{flex:1;display:block}
+.papier .rule i:nth-child(1){background:#BC2F26}
+.papier .rule i:nth-child(2){background:#8E6206}
+.papier .rule i:nth-child(3){background:#20654A}
+.papier .rule i:nth-child(4){background:#1D6A82}
+.pa-tete{display:flex;justify-content:space-between;gap:12mm;align-items:flex-start}
+.pa-marque{font-family:var(--display);font-weight:800;font-size:16pt;letter-spacing:-.02em;color:#2E4E77}
+.pa-titre{font-family:var(--display);font-weight:700;font-size:20pt;letter-spacing:.04em}
+.pa-min{font-size:8.5pt;color:#5A6472;line-height:1.5;margin-top:3mm}
+.pa-cli{margin-top:12mm;border:.3mm solid #D7DCE3;border-radius:2mm;padding:5mm 6mm;max-width:95mm}
+.pa-obj{margin-top:8mm}
+.pa-t{width:100%;border-collapse:collapse;margin-top:8mm;font-size:9.5pt}
+.pa-t th{text-align:left;font-family:var(--mono);font-size:7.5pt;letter-spacing:.1em;text-transform:uppercase;
+  color:#5A6472;font-weight:400;border-bottom:.4mm solid #131A24;padding:0 3mm 2mm}
+.pa-t td{padding:2.4mm 3mm;border-bottom:.2mm solid #E4E8EE;vertical-align:top}
+.pa-t .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pa-tot{margin-top:8mm;margin-left:auto;width:85mm}
+.pa-tot div{display:flex;justify-content:space-between;gap:8mm;padding:1.8mm 0;font-variant-numeric:tabular-nums}
+.pa-tot .f{border-top:.3mm solid #131A24;font-family:var(--display);font-weight:600;margin-top:1mm;padding-top:2.4mm}
+.pa-tot .g{border-top:.5mm solid #131A24;font-family:var(--display);font-weight:700;font-size:12pt;margin-top:1mm;padding-top:2.4mm}
+.pa-note{margin-top:8mm;font-size:9pt;color:#414B59;white-space:pre-wrap}
+.pa-sig{display:flex;gap:12mm;margin-top:14mm}
+.pa-sig div{flex:1;border:.3mm solid #D7DCE3;border-radius:2mm;height:32mm;padding:4mm}
+.pa-pied{margin-top:auto;padding-top:8mm;font-size:8pt;color:#5A6472;line-height:1.5}
+@media print{.papier{width:auto;min-height:0}}
 </style>
 
 <div class="gate" id="gate" hidden></div>
@@ -378,9 +411,27 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 /* ---------- constantes ---------- */
 var MET={plomberie:"Plomberie",electricite:"Électricité",chauffage:"Chauffage",clim:"Climatisation, VMC",serrurerie:"Serrurerie",couverture:"Couverture, étanchéité",peinture:"Peinture",platrerie:"Plâtrerie",carrelage:"Carrelage, sols",menuiserie:"Menuiserie",verts:"Espaces verts",menage:"Ménage, nettoyage",autre:"Autre"};
 var INTENT={urgence:{l:"Urgence",c:"u"},depannage:{l:"Dépannage",c:"d"},projet:{l:"Projet",c:"p"},energie:{l:"Travaux financés",c:"e"},public:{l:"Consultation publique",c:"a"}};
-var ETATS={nouvelle:{l:"Nouvelle",c:"a"},devis:{l:"Devis demandé",c:"d"},chiffre:{l:"Chiffrée",c:"d"},planifiee:{l:"Planifiée",c:"p"},close:{l:"Clôturée",c:"n"}};
+var ETATS={nouvelle:{l:"Nouvelle",c:"a"},devis:{l:"Devis demandé",c:"d"},chiffre:{l:"Chiffrée",c:"d"},planifiee:{l:"Planifiée",c:"p"},close:{l:"Clôturée",c:"n"},sanssuite:{l:"Sans suite",c:"n"}};
+/* une demande sans suite n'est pas clôturée : elle ne compte ni dans les
+   interventions ni dans le retard, mais ne disparaît pas de l'historique. */
+function ouverte(d){return d.etat!=="close"&&d.etat!=="sanssuite"}
+/* âge d'une demande encore ouverte : une urgence se compte en heures,
+   le reste en jours, et au-delà d'une semaine le retard se voit. */
+function joursOuverts(d){
+  if(!ouverte(d)||!d.recu)return null;
+  var j=Math.floor((new Date()-new Date(d.recu))/86400000);
+  return isNaN(j)?null:j;
+}
+function retardTag(d){
+  var j=joursOuverts(d);
+  if(j===null)return "";
+  if(d.intent==="urgence"&&j>=1)return '<span class="tag u">ouverte depuis '+j+' j</span>';
+  if(j>=14)return '<span class="tag u">'+j+' jours sans réponse</span>';
+  if(j>=7)return '<span class="tag d">'+j+' jours</span>';
+  return "";
+}
 var STATUTS={occupant:"Propriétaire occupant",locataire:"Locataire",bailleur:"Propriétaire bailleur",syndic:"Syndic ou gestionnaire",conseil:"Conseil syndical",pro:"Commerce ou entreprise"};
-var NAV=[{id:"dashboard",l:"Tableau de bord"},{id:"demandes",l:"Demandes"},{id:"prestataires",l:"Prestataires"},{id:"clients",l:"Clients"},{id:"interventions",l:"Historique"},{id:"qrcodes",l:"QR codes"},{id:"facturation",l:"Facturation"}];
+var NAV=[{id:"dashboard",l:"Tableau de bord"},{id:"demandes",l:"Demandes"},{id:"devis",l:"Devis"},{id:"prestataires",l:"Prestataires"},{id:"clients",l:"Clients"},{id:"interventions",l:"Historique"},{id:"qrcodes",l:"QR codes"},{id:"facturation",l:"Facturation"}];
 var NAV_SYNDIC=[{id:"syndic",l:"Carte"},{id:"sdemandes",l:"Demandes"},{id:"sqr",l:"QR codes"}];
 var PRO_ROLES=["syndic","bailleur","pro"];
 var GRILLE=[
@@ -517,7 +568,7 @@ function barres(items){
 function interDe(d){return DATA.interventions.filter(function(i){return i.demandeId===d.id})[0]}
 
 /* ---------- sauvegarde et restauration ---------- */
-var COLLS=["demandes","prestataires","clients","interventions","bordereaux","documents","residences","reglages"];
+var COLLS=["demandes","prestataires","clients","interventions","bordereaux","documents","residences","devis","reglages"];
 function derniereSauvegarde(){
   try{return localStorage.getItem("vd-sauvegarde")||""}catch(e){return ""}
 }
@@ -670,9 +721,10 @@ var db=null,ready=false,etatCx="attente",cxErr="";
    appelle paint() dès la première ligne du script, donc avant l'affectation. */
 var SESS={role:null,clientId:null,apercu:false},gateErr="",selK=null;
 try{var _s0=sessionStorage.getItem("vds-sess");if(_s0)SESS=JSON.parse(_s0)||SESS}catch(e){}
-var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[],reglages:[],documents:[],residences:[]};
+var DATA={demandes:[],prestataires:[],clients:[],interventions:[],bordereaux:[],reglages:[],documents:[],residences:[],devis:[]};
 var route={v:"dashboard",id:null};
-var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note",type:"tous",per:"semaine",mois:"",cq:"",ctype:"tous",cville:"",crole:"",setat:"tous",sq:"",sville:"",setatc:"tous"};
+var flt={etat:"actives",q:"",metier:"",ville:"",tri:"note",type:"tous",per:"semaine",mois:"",cq:"",ctype:"tous",cville:"",crole:"",setat:"tous",sq:"",sville:"",setatc:"tous",
+  pq:"",dq:"",dvCorps:"plomberie",dvPresta:""};
 var BD=null,bdTimer=null,qTimer=null;
 
 function coll(name){
@@ -743,7 +795,7 @@ function paintNav(){
   var nouvelles=DATA.demandes.filter(function(d){return d.etat==="nouvelle"}).length;
   document.getElementById("nav").innerHTML=NAV.map(function(n){
     var cur=(route.v===n.id)||(n.id==="demandes"&&(route.v==="demande"||route.v==="bordereau"))
-      ||(n.id==="prestataires"&&route.v==="documents");
+      ||(n.id==="prestataires"&&route.v==="documents")||(n.id==="devis"&&route.v==="devis-edit");
     return '<button data-nav="'+n.id+'" aria-current="'+cur+'">'+n.l+(n.id==="demandes"&&nouvelles?' <b>'+nouvelles+'</b>':"")+'</button>';
   }).join("");
   document.getElementById("railfoot").innerHTML= etatCx==="ok"
@@ -763,7 +815,7 @@ function vDashboard(){
   var vol=itv.reduce(function(s,i){return s+(Number(i.montant)||0)},0);
   var com=itv.reduce(function(s,i){var c=commission(i.montant);return s+(c.v||0)},0);
   var accord=itv.filter(function(i){return commission(i.montant).accord}).length;
-  var attente=DATA.demandes.filter(function(d){return d.etat!=="close"});
+  var attente=DATA.demandes.filter(ouverte);
   var urg=dem.filter(function(d){return d.intent==="urgence"});
   var label=(PERIODES.filter(function(x){return x[0]===per})[0]||["","" ])[1].toLowerCase();
 
@@ -1041,7 +1093,7 @@ function texteFacture(pid){
 /* ---------- vue : liste des demandes ---------- */
 function vDemandes(){
   var list=DATA.demandes.slice().sort(function(a,b){return (b.recu||"").localeCompare(a.recu||"")});
-  if(flt.etat==="actives")list=list.filter(function(d){return d.etat!=="close"});
+  if(flt.etat==="actives")list=list.filter(ouverte);
   else if(flt.etat!=="toutes")list=list.filter(function(d){return d.etat===flt.etat});
   if(flt.type==="pro")list=list.filter(function(d){return estPro(d.statutDemandeur)});
   else if(flt.type==="part")list=list.filter(function(d){return !estPro(d.statutDemandeur)});
@@ -1054,10 +1106,10 @@ function vDemandes(){
   }
   var h='<div class="head"><div><p class="eyebrow">Boîte de réception</p><h1>Demandes</h1>'
     +'<p>'+DATA.demandes.filter(function(d){return d.etat==="nouvelle"}).length+' nouvelle(s) · '
-    +DATA.demandes.filter(function(d){return d.etat!=="close"}).length+' en cours de traitement</p></div>'
+    +DATA.demandes.filter(ouverte).length+' en cours de traitement</p></div>'
     +'<button class="btn ghost" data-act="demande-manuelle">+ Saisir une demande</button></div>';
   h+='<div class="bar">';
-  [["actives","À traiter"],["nouvelle","Nouvelles"],["devis","Devis demandé"],["planifiee","Planifiées"],["close","Clôturées"],["toutes","Toutes"]]
+  [["actives","À traiter"],["nouvelle","Nouvelles"],["devis","Devis demandé"],["planifiee","Planifiées"],["close","Clôturées"],["sanssuite","Sans suite"],["toutes","Toutes"]]
     .forEach(function(f){h+='<button class="pill" data-flt="etat" data-v="'+f[0]+'" aria-pressed="'+(flt.etat===f[0])+'">'+f[1]+'</button>'});
   h+='<input class="search" id="q" placeholder="Chercher une adresse, un nom, un métier…" value="'+E(flt.q)+'"></div>';
   h+='<div class="bar">'+[["tous","Tout le monde"],["pro","Professionnels"],["part","Particuliers"]].map(function(f){
@@ -1077,7 +1129,8 @@ function vDemandes(){
       +quiBadge(d.statutDemandeur)
       +'<span class="tag '+it.c+'">'+it.l+'</span>'
       +'<span class="tag '+(r==="moe"?"p":"n")+'">'+(r==="moe"?"Coordination":"Envoi direct")+'</span>'
-      +'<span class="tag '+et.c+'">'+et.l+'</span>'+(d.exemple?'<span class="tag ex">exemple</span>':"")
+      +'<span class="tag '+et.c+'">'+et.l+'</span>'
+      +retardTag(d)+(d.exemple?'<span class="tag ex">exemple</span>':"")
       +'</span></button>';
   }).join("")+'</div>';
   return h;
@@ -1306,8 +1359,7 @@ function vBordereau(){
   if(!d)return emptyBlock();
   if(!BD){
     var ex=DATA.bordereaux.filter(function(b){return b.id===d.id})[0];
-    BD=ex?JSON.parse(JSON.stringify(ex)):{id:d.id,marge:12,envoye:false,prix:{},
-      lignes:(prestaLabels(d).length?prestaLabels(d):["Prestation à décrire"]).map(function(l){return {d:l,u:"ens.",q:1}})};
+    BD=ex?JSON.parse(JSON.stringify(ex)):{id:d.id,marge:12,envoye:false,prix:{},lignes:lignesDemande(d)};
     BD.prix=BD.prix||{};BD.lignes=BD.lignes||[];
   }
   var ents=(d.assignes||[]).map(function(id){return DATA.prestataires.filter(function(p){return p.id===id})[0]}).filter(Boolean);
@@ -1330,6 +1382,7 @@ function vBordereau(){
     +'<td class="num" id="tot-cli" style="font-weight:600">'+eur(totClient())+'</td><td></td></tr></tfoot></table></div>';
   h+='<div class="chips" style="margin-top:16px;align-items:center">'
     +'<button class="btn sm ghost" data-act="bd-add">+ Ajouter une ligne</button>'
+    +'<button class="btn sm ghost" data-act="bd-cat">+ Depuis le catalogue</button>'
     +'<span class="note">Marge appliquée au prix client</span>'
     +'<input class="bd-in" id="marge" style="width:80px" type="number" min="0" max="60" step="1" value="'+E(BD.marge)+'" data-act="bd-marge"><span class="note">%</span>'
     +'<button class="btn sm ghost" data-act="bd-envoye">'+(BD.envoye?"Marquer comme non envoyé":"Marquer comme envoyé aux entreprises")+'</button>'
@@ -1411,10 +1464,10 @@ function vPrestataires(){
     +'<div class="actions" style="margin:0"><button class="btn ghost" data-act="reglages">Mes coordonnées</button>'
     +'<button class="btn ghost" data-act="purge">Vider les exemples</button>'
     +'<button class="btn" data-act="presta-new">+ Ajouter une entreprise</button></div></div>';
-  h+='<div class="bar"><input class="search" id="q" placeholder="Chercher une entreprise, une ville…" value="'+E(flt.q)+'"></div>';
+  h+='<div class="bar"><input class="search" id="pq" placeholder="Chercher une entreprise, une ville…" value="'+E(flt.pq)+'"></div>';
 
-  if(flt.q){
-    var q=flt.q.toLowerCase();
+  if(flt.pq){
+    var q=flt.pq.toLowerCase();
     var res=all.filter(function(p){
       return (p.nom+" "+(p.villes||[]).join(" ")+" "+(p.metiers||[]).map(function(m){return MET[m]||m}).join(" ")).toLowerCase().indexOf(q)>=0;
     }).sort(function(a,b){return moy(b)-moy(a)});
@@ -1734,6 +1787,8 @@ function paint(){
       : route.v==="facturation"?vFacturation()
       : route.v==="demandes"?vDemandes()
       : route.v==="demande"?vDemande()
+      : route.v==="devis"?vDevis()
+      : route.v==="devis-edit"?vDevisEdit()
       : route.v==="bordereau"?vBordereau()
       : route.v==="prestataires"?vPrestataires()
       : route.v==="clients"?vClients()
@@ -1870,16 +1925,22 @@ function aMoi(d){
 var SETAT={
   nouvelle:{l:"Nouvelle",c:"n",col:"var(--accent)",r:"var(--accent-ink)"},
   encours:{l:"En cours",c:"e",col:"var(--dep)",r:"var(--dep)"},
-  termine:{l:"Terminée",c:"t",col:"var(--pro)",r:"var(--pro)"}
+  termine:{l:"Terminée",c:"t",col:"var(--pro)",r:"var(--pro)"},
+  sanssuite:{l:"Sans suite",c:"s",col:"var(--ink-3)",r:"var(--ink-3)"}
 };
-var ORD=["nouvelle","encours","termine"];
-function etatS(d){return d.etat==="close"?"termine":d.etat==="nouvelle"?"nouvelle":"encours"}
+var ORD=["nouvelle","encours","termine","sanssuite"];
+function etatS(d){
+  return d.etat==="close"?"termine":d.etat==="sanssuite"?"sanssuite"
+    :d.etat==="nouvelle"?"nouvelle":"encours";
+}
 function compte(l){
-  var o={nouvelle:0,encours:0,termine:0,total:0,urgence:0};
-  (l||[]).forEach(function(d){o[etatS(d)]++;o.total++;if(d.intent==="urgence"&&d.etat!=="close")o.urgence++});
+  var o={nouvelle:0,encours:0,termine:0,sanssuite:0,total:0,urgence:0};
+  (l||[]).forEach(function(d){o[etatS(d)]++;o.total++;if(d.intent==="urgence"&&ouverte(d))o.urgence++});
   return o;
 }
-function domin(o){return o.nouvelle?"nouvelle":o.encours?"encours":o.total?"termine":null}
+function domin(o){
+  return o.nouvelle?"nouvelle":o.encours?"encours":o.termine?"termine":o.sanssuite?"sanssuite":null;
+}
 function couleurCopro(o){var k=domin(o);return k?SETAT[k].col:"var(--line-strong)"}
 
 /* ---------- entreprise, devis, montant ---------- */
@@ -2122,7 +2183,7 @@ function ligneCopro(k){
 }
 function ligneDemande(d){
   var e=etatS(d),s=SETAT[e],k=coproDe(d),mt=montantSyndic(d);
-  var cls=d.intent==="urgence"&&d.etat!=="close"?"u":e==="nouvelle"?"a":e==="encours"?"d":"p";
+  var cls=d.intent==="urgence"&&ouverte(d)?"u":e==="nouvelle"?"a":e==="encours"?"d":e==="termine"?"p":"n";
   var ent=entrepriseDe(d),cs=consultees(d);
   var meta=[dt(d.recu),k?k.nom:(d.residence||d.ville||""),
     ent?"Entreprise : "+ent.nom:(cs.length?cs.length+" entreprise(s) consultée(s)":"entreprise à désigner")].filter(Boolean).join(" · ");
@@ -2311,6 +2372,454 @@ function vueSyndic(){
     : route.v==="sdemandes"?vSDemandes()
     : route.v==="sqr"?vSQR()
     : vSCarte();
+}
+
+/* ---------- catalogue de prix ----------
+   Prix indicatifs HT, pose comprise sauf mention, secteur Alpes-Maritimes.
+   Point de départ seulement : vous corrigez ligne par ligne dans le devis, et
+   « Garder ce prix » enregistre le vôtre pour tous les devis suivants. */
+var CATALOGUE={
+ plomberie:[
+  {l:"Déplacement et diagnostic",u:"forfait",p:85},
+  {l:"Main d'œuvre plombier",u:"h",p:55},
+  {l:"Recherche de fuite non destructive",u:"forfait",p:350},
+  {l:"Débouchage de canalisation",u:"forfait",p:180},
+  {l:"Remplacement d'un mitigeur de lavabo",u:"u",p:150},
+  {l:"Remplacement d'un mitigeur bain-douche",u:"u",p:190},
+  {l:"Remplacement d'un WC complet",u:"u",p:420},
+  {l:"WC suspendu avec bâti support",u:"u",p:950},
+  {l:"Remplacement d'un receveur de douche",u:"u",p:850},
+  {l:"Baignoire remplacée par une douche à l'italienne",u:"ens.",p:3800},
+  {l:"Réfection complète d'une salle de bains",u:"ens.",p:7500},
+  {l:"Chauffe-eau électrique 200 L",u:"u",p:1150},
+  {l:"Chauffe-eau thermodynamique",u:"u",p:2900},
+  {l:"Création d'une alimentation eau froide et chaude",u:"ml",p:65},
+  {l:"Remplacement d'une colonne d'évacuation",u:"ml",p:180}
+ ],
+ electricite:[
+  {l:"Déplacement et diagnostic",u:"forfait",p:85},
+  {l:"Main d'œuvre électricien",u:"h",p:52},
+  {l:"Tableau électrique 2 rangées",u:"u",p:1250},
+  {l:"Mise aux normes du tableau et de la terre",u:"ens.",p:1800},
+  {l:"Remplacement d'un disjoncteur différentiel",u:"u",p:180},
+  {l:"Point lumineux simple",u:"u",p:95},
+  {l:"Prise de courant 16 A",u:"u",p:85},
+  {l:"Prise réseau RJ45",u:"u",p:110},
+  {l:"Interrupteur ou va-et-vient",u:"u",p:65},
+  {l:"Éclairage de communs avec détecteur",u:"u",p:180},
+  {l:"Bloc autonome de secours (BAES)",u:"u",p:150},
+  {l:"Platine d'interphone audio",u:"u",p:1400},
+  {l:"Visiophone",u:"u",p:1900},
+  {l:"Borne de recharge 7,4 kW",u:"u",p:1600}
+ ],
+ chauffage:[
+  {l:"Déplacement et diagnostic",u:"forfait",p:95},
+  {l:"Entretien annuel d'une chaudière gaz",u:"u",p:140},
+  {l:"Chaudière gaz à condensation 24 kW",u:"u",p:4200},
+  {l:"Pompe à chaleur air/eau 8 kW",u:"ens.",p:12500},
+  {l:"Remplacement d'un radiateur à eau",u:"u",p:420},
+  {l:"Radiateur électrique à inertie",u:"u",p:450},
+  {l:"Vanne thermostatique",u:"u",p:65},
+  {l:"Remplacement d'un circulateur",u:"u",p:480},
+  {l:"Désembouage du circuit",u:"forfait",p:850},
+  {l:"Équilibrage d'une colonne de chauffage",u:"forfait",p:650},
+  {l:"Plancher chauffant hydraulique",u:"m²",p:95}
+ ],
+ clim:[
+  {l:"Déplacement et diagnostic",u:"forfait",p:95},
+  {l:"Climatiseur mono-split 3,5 kW",u:"u",p:1850},
+  {l:"Climatiseur bi-split",u:"ens.",p:3200},
+  {l:"Remplacement d'une unité split",u:"u",p:1500},
+  {l:"Entretien et recharge de fluide",u:"u",p:180},
+  {l:"VMC simple flux hygroréglable",u:"ens.",p:1400},
+  {l:"VMC double flux",u:"ens.",p:5500},
+  {l:"Nettoyage des gaines de ventilation",u:"forfait",p:450},
+  {l:"Bouche d'extraction",u:"u",p:75}
+ ],
+ serrurerie:[
+  {l:"Ouverture de porte claquée",u:"forfait",p:150},
+  {l:"Ouverture de porte fermée à clé",u:"forfait",p:240},
+  {l:"Cylindre européen standard",u:"u",p:180},
+  {l:"Cylindre haute sécurité",u:"u",p:320},
+  {l:"Serrure 3 points en applique",u:"u",p:650},
+  {l:"Serrure de boîte aux lettres",u:"u",p:95},
+  {l:"Ferme-porte hydraulique",u:"u",p:320},
+  {l:"Porte de hall avec contrôle d'accès",u:"ens.",p:4500},
+  {l:"Dépannage d'un volet roulant",u:"forfait",p:180},
+  {l:"Motorisation de portail",u:"ens.",p:1900}
+ ],
+ couverture:[
+  {l:"Déplacement et diagnostic",u:"forfait",p:120},
+  {l:"Recherche de fuite en toiture",u:"forfait",p:450},
+  {l:"Réparation ponctuelle de tuiles",u:"forfait",p:380},
+  {l:"Réfection de toiture en tuiles",u:"m²",p:95},
+  {l:"Étanchéité toiture-terrasse bicouche",u:"m²",p:85},
+  {l:"Étanchéité par résine liquide",u:"m²",p:65},
+  {l:"Nettoyage et démoussage de toiture",u:"m²",p:18},
+  {l:"Gouttière en zinc",u:"ml",p:75},
+  {l:"Solin et habillage de souche",u:"ml",p:95},
+  {l:"Fenêtre de toit, fourniture et pose",u:"u",p:1250}
+ ],
+ peinture:[
+  {l:"Peinture murs et plafonds, deux couches",u:"m²",p:28},
+  {l:"Peinture plafond seul",u:"m²",p:22},
+  {l:"Préparation, rebouchage et enduit",u:"m²",p:18},
+  {l:"Ratissage complet",u:"m²",p:25},
+  {l:"Peinture d'une porte, deux faces",u:"u",p:95},
+  {l:"Peinture de boiseries",u:"ml",p:32},
+  {l:"Pose de papier peint",u:"m²",p:26},
+  {l:"Peinture d'une cage d'escalier",u:"ens.",p:4500},
+  {l:"Ravalement de façade, nettoyage et deux couches",u:"m²",p:65},
+  {l:"Échafaudage, montage et location",u:"m²",p:22}
+ ],
+ platrerie:[
+  {l:"Cloison placo 72 mm",u:"m²",p:58},
+  {l:"Doublage sur ossature avec isolant",u:"m²",p:65},
+  {l:"Faux plafond en plaques",u:"m²",p:62},
+  {l:"Coffrage de gaine",u:"ml",p:75},
+  {l:"Trappe de visite",u:"u",p:120},
+  {l:"Reprise de fissure",u:"ml",p:28},
+  {l:"Dépose d'une cloison",u:"m²",p:35},
+  {l:"Enduit de lissage",u:"m²",p:18}
+ ],
+ carrelage:[
+  {l:"Carrelage au sol, pose droite",u:"m²",p:45},
+  {l:"Carrelage grand format",u:"m²",p:60},
+  {l:"Faïence murale",u:"m²",p:55},
+  {l:"Plinthes",u:"ml",p:15},
+  {l:"Dépose d'un ancien carrelage",u:"m²",p:25},
+  {l:"Ragréage",u:"m²",p:22},
+  {l:"Réfection des joints",u:"m²",p:18},
+  {l:"Parquet stratifié, pose",u:"m²",p:28},
+  {l:"Parquet contrecollé, pose",u:"m²",p:42},
+  {l:"Sol souple PVC",u:"m²",p:32}
+ ],
+ menuiserie:[
+  {l:"Fenêtre PVC deux vantaux, double vitrage",u:"u",p:850},
+  {l:"Fenêtre aluminium deux vantaux",u:"u",p:1250},
+  {l:"Porte-fenêtre coulissante aluminium",u:"u",p:2200},
+  {l:"Volet roulant électrique",u:"u",p:950},
+  {l:"Porte d'entrée",u:"u",p:2400},
+  {l:"Bloc-porte intérieur",u:"u",p:450},
+  {l:"Placard sur mesure",u:"ml",p:650},
+  {l:"Moustiquaire",u:"u",p:180},
+  {l:"Dépose et évacuation d'une menuiserie",u:"u",p:120}
+ ],
+ verts:[
+  {l:"Tonte et entretien courant",u:"h",p:42},
+  {l:"Taille de haie",u:"ml",p:12},
+  {l:"Élagage d'un arbre",u:"u",p:280},
+  {l:"Abattage d'un arbre",u:"u",p:650},
+  {l:"Débroussaillage réglementaire (OLD)",u:"m²",p:1.2},
+  {l:"Arrosage automatique",u:"ml",p:28},
+  {l:"Évacuation des déchets verts",u:"m³",p:85},
+  {l:"Contrat d'entretien annuel, petite copropriété",u:"forfait",p:2400}
+ ],
+ menage:[
+  {l:"Nettoyage des parties communes",u:"h",p:32},
+  {l:"Contrat mensuel, un passage par semaine",u:"mois",p:420},
+  {l:"Sortie et rentrée des containers",u:"mois",p:160},
+  {l:"Remise en état après travaux",u:"m²",p:6.5},
+  {l:"Nettoyage de fin de chantier",u:"forfait",p:380},
+  {l:"Lavage de vitres",u:"m²",p:4.5},
+  {l:"Nettoyage de parking à l'autolaveuse",u:"m²",p:2.2},
+  {l:"Désinfection du local poubelles",u:"forfait",p:180}
+ ],
+ autre:[
+  {l:"Déplacement et diagnostic",u:"forfait",p:85},
+  {l:"Main d'œuvre",u:"h",p:48},
+  {l:"Installation et protection de chantier",u:"forfait",p:250},
+  {l:"Évacuation en déchetterie",u:"m³",p:95},
+  {l:"Location d'une benne 8 m³",u:"u",p:420},
+  {l:"Location d'une nacelle, à la journée",u:"j",p:380},
+  {l:"Échafaudage roulant, à la semaine",u:"sem.",p:180},
+  {l:"Coordination SPS",u:"forfait",p:900}
+ ]
+};
+var GESTES_L={pac_ae:"Pompe à chaleur air/eau",pac_aa:"Clim réversible air/air",cet:"Chauffe-eau thermodynamique",
+  granules:"Poêle ou chaudière à granulés",combles:"Isolation des combles",murs_int:"Isolation des murs par l'intérieur",
+  ite:"Isolation par l'extérieur",plancher:"Isolation du plancher bas",fenetres:"Fenêtres et menuiseries",
+  vmc:"VMC double flux",solaire:"Panneaux solaires",audit:"Audit énergétique",ampleur:"Rénovation globale"};
+var TVAS=[["20","20 % — neuf, locaux professionnels"],
+  ["10","10 % — rénovation, logement de plus de 2 ans"],
+  ["5.5","5,5 % — rénovation énergétique"],
+  ["0","0 % — non assujetti"]];
+var ETATS_DEVIS={brouillon:{l:"Brouillon",c:"n"},envoye:{l:"Envoyé",c:"d"},
+  accepte:{l:"Accepté",c:"p"},refuse:{l:"Refusé",c:"u"}};
+
+function tarifs(){
+  var r=DATA.reglages.filter(function(x){return x.id==="tarifs"})[0]||{};
+  return r.prix||{};
+}
+function cleCat(corps,l){return corps+"|"+l}
+function prixCat(corps,l){
+  var t=tarifs(),k=cleCat(corps,l);
+  if(t[k]!=null)return Number(t[k]);
+  var c=(CATALOGUE[corps]||[]).filter(function(x){return x.l===l})[0];
+  return c?c.p:0;
+}
+function catLigne(corps,l){
+  var c=(CATALOGUE[corps]||[]).filter(function(x){return x.l===l})[0];
+  return {corps:corps,d:l,u:c?c.u:"ens.",q:1,pu:prixCat(corps,l)};
+}
+function corpsDispo(){
+  return Object.keys(CATALOGUE).filter(function(k){return MET[k]});
+}
+/* Les postes de départ d'un bordereau, tirés de ce que le demandeur a coché :
+   les prestations du parcours projet, sinon les gestes du parcours énergie,
+   sinon, faute de mieux, un poste par corps de métier. */
+function lignesDemande(d){
+  var out=[];
+  (d.presta||[]).forEach(function(k){
+    var parts=String(k).split("|"),corps=parts.length>1?parts[0]:"",lab=parts.length>1?parts[1]:parts[0];
+    var c=(CATALOGUE[corps]||[]).filter(function(x){return x.l===lab})[0];
+    out.push({d:lab,u:c?c.u:"ens.",q:1,corps:corps});
+  });
+  if(!out.length)(d.gestes||[]).forEach(function(g){
+    out.push({d:GESTES_L[g]||g,u:"ens.",q:1,corps:""});
+  });
+  if(!out.length)(d.trades||[]).forEach(function(t){
+    out.push({d:MET[t]||t,u:"ens.",q:1,corps:t});
+  });
+  if(!out.length)out.push({d:"Prestation à décrire",u:"ens.",q:1,corps:""});
+  return out;
+}
+
+/* ---------- vue : devis ---------- */
+var DV=null,dvTimer=null;
+function numeroDevis(){
+  var an=new Date().getFullYear();
+  var n=DATA.devis.filter(function(d){return String(d.num||"").indexOf("DV-"+an)===0}).length+1;
+  return "DV-"+an+"-"+String(n).padStart(3,"0");
+}
+function devisVide(){
+  return {num:numeroDevis(),date:new Date().toISOString().slice(0,10),validite:30,
+    clientId:"",client:"",adresse:"",objet:"",demandeId:"",statut:"brouillon",
+    remise:0,tva:"10",lignes:[],notes:""};
+}
+function totHT(dv){
+  return (dv.lignes||[]).reduce(function(s,l){return s+(Number(l.q)||0)*(Number(l.pu)||0)},0);
+}
+function totRemise(dv){return totHT(dv)*(Number(dv.remise)||0)/100}
+function totNet(dv){return totHT(dv)-totRemise(dv)}
+function totTVA(dv){return totNet(dv)*(Number(dv.tva)||0)/100}
+function totTTC(dv){return totNet(dv)+totTVA(dv)}
+
+function vDevis(){
+  var list=DATA.devis.slice().sort(function(a,b){return String(b.date||"").localeCompare(String(a.date||""))});
+  if(flt.dq){
+    var q=flt.dq.toLowerCase();
+    list=list.filter(function(d){
+      return [d.num,d.client,d.objet,d.adresse].filter(Boolean).join(" ").toLowerCase().indexOf(q)>=0;
+    });
+  }
+  var ca=DATA.devis.filter(function(d){return d.statut==="accepte"}).reduce(function(s,d){return s+totNet(d)},0);
+  var att=DATA.devis.filter(function(d){return d.statut==="envoye"}).reduce(function(s,d){return s+totNet(d)},0);
+  var h='<div class="head"><div><p class="eyebrow">Chiffrage</p><h1>Devis</h1>'
+    +'<p>Un catalogue de prix par corps d\'état, et le devis se monte en quelques clics.</p></div>'
+    +'<div class="actions" style="margin:0">'
+    +'<button class="btn ghost" data-act="cat-voir">Voir le catalogue</button>'
+    +'<button class="btn" data-act="dv-new">+ Nouveau devis</button></div></div>';
+  h+='<dl class="tiles">'
+    +tile("Devis établis",DATA.devis.length)
+    +tile("En attente de réponse",Math.round(att).toLocaleString("fr-FR"),"€ HT")
+    +tile("Acceptés",Math.round(ca).toLocaleString("fr-FR"),"€ HT")
+    +tile("Prestations au catalogue",corpsDispo().reduce(function(s,c){return s+CATALOGUE[c].length},0))
+    +'</dl>';
+  h+='<div class="warn" style="margin-bottom:16px"><strong>Au nom de qui ?</strong> Un devis émis au nom de '
+    +'VD SERVICES vous place en vendeur des travaux : la décennale devient obligatoire. Tant que vous restez '
+    +'apporteur d\'affaires, servez-vous de cet onglet pour chiffrer, comparer et négocier, et laissez '
+    +'l\'entreprise émettre le devis que le client signe.</div>';
+  h+='<div class="bar" style="display:flex"><input class="search" id="dq" placeholder="Chercher un numéro, un client, un objet…" value="'+E(flt.dq)+'"></div>';
+  if(!list.length)return h+'<div class="empty"><h3>Aucun devis</h3><p>Créez-en un, ou partez d\'une demande : ses prestations cochées remplissent le bordereau.</p></div>';
+  h+='<div class="rows">'+list.map(function(d){
+    var st=ETATS_DEVIS[d.statut]||ETATS_DEVIS.brouillon;
+    return '<button class="row '+(d.statut==="accepte"?"p":d.statut==="refuse"?"u":"a")+'" data-act="dv-open" data-v="'+E(d.id)+'">'
+      +'<span class="stripe"></span><span class="mid">'
+      +'<span class="ref" style="display:block">'+E(d.num)+' · '+E(jour(d.date))+'</span>'
+      +'<span class="t">'+E(d.objet||"Devis sans objet")+'</span>'
+      +'<span class="meta">'+E([d.client,d.adresse].filter(Boolean).join(" · ")||"client à renseigner")
+      +' · '+((d.lignes||[]).length)+' ligne(s)</span></span>'
+      +'<span class="end"><span class="tag '+st.c+'">'+st.l+'</span>'
+      +'<span class="ref">'+E(eur(totNet(d)))+' HT</span></span></button>';
+  }).join("")+'</div>';
+  return h;
+}
+function vDevisEdit(){
+  if(!DV)return '<button class="back" data-nav="devis">← Devis</button>'+emptyBlock();
+  var st=ETATS_DEVIS[DV.statut]||ETATS_DEVIS.brouillon;
+  var corps=flt.dvCorps||"plomberie",presta=CATALOGUE[corps]||[];
+  var h='<button class="back" data-nav="devis">← Tous les devis</button>';
+  h+='<div class="head"><div><p class="eyebrow">'+E(DV.num)+' · '+E(jour(DV.date))+'</p>'
+    +'<h1>'+E(DV.objet||"Nouveau devis")+'</h1>'
+    +'<p><span class="tag '+st.c+'">'+st.l+'</span></p></div>'
+    +'<div class="actions" style="margin:0">'
+    +'<button class="btn" data-act="dv-save">Enregistrer</button>'
+    +'<button class="btn ghost" data-act="dv-print">Imprimer ou PDF</button>'
+    +'<button class="btn ghost" data-act="dv-copy">Copier</button>'
+    +(DV.id?'<button class="btn ghost" data-act="dv-dup">Dupliquer</button>'
+      +'<button class="btn ghost" data-act="dv-del">Supprimer</button>':"")
+    +'</div></div>';
+
+  h+='<div class="split"><div>';
+  /* ---- ajout d'une prestation ---- */
+  h+='<div class="card"><h3>Ajouter une prestation</h3>'
+    +'<p class="sub">Choisissez le corps d\'état, puis la prestation. Le prix du catalogue est repris, vous le corrigez ensuite ligne par ligne.</p>'
+    +'<div class="two">'
+    +'<div class="field"><label for="dv-corps">Corps d\'état</label><select id="dv-corps" data-flt="dvCorps">'
+    +corpsDispo().map(function(c){
+      return '<option value="'+E(c)+'"'+(corps===c?" selected":"")+'>'+E(MET[c])+' ('+CATALOGUE[c].length+')</option>';
+    }).join("")+'</select></div>'
+    +'<div class="field"><label for="dv-presta">Prestation</label><select id="dv-presta" data-flt="dvPresta">'
+    +'<option value="">Choisir…</option>'
+    +presta.map(function(x){
+      return '<option value="'+E(x.l)+'"'+(flt.dvPresta===x.l?" selected":"")+'>'+E(x.l)+' — '+E(eur(prixCat(corps,x.l)))+' / '+E(x.u)+'</option>';
+    }).join("")+'</select></div></div>'
+    +'<div class="actions" style="margin:0">'
+    +'<button class="btn sm" data-act="dv-add" '+(flt.dvPresta?"":"disabled")+'>Ajouter au devis</button>'
+    +'<button class="btn sm ghost" data-act="dv-add-libre">+ Ligne libre</button>'
+    +'<button class="btn sm ghost" data-act="dv-add-tout">Tout le corps d\'état</button>'
+    +'</div></div>';
+
+  /* ---- les lignes ---- */
+  h+='<div class="card"><h3>Le détail</h3>'
+    +'<p class="sub">'+(DV.lignes.length||"Aucune")+' ligne(s). Quantité et prix unitaire se modifient directement.</p>';
+  if(!DV.lignes.length)h+='<p class="note">Rien pour l\'instant. Ajoutez une prestation ci-dessus.</p>';
+  else h+='<div class="scroll"><table class="tbl"><thead><tr>'
+    +'<th style="min-width:200px">Désignation</th><th class="num">U</th><th class="num">Qté</th>'
+    +'<th class="num">P.U. HT</th><th class="num">Total HT</th><th></th></tr></thead><tbody>'
+    +DV.lignes.map(dvRow).join("")
+    +'</tbody></table></div>';
+  h+='</div>';
+
+  h+='</div><div>';
+  /* ---- client ---- */
+  h+='<div class="card"><h3>Le client</h3><p class="sub">Repris en tête du devis imprimé.</p>'
+    +'<div class="field"><label for="dv-cli">Fiche client</label><select id="dv-cli" data-dv="clientId">'
+    +'<option value="">Saisie libre</option>'
+    +DATA.clients.slice().sort(function(a,b){return String(a.nom).localeCompare(String(b.nom))}).map(function(c){
+      return '<option value="'+E(c.id)+'"'+(DV.clientId===c.id?" selected":"")+'>'+E(c.nom)+'</option>';
+    }).join("")+'</select></div>'
+    +fldDv("dv-nom","Nom ou raison sociale","client")
+    +fldDv("dv-adr","Adresse du chantier","adresse")
+    +fldDv("dv-obj","Objet du devis","objet","text","Remise en peinture de la cage d\'escalier")
+    +'<div class="two">'+fldDv("dv-date","Date","date","date")
+    +fldDv("dv-val","Validité (jours)","validite","number")+'</div>'
+    +'<div class="field"><label for="dv-dem">Demande liée</label><select id="dv-dem" data-dv="demandeId">'
+    +'<option value="">Aucune</option>'
+    +DATA.demandes.slice().sort(function(a,b){return String(b.recu||"").localeCompare(String(a.recu||""))}).slice(0,60).map(function(d){
+      return '<option value="'+E(d.id)+'"'+(DV.demandeId===d.id?" selected":"")+'>'+E(d.ref)+' — '+E(d.nom||"")+'</option>';
+    }).join("")+'</select></div>'
+    +'<div class="field"><label for="dv-st">État</label><select id="dv-st" data-dv="statut">'
+    +Object.keys(ETATS_DEVIS).map(function(k){
+      return '<option value="'+k+'"'+(DV.statut===k?" selected":"")+'>'+ETATS_DEVIS[k].l+'</option>';
+    }).join("")+'</select></div></div>';
+
+  /* ---- totaux ---- */
+  h+='<div class="card"><h3>Totaux</h3>'
+    +'<div class="two">'
+    +'<div class="field"><label for="dv-rem">Remise (%)</label>'
+    +'<input id="dv-rem" type="number" min="0" max="80" step="1" value="'+E(DV.remise)+'" data-dv="remise"></div>'
+    +'<div class="field"><label for="dv-tva">TVA</label><select id="dv-tva" data-dv="tva">'
+    +TVAS.map(function(t){return '<option value="'+t[0]+'"'+(String(DV.tva)===t[0]?" selected":"")+'>'+E(t[1])+'</option>'}).join("")
+    +'</select></div></div>'
+    +'<dl style="margin-top:4px">'
+    +'<div class="kv"><dt>Sous-total</dt><dd id="t-brut">'+E(eur(totHT(DV)))+'</dd></div>'
+    +'<div class="kv"><dt>Remise</dt><dd id="t-rem">− '+E(eur(totRemise(DV)))+'</dd></div>'
+    +'<div class="kv"><dt>Total HT</dt><dd id="t-net" style="font-weight:600">'+E(eur(totNet(DV)))+'</dd></div>'
+    +'<div class="kv"><dt>TVA</dt><dd id="t-tva">'+E(eur(totTVA(DV)))+'</dd></div>'
+    +'<div class="kv"><dt>Total TTC</dt><dd id="t-ttc" style="font-family:var(--display);font-weight:700;font-size:1.15rem">'+E(eur(totTTC(DV)))+'</dd></div>'
+    +'</dl></div>';
+  h+='<div class="card"><h3>Mentions</h3>'
+    +area("dv-notes","Conditions particulières",DV.notes,"Acompte de 30 % à la commande. Délai d\'intervention : 3 semaines après acceptation.")
+    +'<p class="note">Le pied du devis imprimé reprend vos coordonnées, la durée de validité et les mentions légales.</p></div>';
+  h+='</div></div>';
+  return h;
+}
+function fldDv(id,label,cle,type,ph){
+  return '<div class="field"><label for="'+id+'">'+label+'</label>'
+    +'<input id="'+id+'" type="'+(type||"text")+'" value="'+E(DV[cle]==null?"":DV[cle])+'" placeholder="'+E(ph||"")+'" data-dv="'+cle+'"></div>';
+}
+function dvRow(l,i){
+  return '<tr data-i="'+i+'">'
+    +'<td><input class="bd-in txt" id="dvd-'+i+'" data-dvl="d" data-i="'+i+'" value="'+E(l.d)+'"></td>'
+    +'<td class="num"><input class="bd-in" style="width:64px" id="dvu-'+i+'" data-dvl="u" data-i="'+i+'" value="'+E(l.u)+'"></td>'
+    +'<td class="num"><input class="bd-in" style="width:70px" id="dvq-'+i+'" type="number" step="0.5" min="0" data-dvl="q" data-i="'+i+'" value="'+E(l.q)+'"></td>'
+    +'<td class="num"><input class="bd-in" style="width:90px" id="dvp-'+i+'" type="number" step="1" min="0" data-dvl="pu" data-i="'+i+'" value="'+E(l.pu)+'"></td>'
+    +'<td class="num" id="dvt-'+i+'" style="white-space:nowrap">'+E(eur((Number(l.q)||0)*(Number(l.pu)||0)))+'</td>'
+    +'<td style="white-space:nowrap">'
+    +(l.corps?'<button class="btn sm ghost" data-act="dv-garder" data-i="'+i+'" title="Garder ce prix au catalogue">€</button>':"")
+    +'<button class="x" data-act="dv-del-ligne" data-i="'+i+'" aria-label="Supprimer la ligne">×</button></td></tr>';
+}
+function dvRefresh(){
+  (DV.lignes||[]).forEach(function(l,i){
+    var e=document.getElementById("dvt-"+i);
+    if(e)e.textContent=eur((Number(l.q)||0)*(Number(l.pu)||0));
+  });
+  var m={"t-brut":eur(totHT(DV)),"t-rem":"− "+eur(totRemise(DV)),"t-net":eur(totNet(DV)),
+    "t-tva":eur(totTVA(DV)),"t-ttc":eur(totTTC(DV))};
+  Object.keys(m).forEach(function(k){var e=document.getElementById(k);if(e)e.textContent=m[k]});
+}
+function texteDevis(dv){
+  var v=societe(),L=[];
+  L.push("DEVIS "+dv.num);
+  L.push(v.nom+" — "+v.forme+" au capital de "+v.capital+" €");
+  if(v.adresse)L.push(v.adresse);
+  L.push("RCS "+v.rcsville+(v.siren?" "+v.siren:"")+(v.tel?" — "+v.tel:"")+(v.email?" — "+v.email:""));
+  L.push("");
+  L.push("Client : "+(dv.client||"—"));
+  if(dv.adresse)L.push("Chantier : "+dv.adresse);
+  L.push("Date : "+jour(dv.date)+"   Validité : "+(dv.validite||30)+" jours");
+  if(dv.objet)L.push("Objet : "+dv.objet);
+  L.push("");
+  L.push("Désignation | U | Qté | P.U. HT | Total HT");
+  (dv.lignes||[]).forEach(function(l){
+    L.push(l.d+" | "+l.u+" | "+l.q+" | "+eur(l.pu)+" | "+eur((Number(l.q)||0)*(Number(l.pu)||0)));
+  });
+  L.push("");
+  L.push("Sous-total : "+eur(totHT(dv)));
+  if(Number(dv.remise))L.push("Remise "+dv.remise+" % : − "+eur(totRemise(dv)));
+  L.push("TOTAL HT : "+eur(totNet(dv)));
+  L.push("TVA "+dv.tva+" % : "+eur(totTVA(dv)));
+  L.push("TOTAL TTC : "+eur(totTTC(dv)));
+  L.push("");
+  if(dv.notes)L.push(dv.notes);
+  L.push("Devis gratuit, valable "+(dv.validite||30)+" jours. Bon pour accord, date et signature du client :");
+  return L.join("\n");
+}
+function htmlDevis(dv){
+  var v=societe();
+  var h='<div class="papier"><div class="rule"><i></i><i></i><i></i><i></i></div>';
+  h+='<div class="pa-tete"><div><p class="pa-marque">'+E(v.nom)+'</p>'
+    +'<p class="pa-min">'+E(v.forme)+' au capital de '+E(v.capital)+' €'
+    +(v.adresse?'<br>'+E(v.adresse):"")
+    +'<br>RCS '+E(v.rcsville)+(v.siren?' '+E(v.siren):"")
+    +(v.tel?'<br>'+E(v.tel):"")+(v.email?'<br>'+E(v.email):"")+'</p></div>'
+    +'<div style="text-align:right"><p class="pa-titre">DEVIS</p>'
+    +'<p class="pa-min">'+E(dv.num)+'<br>'+E(jour(dv.date))
+    +'<br>Validité '+E(dv.validite||30)+' jours</p></div></div>';
+  h+='<div class="pa-cli"><p class="pa-min">Client</p><p><strong>'+E(dv.client||"—")+'</strong>'
+    +(dv.adresse?'<br>'+E(dv.adresse):"")+'</p></div>';
+  if(dv.objet)h+='<p class="pa-obj"><strong>Objet :</strong> '+E(dv.objet)+'</p>';
+  h+='<table class="pa-t"><thead><tr><th>Désignation</th><th class="n">U</th><th class="n">Qté</th>'
+    +'<th class="n">P.U. HT</th><th class="n">Total HT</th></tr></thead><tbody>'
+    +(dv.lignes||[]).map(function(l){
+      return '<tr><td>'+E(l.d)+'</td><td class="n">'+E(l.u)+'</td><td class="n">'+E(l.q)+'</td>'
+        +'<td class="n">'+E(eur(l.pu))+'</td><td class="n">'+E(eur((Number(l.q)||0)*(Number(l.pu)||0)))+'</td></tr>';
+    }).join("")+'</tbody></table>';
+  h+='<div class="pa-tot">'
+    +'<div><span>Sous-total</span><span>'+E(eur(totHT(dv)))+'</span></div>'
+    +(Number(dv.remise)?'<div><span>Remise '+E(dv.remise)+' %</span><span>− '+E(eur(totRemise(dv)))+'</span></div>':"")
+    +'<div class="f"><span>Total HT</span><span>'+E(eur(totNet(dv)))+'</span></div>'
+    +'<div><span>TVA '+E(dv.tva)+' %</span><span>'+E(eur(totTVA(dv)))+'</span></div>'
+    +'<div class="g"><span>Total TTC</span><span>'+E(eur(totTTC(dv)))+'</span></div></div>';
+  if(dv.notes)h+='<p class="pa-note">'+E(dv.notes)+'</p>';
+  h+='<div class="pa-sig"><div><p class="pa-min">Pour '+E(v.nom)+'</p></div>'
+    +'<div><p class="pa-min">Bon pour accord, date et signature du client</p></div></div>';
+  h+='<p class="pa-pied">Devis gratuit et sans engagement, valable '+E(dv.validite||30)+' jours à compter de sa date. '
+    +'Prix fermes pour cette durée. Les travaux ne commencent qu\'après retour du devis signé.</p>';
+  h+='</div>';
+  return h;
 }
 
 /* ---------- boîte de dialogue ---------- */
@@ -2869,6 +3378,88 @@ document.addEventListener("click",function(ev){
       '<button class="btn ghost" data-act="dlg-close">Fermer</button>');
     return;
   }
+  /* ---- devis ---- */
+  if(act&&act.indexOf("dv-")===0&&act!=="dv-new"&&act!=="dv-open"&&!DV)return;
+  if(act==="dv-new"){DV=devisVide();navigate("devis-edit");return}
+  if(act==="dv-open"){
+    var dz=DATA.devis.filter(function(x){return x.id===b.dataset.v})[0];
+    if(!dz)return;
+    DV=JSON.parse(JSON.stringify(dz));DV.lignes=DV.lignes||[];
+    navigate("devis-edit");return;
+  }
+  if(act==="dv-add"){
+    if(!flt.dvPresta)return;
+    DV.lignes.push(catLigne(flt.dvCorps,flt.dvPresta));
+    flt.dvPresta="";paint();return;
+  }
+  if(act==="dv-add-tout"){
+    (CATALOGUE[flt.dvCorps]||[]).forEach(function(x){DV.lignes.push(catLigne(flt.dvCorps,x.l))});
+    paint();return;
+  }
+  if(act==="dv-add-libre"){DV.lignes.push({d:"",u:"ens.",q:1,pu:0});paint();return}
+  if(act==="dv-del-ligne"){DV.lignes.splice(Number(b.dataset.i),1);paint();return}
+  if(act==="dv-garder"){
+    if(!db){toast("Base indisponible");return}
+    var lg=DV.lignes[Number(b.dataset.i)];
+    if(!lg||!lg.corps)return;
+    var t=Object.assign({},tarifs());
+    t[cleCat(lg.corps,lg.d)]=Number(lg.pu)||0;
+    db.doc("reglages/tarifs").set({prix:t})
+      .then(function(){toast("Prix gardé au catalogue : "+eur(lg.pu))})
+      .catch(function(){toast("Écriture refusée")});
+    return;
+  }
+  if(act==="dv-save"){
+    if(!db){toast("Base indisponible");return}
+    var corpsDv=JSON.parse(JSON.stringify(DV)),idDv=corpsDv.id;delete corpsDv.id;
+    (idDv?db.doc("devis/"+idDv).set(corpsDv):db.collection("devis").add(corpsDv))
+      .then(function(ref){if(ref&&ref.id)DV.id=ref.id;toast("Devis "+DV.num+" enregistré");paint()})
+      .catch(function(){toast("Écriture refusée")});
+    return;
+  }
+  if(act==="dv-dup"){
+    var cp=JSON.parse(JSON.stringify(DV));
+    delete cp.id;cp.num=numeroDevis();cp.statut="brouillon";cp.date=new Date().toISOString().slice(0,10);
+    DV=cp;toast("Copie créée, pensez à l'enregistrer");paint();return;
+  }
+  if(act==="dv-del"){
+    if(!DV.id){DV=null;navigate("devis");return}
+    openDlg("Supprimer le devis",E(DV.num),
+      '<p class="warn">Le devis sera définitivement supprimé.</p>',
+      '<button class="btn ghost" data-act="dlg-close">Annuler</button>'
+      +'<button class="btn" data-act="dv-del-go">Supprimer</button>');
+    return;
+  }
+  if(act==="dv-del-go"){
+    if(db&&DV.id)db.doc("devis/"+DV.id).delete().then(function(){closeDlg();DV=null;navigate("devis");toast("Devis supprimé")});
+    return;
+  }
+  if(act==="dv-copy"){copier(texteDevis(DV),"Devis copié");return}
+  if(act==="dv-print"){
+    document.getElementById("printable-txt").textContent="";
+    document.getElementById("printable-html").innerHTML=htmlDevis(DV);
+    setTimeout(function(){window.print()},140);
+    return;
+  }
+  if(act==="cat-voir"){
+    openDlg("Catalogue de prix","Prix indicatifs HT, pose comprise sauf mention. Vos prix enregistrés remplacent les miens.",
+      corpsDispo().map(function(c){
+        return '<p class="sect">'+E(MET[c])+'</p><div class="grille">'
+          +'<div>Prestation</div><div>Prix unitaire</div>'
+          +CATALOGUE[c].map(function(x){
+            var p=prixCat(c,x.l),perso=p!==x.p;
+            return '<div>'+E(x.l)+'</div><div>'+E(eur(p))+' / '+E(x.u)
+              +(perso?' <span class="tag p">votre prix</span>':"")+'</div>';
+          }).join("")+'</div>';
+      }).join(""),
+      '<button class="btn ghost" data-act="cat-reset">Revenir aux prix d\'origine</button>'
+      +'<button class="btn" data-act="dlg-close">Fermer</button>');
+    return;
+  }
+  if(act==="cat-reset"){
+    if(db)db.doc("reglages/tarifs").set({prix:{}}).then(function(){closeDlg();toast("Catalogue réinitialisé")});
+    return;
+  }
   if(act==="qr-copy"){copier(lienRes(b.dataset.v),"Lien copié");return}
   if(act==="qr-print"){
     var rr=DATA.residences.filter(function(x){return x.code===b.dataset.v})[0];
@@ -3165,6 +3756,28 @@ document.addEventListener("click",function(ev){
     return;
   }
   if(act==="bd-add"){BD.lignes.push({d:"",u:"ens.",q:1});paint();return}
+  if(act==="bd-cat"){
+    openDlg("Ajouter depuis le catalogue","Les postes cochés s'ajoutent au bordereau, avec leur unité.",
+      corpsDispo().map(function(c){
+        return '<p class="sect">'+E(MET[c])+'</p><div class="pick">'
+          +CATALOGUE[c].map(function(x){
+            return '<div class="r"><label><input type="checkbox" data-cat="'+E(c)+'|'+E(x.l)+'">'
+              +'<span><span class="nm">'+E(x.l)+'</span><span class="ct">'+E(eur(prixCat(c,x.l)))+' / '+E(x.u)+' au catalogue</span></span></label></div>';
+          }).join("")+'</div>';
+      }).join(""),
+      '<button class="btn ghost" data-act="dlg-close">Annuler</button>'
+      +'<button class="btn" data-act="bd-cat-go">Ajouter au bordereau</button>');
+    return;
+  }
+  if(act==="bd-cat-go"){
+    [].slice.call(document.querySelectorAll("[data-cat]")).forEach(function(i){
+      if(!i.checked)return;
+      var p=i.dataset.cat.split("|");
+      var c=(CATALOGUE[p[0]]||[]).filter(function(x){return x.l===p[1]})[0];
+      BD.lignes.push({d:p[1],u:c?c.u:"ens.",q:1,corps:p[0]});
+    });
+    closeDlg();bdSave();paint();return;
+  }
   if(act==="bd-del"){BD.lignes.splice(Number(b.dataset.i),1);
     Object.keys(BD.prix).forEach(function(k){BD.prix[k].splice(Number(b.dataset.i),1)});bdSave();paint();return}
   if(act==="bd-envoye"){
@@ -3420,6 +4033,17 @@ document.addEventListener("drop",function(ev){
 document.addEventListener("input",function(ev){
   var t=ev.target;
   if(t.id==="q"){flt.q=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
+  if(t.id==="pq"){flt.pq=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
+  if(t.id==="dq"){flt.dq=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
+  if(t.dataset.dv&&DV){
+    DV[t.dataset.dv]=(t.type==="number")?Number(t.value)||0:t.value;
+    dvRefresh();return;
+  }
+  if(t.dataset.dvl&&DV){
+    var li=Number(t.dataset.i),k=t.dataset.dvl;
+    DV.lignes[li][k]=(k==="q"||k==="pu")?Number(t.value)||0:t.value;
+    dvRefresh();return;
+  }
   if(t.id==="cq"){flt.cq=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
   if(t.id==="sq"){flt.sq=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
   if(t.dataset.act==="bd-marge"){BD.marge=Number(t.value)||0;bdRefresh();return}
@@ -3434,6 +4058,23 @@ document.addEventListener("input",function(ev){
 });
 document.addEventListener("change",function(ev){
   var t=ev.target;
+  if(t.dataset.dv&&t.tagName==="SELECT"&&DV){
+    DV[t.dataset.dv]=t.value;
+    if(t.dataset.dv==="clientId"&&t.value){
+      var cl=DATA.clients.filter(function(x){return x.id===t.value})[0];
+      if(cl){DV.client=cl.nom||"";if(!DV.adresse)DV.adresse=cl.ville||""}
+    }
+    if(t.dataset.dv==="demandeId"&&t.value){
+      var dd=DATA.demandes.filter(function(x){return x.id===t.value})[0];
+      if(dd){
+        if(!DV.adresse)DV.adresse=[dd.residence,dd.adresse,dd.ville].filter(Boolean).join(", ");
+        if(!DV.objet)DV.objet=prestaLabels(dd).slice(0,2).join(" · ")||metiersOf(dd).join(" · ");
+        if(!DV.client)DV.client=dd.nom||"";
+      }
+    }
+    paint();return;
+  }
+  if(t.dataset.flt==="dvCorps"){flt.dvCorps=t.value;flt.dvPresta="";paint();return}
   if(t.dataset.flt&&t.tagName==="SELECT"){flt[t.dataset.flt]=t.value;paint();return}
   if(t.dataset.act==="etat"){
     var d=DATA.demandes.filter(function(x){return x.id===t.dataset.id})[0];
