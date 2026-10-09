@@ -258,3 +258,39 @@ l'adresse du siège, le SIREN et l'hébergeur, signalés en rouge sur la page.
 
 La plateforme `docs/regie-copro.html` **ne peut pas** aller sur Vercel : sa base
 de données est celle de l'artifact claude.ai. Elle reste là où elle est.
+
+## `site/app/` — la plateforme en application
+
+Produite par `outils/construire-app.py` à partir de `docs/regie-copro.html`
+et de `outils/supabase-adaptateur.js`. Les écrans sont les mêmes : ce qui
+change est le sol sous leurs pieds.
+
+```
+python3 outils/construire-app.py
+```
+
+L'adaptateur reconstruit, au-dessus de Supabase, le `db` que la plateforme
+croit utiliser : mêmes appels `collection().add()`, `doc().set()`,
+`doc().update()`. Trois mille lignes d'écrans n'ont pas bougé. Il traduit au
+passage les noms — la plateforme dit `statutDemandeur`, Postgres dit
+`statut_demandeur` — range les champs rares des parcours énergie et
+consultation publique dans une colonne `extra`, et recolle les photos sur
+leur demande après chaque lecture.
+
+Ce qui change pour de bon :
+
+| | Avant, dans l'artifact | Maintenant |
+|---|---|---|
+| Connexion | un lien secret et un code | e-mail, mot de passe, mot de passe oublié |
+| Qui voit quoi | le rendu de la page | les règles de la base, incontournables |
+| Photos | des noms de fichiers | de vrais fichiers, affichés par lien signé |
+| Sauvegarde | capacité de la plateforme | téléchargement ordinaire |
+| Lecture des attestations | Claude lisait le PDF | **perdue** : saisie à la main |
+
+La lecture automatique des attestations d'assurance passait par Claude, qui
+n'existe pas sur votre domaine. Le fichier est stocké, les dates et le numéro
+de police se saisissent sur la fiche. La rebrancher demanderait une fonction
+serveur et une clé d'API facturée à l'usage.
+
+La plateforme est servie sur `/app`, en `noindex` : elle n'a rien à faire
+dans un moteur de recherche.
