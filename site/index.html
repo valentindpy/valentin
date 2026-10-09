@@ -169,6 +169,11 @@ form{display:flex;flex-direction:column;gap:12px;margin-top:18px}
 
 footer{border-top:1px solid var(--line);padding-block:26px 46px;font-size:.85rem;color:var(--ink-3);line-height:1.65}
 footer .fl{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:12px}
+/* L'entree de la plateforme : presente, sans peser autant que les
+   rubriques publiques. Elle ne s'adresse pas au meme lecteur. */
+footer .fl .interne{margin-left:auto;opacity:.72}
+footer .fl .interne:hover{opacity:1}
+@media(max-width:560px){footer .fl .interne{margin-left:0}}
 footer a{text-decoration:none;color:var(--ink-2)}
 </style>
 </head>
@@ -376,6 +381,9 @@ footer a{text-decoration:none;color:var(--ink-2)}
       <a href="#besoins">Vos besoins</a>
       <a href="#partenaires">Devenir partenaire</a>
       <a href="#contact">Contact</a>
+      <!-- La plateforme : discrète, mais trouvable sans qu'on ait à
+           dicter une adresse au telephone. -->
+      <a href="/app" class="interne">Espace professionnel</a>
     </div>
     <p><strong>VD SERVICES</strong> — SAS au capital de 1 000 € — RCS Nice — SIREN <span class="acompleter">à compléter</span> — siège <span class="acompleter">adresse à compléter</span>, Mandelieu-la-Napoule. Directeur de la publication : le président de VD SERVICES. Hébergeur : <span class="acompleter">à compléter</span>.</p>
     <p style="margin-top:10px">VD Services intervient comme apporteur d'affaires et coordinateur. Les travaux sont réalisés, facturés et garantis par les entreprises partenaires, qui restent seules responsables de leur exécution. Les devis et factures sont établis par elles, directement au nom du client.</p>
