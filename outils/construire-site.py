@@ -63,6 +63,8 @@ page = u'''<!doctype html>
 <meta name="description" content="Décrivez votre besoin en moins d'une minute. VD Services trouve l'entreprise, compare les devis et suit les travaux. Secteur Fréjus – Nice.">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#2E4E77">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
 <meta property="og:title" content="Signaler un besoin — VD Services">
 <meta property="og:description" content="Décrivez votre besoin en moins d'une minute.">
 <meta property="og:type" content="website">
@@ -472,6 +474,7 @@ tete, corps = acc[:i], acc[i:]
 head = (u'<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
         u'<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
         u'<meta name="theme-color" content="#2E4E77">\n'
+        u'<link rel="icon" href="/favicon.svg" type="image/svg+xml">\n<link rel="icon" href="/favicon.ico" sizes="32x32">\n'
         u'<meta name="description" content="VD Services, Mandelieu-la-Napoule. Vous d\u00e9crivez le probl\u00e8me, '
         u'je choisis l\u2019entreprise, je n\u00e9gocie les devis et je suis les travaux. Secteur Fr\u00e9jus \u2013 Nice.">\n'
         u'<meta name="robots" content="index,follow">\n'

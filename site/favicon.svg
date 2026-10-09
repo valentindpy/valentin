@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="VD Services">
+  <!-- Le monogramme sur le bleu de travail, et sous lui la bande des quatre
+       familles de besoins : la meme signature que sur le site. -->
+  <defs><clipPath id="c"><rect width="64" height="64" rx="12"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <rect width="64" height="64" fill="#2E4E77"/>
+    <text x="32" y="41" text-anchor="middle"
+          font-family="Archivo,'Helvetica Neue',Helvetica,Arial,sans-serif"
+          font-size="31" font-weight="800" letter-spacing="-1" fill="#FFFFFF">VD</text>
+    <rect x="0"  y="53" width="16" height="11" fill="#BC2F26"/>
+    <rect x="16" y="53" width="16" height="11" fill="#8E6206"/>
+    <rect x="32" y="53" width="16" height="11" fill="#20654A"/>
+    <rect x="48" y="53" width="16" height="11" fill="#1D6A82"/>
+  </g>
+</svg>

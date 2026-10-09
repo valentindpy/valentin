@@ -306,6 +306,7 @@ tete, corps = src[:i], src[i:]
 page = (u'<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
         u'<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
         u'<meta name="theme-color" content="#2E4E77">\n'
+        u'<link rel="icon" href="/favicon.svg" type="image/svg+xml">\n<link rel="icon" href="/favicon.ico" sizes="32x32">\n'
         u'<meta name="robots" content="noindex,nofollow">\n'
         + tete + u'\n</head>\n<body>' + corps + u'\n</body>\n</html>\n')
 
