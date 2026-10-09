@@ -13,13 +13,34 @@ modifiez pas \u00e0 la main, changez docs/ puis relancez ce script.
 import io, os, re
 
 src = io.open("docs/parcours-qr.html", encoding="utf-8").read().split("\n")
-def bloc(a, b):            # lignes 1-indexées, bornes incluses
-    return "\n".join(src[a-1:b])
 
-theme   = bloc(6, 43)       # variables de couleur, clair et sombre
-ecran   = bloc(248, 301)    # tout ce qui s'affiche dans l'écran du téléphone
-consts  = bloc(471, 568)    # listes de métiers, prestations, gestes, libellés
-moteur  = bloc(589, 845)    # dots, back, aides, okContact, grp, tiles, render
+
+def bloc(debut, fin_exclue):
+    """Decoupe le prototype entre deux lignes reperees par leur contenu.
+
+    Les bornes etaient des numeros de ligne. Une seule ligne ajoutee dans
+    docs/parcours-qr.html decalait les quatre blocs sans rien dire, et le
+    formulaire sortait coupe en plein milieu. Repere par le contenu, une
+    borne qui disparait arrete le script au lieu de produire une page morte.
+    """
+    def ou(t):
+        i = [k for k, l in enumerate(src) if l == t]
+        assert len(i) == 1, "borne absente ou ambigue dans docs/parcours-qr.html : %r" % t
+        return i[0]
+    a, b = ou(debut), ou(fin_exclue)
+    assert a < b, "bornes inversees : %r avant %r" % (debut, fin_exclue)
+    return "\n".join(src[a:b])
+
+
+# variables de couleur, clair et sombre
+theme  = bloc(":root{", "*{box-sizing:border-box}")
+# tout ce qui s'affiche dans l'ecran du telephone
+ecran  = bloc(".dots{display:flex;gap:5px;margin-bottom:16px}",
+              ".side{display:flex;flex-direction:column;gap:18px}")
+# listes de metiers, prestations, gestes, libelles
+consts = bloc("var TRADES=[", "var S,step,t0,tick,taps;")
+# dots, back, aides, okContact, grp, tiles, render
+moteur = bloc("function dots(){", 'function row(k,v){return \'<div class="frow"><dt>\'+k+\'</dt><dd class="\'+(v?"":"empty")+\'">\'+(esc(v)||"—")+\'</dd></div>\'}')
 
 # --- le moteur est repris tel quel, à trois endroits près -------------------
 old_done = moteur[moteur.index('  else if(step==="done"){'):moteur.index("  sc.innerHTML=h;")]
@@ -304,6 +325,9 @@ function envoyer(){
     .then(function(){fin("ok")})
     .catch(function(e){console.warn("depot",e);fin("erreur")});
 }
+/* Quelle que soit l'issue, le visiteur doit pouvoir repartir vers le site :
+   sans cela, la page du QR code est un cul-de-sac. */
+var RETOUR_ACCUEIL="<a class='cta sec' href='/' style='margin-top:22px'>Retour \u00e0 la page d'accueil</a>";
 function ecranFinal(){
   var suite={urgence:"Je vous rappelle dans les minutes qui viennent.",
     depannage:"Je vous rappelle aujourd'hui, intervention sous 72 heures.",
@@ -314,7 +338,8 @@ function ecranFinal(){
     return '<div class="ok"><div class="mark">\\u2713</div><p class="q">Demande enregistrée</p>'
       +'<p class="qs">'+suite+'</p><span class="ref">réf. '+esc(REF)+'</span>'
       +'<button class="cta sec" data-copier="1">Copier le récapitulatif</button>'
-      +'<p class="note">Gardez cette référence, elle suffit à retrouver votre dossier.</p></div>';
+      +'<p class="note">Gardez cette référence, elle suffit à retrouver votre dossier.</p>'
+      +RETOUR_ACCUEIL+'</div>';
   }
   if(ENVOI==="erreur"){
     return '<div class="ok"><div class="mark mark-err">!</div><p class="q">L\\'envoi n\\'a pas abouti</p>'
@@ -322,7 +347,8 @@ function ecranFinal(){
       +'<a class="cta" href="'+esc(lienMail())+'">Envoyer par e-mail</a>'
       +'<a class="cta sec" href="tel:'+esc(CONFIG.tel)+'">Appeler VD Services</a>'
       +'<button class="cta sec" data-copier="1">Copier le récapitulatif</button>'
-      +'<div class="recap" id="recap">'+esc(RECAP)+'</div></div>';
+      +'<div class="recap" id="recap">'+esc(RECAP)+'</div>'
+      +RETOUR_ACCUEIL+'</div>';
   }
   return '<div class="ok"><div class="mark mark-att">\\u2709</div><p class="q">Dernière étape : envoyez-la</p>'
     +'<p class="qs">Votre demande est prête. Touchez le bouton, votre messagerie s\\'ouvre avec le récapitulatif déjà écrit. '
@@ -332,7 +358,8 @@ function ecranFinal(){
     +'<button class="cta sec" data-copier="1">Copier le récapitulatif</button>'
     +'<span class="ref">réf. '+esc(REF)+'</span>'
     +'<div class="recap" id="recap">'+esc(RECAP)+'</div>'
-    +'<p class="note">'+suite+'</p></div>';
+    +'<p class="note">'+suite+'</p>'
+    +RETOUR_ACCUEIL+'</div>';
 }
 function copier(){
   var t=RECAP;

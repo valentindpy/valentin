@@ -91,7 +91,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .opt.p{border-left-color:var(--pro)} .opt.p b{color:var(--pro)}
 .opt.e{border-left-color:var(--ene)} .opt.e b{color:var(--ene)}
 .opt.a{border-left-color:var(--accent)} .opt.a b{color:var(--accent-ink)}
-.marque{display:flex;flex-direction:column;gap:3px;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:16px}
+.marque{display:flex;flex-direction:column;gap:3px;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:16px;text-decoration:none;color:inherit}
+/* Le titre ramene a l'accueil : c'est la seule sortie depuis le premier ecran. */
+.marque:hover strong{text-decoration:underline;text-underline-offset:3px}
 .marque strong{font-family:var(--display);font-weight:700;font-size:1.1rem;letter-spacing:-.01em;color:var(--ink)}
 .marque span{font-family:var(--mono);font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
 .etoile{background:none;border:0;padding:0;margin-top:14px;text-align:left;font:inherit;font-size:.79rem;
@@ -353,7 +355,7 @@ function render(){
   var keep=(lastStep===step)?sc.scrollTop:0;
   if(step==="intent"){
     h+=dots();
-    h+='<div class="marque"><strong>VD SERVICES</strong><span>Consultation · Pilotage · Coordination et assistance</span></div>';
+    h+='<a class="marque" href="/"><strong>VD SERVICES</strong><span>Consultation · Pilotage · Coordination et assistance</span></a>';
     h+='<p class="q">Que se passe-t-il ?</p><p class="qs">Une seule réponse. Si c\'est grave, vous n\'aurez rien à remplir.</p>';
     h+='<div class="col">'
       +'<button class="opt u" data-intent="urgence"><b>C\'est une urgence</b><span>Fuite qui coule, plus d\'électricité, porte bloquée, dégât en cours</span></button>'
@@ -689,6 +691,9 @@ function envoyer(){
     .then(function(){fin("ok")})
     .catch(function(e){console.warn("depot",e);fin("erreur")});
 }
+/* Quelle que soit l'issue, le visiteur doit pouvoir repartir vers le site :
+   sans cela, la page du QR code est un cul-de-sac. */
+var RETOUR_ACCUEIL="<a class='cta sec' href='/' style='margin-top:22px'>Retour à la page d'accueil</a>";
 function ecranFinal(){
   var suite={urgence:"Je vous rappelle dans les minutes qui viennent.",
     depannage:"Je vous rappelle aujourd'hui, intervention sous 72 heures.",
@@ -699,7 +704,8 @@ function ecranFinal(){
     return '<div class="ok"><div class="mark">\u2713</div><p class="q">Demande enregistrée</p>'
       +'<p class="qs">'+suite+'</p><span class="ref">réf. '+esc(REF)+'</span>'
       +'<button class="cta sec" data-copier="1">Copier le récapitulatif</button>'
-      +'<p class="note">Gardez cette référence, elle suffit à retrouver votre dossier.</p></div>';
+      +'<p class="note">Gardez cette référence, elle suffit à retrouver votre dossier.</p>'
+      +RETOUR_ACCUEIL+'</div>';
   }
   if(ENVOI==="erreur"){
     return '<div class="ok"><div class="mark mark-err">!</div><p class="q">L\'envoi n\'a pas abouti</p>'
@@ -707,7 +713,8 @@ function ecranFinal(){
       +'<a class="cta" href="'+esc(lienMail())+'">Envoyer par e-mail</a>'
       +'<a class="cta sec" href="tel:'+esc(CONFIG.tel)+'">Appeler VD Services</a>'
       +'<button class="cta sec" data-copier="1">Copier le récapitulatif</button>'
-      +'<div class="recap" id="recap">'+esc(RECAP)+'</div></div>';
+      +'<div class="recap" id="recap">'+esc(RECAP)+'</div>'
+      +RETOUR_ACCUEIL+'</div>';
   }
   return '<div class="ok"><div class="mark mark-att">\u2709</div><p class="q">Dernière étape : envoyez-la</p>'
     +'<p class="qs">Votre demande est prête. Touchez le bouton, votre messagerie s\'ouvre avec le récapitulatif déjà écrit. '
@@ -717,7 +724,8 @@ function ecranFinal(){
     +'<button class="cta sec" data-copier="1">Copier le récapitulatif</button>'
     +'<span class="ref">réf. '+esc(REF)+'</span>'
     +'<div class="recap" id="recap">'+esc(RECAP)+'</div>'
-    +'<p class="note">'+suite+'</p></div>';
+    +'<p class="note">'+suite+'</p>'
+    +RETOUR_ACCUEIL+'</div>';
 }
 function copier(){
   var t=RECAP;

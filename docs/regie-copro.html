@@ -908,7 +908,10 @@ function slug(v){
 }
 function baseUrl(){
   var r=DATA.reglages.filter(function(x){return x.id==="societe"})[0]||{};
-  return (r.urlForm||"https://claude.ai/code/artifact/ca8daf71-a72c-489e-a233-d2ce0fdeb712").trim();
+  /* Le formulaire vit desormais sur le domaine. Ce defaut sert tant que
+     le champ des reglages n'a pas ete rempli : un QR code imprime avec
+     une mauvaise adresse se reimprime, il ne se corrige pas. */
+  return (r.urlForm||"https://vd-services.fr/formulaire").trim();
 }
 function lienRes(code){
   var u=baseUrl();
@@ -1210,6 +1213,7 @@ function vDemande(){
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8.5A1.5 1.5 0 014.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0121 8.5v9A1.5 1.5 0 0119.5 19h-15A1.5 1.5 0 013 17.5z"/><circle cx="12" cy="13" r="3.2"/></svg>'
       +E(p.nom)+'<span>'+E(p.h||"")+'</span></button>';
     }).join("")+'</div>':'<p class="note">Rien de joint. Demandez une photo par SMS avant de déranger une entreprise.</p>';
+  h+=carteDevisRecus(d);
   if(d.intent==="public"){
     var att=nbDevisAttendu(d),ret=(d.assignes||[]).length;
     h+='<div class="card" style="border-color:var(--accent)"><h3>Consultation publique</h3>'
@@ -1303,6 +1307,7 @@ function vDemande(){
     +'<button class="btn ghost" data-act="note" data-id="'+E(d.id)+'">Ajouter une note</button>'
     +'<button class="btn ghost" data-act="bordereau" data-id="'+E(d.id)+'">'+(bd?"Ouvrir le bordereau de prix":"Créer un bordereau de prix")+'</button>'
     +'<button class="btn ghost" data-act="cloturer" data-id="'+E(d.id)+'">Clôturer l\'intervention</button>'
+    +'<button class="btn ghost" data-act="dem-suppr" data-id="'+E(d.id)+'" style="margin-left:auto;color:var(--urg);border-color:var(--urg)">Supprimer la demande</button>'
     +'</div>';
   h+='<p class="eyebrow" style="margin:22px 0 9px">Entreprises concernées dans le secteur</p>';
   if(!cand.length)h+='<p class="note">Aucune entreprise du répertoire ne fait '+E(metiersOf(d).join(", ")||"ce métier")+'. Ajoutez un contact depuis l\'onglet Prestataires.</p>';
@@ -1353,14 +1358,99 @@ function candidats(d){
   }).sort(function(a,b){return (b.local?1:0)-(a.local?1:0)||moy(b)-moy(a)});
 }
 
+/* Efface le fichier d'une piece. Version artifact : l'asset de la page. */
+function effacerFichierPiece(doc){
+  if(!doc||!doc.assetId)return Promise.resolve();
+  return (window.claude&&window.claude.use?window.claude.use("assets"):Promise.resolve(null))
+    .then(function(as){if(as)return as.delete(doc.assetId)}).catch(function(){});
+}
+/* Supprime une demande et ce qui n'a plus de sens sans elle. L'ordre compte :
+   les fichiers d'abord, car une fois la fiche partie on ne sait plus ou ils
+   sont ; la fiche en dernier, pour qu'un echec en cours de route laisse une
+   demande encore visible plutot que des pieces orphelines. */
+async function supprimerDemande(id){
+  var pieces=devisRecus(id);
+  for(var i=0;i<pieces.length;i++){
+    try{await effacerFichierPiece(pieces[i])}catch(e){}
+    try{await db.doc("documents/"+pieces[i].id).delete()}catch(e){}
+  }
+  try{await db.doc("bordereaux/"+id).delete()}catch(e){}
+  await db.doc("demandes/"+id).delete();
+}
+
+/* ---------- devis recus des entreprises ----------
+   Une entreprise repond rarement dans la plateforme : elle envoie un PDF par
+   mail. Ces devis-la sont la piece qui justifie le prix retenu, donc ils
+   doivent vivre a cote de la demande, pas dans une boite aux lettres. */
+function devisRecus(did){
+  return DATA.documents.filter(function(x){return x.type==="devis"&&x.demandeId===did})
+    .sort(function(a,b){return String(b.ajouteLe||"").localeCompare(String(a.ajouteLe||""))});
+}
+function carteDevisRecus(d){
+  var l=devisRecus(d.id);
+  var h='<div class="card"><h3>Devis re\u00e7us des entreprises</h3>'
+    +'<p class="sub">'+(l.length?l.length+' devis class\u00e9(s) sur cette demande.'
+      :'Aucun devis re\u00e7u pour l\u2019instant.')+'</p>';
+  h+='<label class="depot" for="up-devis"><strong>D\u00e9poser un devis</strong>'
+    +'<span>PDF ou photo, 20 Mo maximum. Celui que l\u2019entreprise vous a envoy\u00e9 par mail : '
+    +'enregistrez-le ici, il restera attach\u00e9 \u00e0 la demande.</span>'
+    +'<input type="file" id="up-devis" accept="application/pdf,image/png,image/jpeg,image/webp" multiple hidden></label>';
+  h+='<p class="note" id="dv-etat"></p>';
+  if(l.length)h+='<div class="pick" style="margin-top:14px">'+l.map(function(x){
+    return '<div class="r"><span><span class="nm">'+E(x.nom)+'</span>'
+      +'<span class="ct">d\u00e9pos\u00e9 le '+E(jour(x.ajouteLe))
+      +(x.taille||x.sizeBytes?' \u00b7 '+Math.round((x.taille||x.sizeBytes)/1024)+' Ko':"")+'</span></span>'
+      +'<input class="bd-in" style="width:140px" placeholder="Entreprise" data-dv-doc="entreprise" '
+        +'data-id="'+E(x.id)+'" value="'+E(x.entreprise||"")+'">'
+      +'<input class="bd-in num" style="width:100px" type="number" step="1" min="0" placeholder="\u20ac HT" '
+        +'data-dv-doc="montantHt" data-id="'+E(x.id)+'" value="'+(x.montantHt>0?E(x.montantHt):"")+'">'
+      +'<span class="actions" style="margin:0">'
+      +'<button class="btn sm ghost" data-act="piece-ouvrir" data-id="'+E(x.id)+'">Ouvrir</button>'
+      +'<button class="x" data-act="doc-suppr" data-id="'+E(x.id)+'" aria-label="Supprimer">\u00d7</button></span></div>';
+  }).join("")+'</div>';
+  h+='<p class="note" style="margin-top:12px">L\u2019entreprise et le montant sont facultatifs : ils servent \u00e0 retrouver '
+    +'un devis sans l\u2019ouvrir, et \u00e0 comparer d\u2019un coup d\u2019\u0153il. Rien n\u2019est report\u00e9 automatiquement dans le bordereau.</p>';
+  return h+'</div>';
+}
+/* Ouvre une piece stockee. Version artifact : l'adresse est deja dans la fiche. */
+function ouvrirPiece(doc){
+  var u=doc&&(doc.url||(doc.assetId?"/_blob/"+doc.assetId:""));
+  if(!u){toast("Fichier introuvable");return}
+  window.open(u,"_blank","noopener");
+}
+async function televerserDevis(files,did){
+  var etat=document.getElementById("dv-etat");
+  function dire(t){if(etat)etat.textContent=t}
+  if(!db){dire("Base indisponible.");return}
+  var as=null;
+  try{as=window.claude&&window.claude.use?await window.claude.use("assets"):null}catch(e){as=null}
+  if(!as){dire("Le stockage de fichiers n'est pas disponible sur cette page.");return}
+  for(var i=0;i<files.length;i++){
+    var f=files[i];
+    try{
+      dire("Envoi de "+f.name+"\u2026");
+      var up=await as.upload(f);
+      await db.collection("documents").add({demandeId:did,type:"devis",nom:f.name,
+        assetId:up.id,url:up.url,contentType:up.contentType,sizeBytes:up.sizeBytes,
+        entreprise:"",montantHt:null,ajouteLe:new Date().toISOString()});
+      dire("");toast(f.name+" enregistr\u00e9");
+    }catch(err){
+      dire("\u00c9chec sur "+f.name+" : "+((err&&(err.message||err.code))||"erreur"));
+    }
+  }
+}
+
 /* ---------- vue : bordereau de prix ---------- */
 function vBordereau(){
   var d=DATA.demandes.filter(function(x){return x.id===route.id})[0];
   if(!d)return emptyBlock();
   if(!BD){
     var ex=DATA.bordereaux.filter(function(b){return b.id===d.id})[0];
-    BD=ex?JSON.parse(JSON.stringify(ex)):{id:d.id,marge:12,envoye:false,prix:{},lignes:lignesDemande(d)};
+    BD=ex?JSON.parse(JSON.stringify(ex)):{id:d.id,marge:12,envoye:false,prix:{},force:[],lignes:lignesDemande(d)};
     BD.prix=BD.prix||{};BD.lignes=BD.lignes||[];
+    /* force : le prix que vous fixez vous-meme sur une ligne. Il l'emporte
+       sur le moins-disant, et permet de chiffrer avant toute consultation. */
+    BD.force=BD.force||[];
   }
   var ents=(d.assignes||[]).map(function(id){return DATA.prestataires.filter(function(p){return p.id===id})[0]}).filter(Boolean);
   var h='<button class="back" data-nav="demande" data-id="'+E(d.id)+'">← Retour à la demande</button>';
@@ -1373,7 +1463,7 @@ function vBordereau(){
   h+='<div class="card"><div class="scroll"><table class="tbl"><thead><tr>'
     +'<th style="width:34%">Désignation</th><th class="num">U</th><th class="num">Qté</th>'
     +ents.map(function(p){return '<th class="num">'+E(p.nom)+'</th>'}).join("")
-    +'<th class="num">Retenu</th><th class="num">Prix client</th><th></th></tr></thead><tbody id="bdbody">'
+    +'<th class="num">Retenu U</th><th class="num">Prix client</th><th></th></tr></thead><tbody id="bdbody">'
     +BD.lignes.map(function(l,i){return bdRow(l,i,ents)}).join("")
     +'</tbody><tfoot><tr>'
     +'<td colspan="3" style="font-family:var(--display);font-weight:600">Total</td>'
@@ -1387,7 +1477,9 @@ function vBordereau(){
     +'<input class="bd-in" id="marge" style="width:80px" type="number" min="0" max="60" step="1" value="'+E(BD.marge)+'" data-act="bd-marge"><span class="note">%</span>'
     +'<button class="btn sm ghost" data-act="bd-envoye">'+(BD.envoye?"Marquer comme non envoyé":"Marquer comme envoyé aux entreprises")+'</button>'
     +'</div>';
-  h+='<p class="note" style="margin-top:12px">Le « retenu » est le moins-disant des prix saisis. Le prix client est le retenu majoré de votre marge. Le client ne voit jamais les colonnes des entreprises.</p></div>';
+  h+='<p class="note" style="margin-top:12px">Le « retenu » est un prix <strong>unitaire</strong> : par défaut le moins-disant des entreprises, affiché en gris. '
+    +'Saisissez-en un pour imposer le vôtre — c’est ce qui permet de chiffrer avant d’avoir consulté qui que ce soit. Videz la case pour revenir au calcul. '
+    +'Le prix client est le retenu multiplié par la quantité, majoré de votre marge. Le client ne voit jamais les colonnes des entreprises.</p></div>';
   return h;
 }
 function bdRow(l,i,ents){
@@ -1399,13 +1491,20 @@ function bdRow(l,i,ents){
       var v=(BD.prix[p.id]||[])[i];
       return '<td class="num"><input class="bd-in" style="width:86px" type="number" step="1" min="0" placeholder="—" data-bd="p" data-p="'+E(p.id)+'" data-i="'+i+'" value="'+(v==null?"":E(v))+'"></td>';
     }).join("")
-    +'<td class="num" id="ret-'+i+'">'+(retenu(i)==null?"—":eur(retenu(i)*Number(l.q||0)))+'</td>'
+    +'<td class="num"><input class="bd-in" style="width:92px" type="number" step="1" min="0" '
+      +'data-bd="f" data-i="'+i+'" value="'+(BD.force[i]>0?E(BD.force[i]):"")+'" '
+      +'placeholder="'+(moinsDisant(i)==null?"—":E(moinsDisant(i)))+'" '
+      +'title="Prix unitaire. Vide : le moins-disant des entreprises. Rempli : c\'est le votre qui compte."></td>'
     +'<td class="num" id="cli-'+i+'">'+(retenu(i)==null?"—":eur(retenu(i)*Number(l.q||0)*(1+Number(BD.marge||0)/100)))+'</td>'
     +'<td><button class="x" data-act="bd-del" data-i="'+i+'" aria-label="Supprimer la ligne">×</button></td></tr>';
 }
-function retenu(i){
+function moinsDisant(i){
   var vals=Object.keys(BD.prix).map(function(pid){return Number((BD.prix[pid]||[])[i])}).filter(function(v){return v>0});
   return vals.length?Math.min.apply(null,vals):null;
+}
+function retenu(i){
+  var f=Number(BD.force[i]);
+  return f>0?f:moinsDisant(i);
 }
 function totEnt(pid){
   return BD.lignes.reduce(function(s,l,i){var v=Number((BD.prix[pid]||[])[i])||0;return s+v*Number(l.q||0)},0);
@@ -1417,9 +1516,12 @@ function bdRefresh(){
   var ents=(d.assignes||[]).map(function(id){return DATA.prestataires.filter(function(p){return p.id===id})[0]}).filter(Boolean);
   BD.lignes.forEach(function(l,i){
     var r=retenu(i),q=Number(l.q||0);
-    var a=document.getElementById("ret-"+i),b=document.getElementById("cli-"+i);
-    if(a)a.textContent=r==null?"—":eur(r*q);
+    var b=document.getElementById("cli-"+i);
     if(b)b.textContent=r==null?"—":eur(r*q*(1+Number(BD.marge||0)/100));
+    /* le gris de la case Retenu suit les prix des entreprises : il montre
+       a tout moment ce qui s'appliquerait si vous effaciez votre prix. */
+    var f=document.querySelector('input[data-bd="f"][data-i="'+i+'"]');
+    if(f){var m=moinsDisant(i);f.placeholder=(m==null?"—":String(m))}
   });
   ents.forEach(function(p){var e=document.getElementById("tot-"+p.id);if(e)e.textContent=eur(totEnt(p.id))});
   var tr=document.getElementById("tot-ret"),tc=document.getElementById("tot-cli");
@@ -1523,7 +1625,7 @@ function vPrestataires(){
 }
 
 /* ---------- vue : documents d'un partenaire ---------- */
-var docTab="decennale",extraitEnCours=null,analyseEnCours=false;
+var docTab="decennale",extraitEnCours=null,analyseEnCours=false,dvDocTimer=null;
 function vDocuments(){
   var p=DATA.prestataires.filter(function(x){return x.id===route.id})[0];
   if(!p)return '<button class="back" data-nav="prestataires">← Prestataires</button>'+emptyBlock();
@@ -1551,11 +1653,11 @@ function vDocuments(){
   else h+='<div class="pick" style="margin-top:14px">'+liste.map(function(doc){
     var v=validite(doc);
     return '<div class="r"><span><span class="nm">'+E(doc.nom)+'</span>'
-      +'<span class="ct">déposé le '+E(jour(doc.ajouteLe))+' · '+Math.round((doc.sizeBytes||0)/1024)+' Ko'
+      +'<span class="ct">déposé le '+E(jour(doc.ajouteLe))+' · '+Math.round((doc.taille||doc.sizeBytes||0)/1024)+' Ko'
       +(doc.numero?' · n° '+E(doc.numero):"")+(doc.assureur?' · '+E(doc.assureur):"")+'</span></span>'
       +'<span class="tag '+v.c+'">'+E(v.l)+'</span>'
       +'<span class="actions" style="margin:0">'
-      +'<a class="btn sm ghost" href="'+E(doc.url||("/_blob/"+doc.assetId))+'" target="_blank" rel="noopener">Ouvrir</a>'
+      +'<button class="btn sm ghost" data-act="piece-ouvrir" data-id="'+E(doc.id)+'">Ouvrir</button>'
       +(doc.extrait?'<button class="btn sm" data-act="doc-appliquer" data-id="'+E(doc.id)+'">Reprendre</button>':"")
       +'<button class="x" data-act="doc-suppr" data-id="'+E(doc.id)+'" aria-label="Supprimer">×</button></span></div>';
   }).join("")+'</div>';
@@ -3544,11 +3646,43 @@ document.addEventListener("click",function(ev){
       .catch(function(){toast("Écriture refusée")});
     return;
   }
+  if(act==="dem-suppr"){
+    var ds=DATA.demandes.filter(function(x){return x.id===id})[0];
+    if(!ds||!db)return;
+    var np=(ds.photos||[]).length,nd=devisRecus(ds.id).length,
+        nb=DATA.bordereaux.filter(function(x){return x.id===ds.id}).length;
+    var perdu=[np?np+" photo(s) du demandeur":"",nd?nd+" devis re\u00e7u(s)":"",
+               nb?"le bordereau de prix":""].filter(Boolean);
+    openDlg("Supprimer la demande",E(ds.ref)+(ds.nom?" \u00b7 "+E(ds.nom):""),
+      '<p class="warn">Cette demande sera d\u00e9finitivement supprim\u00e9e'
+      +(perdu.length?", avec "+E(perdu.join(", ")):"")
+      +'. Il n\'y a pas de corbeille : rien ne pourra \u00eatre r\u00e9cup\u00e9r\u00e9.</p>'
+      +'<p class="note" style="margin-top:10px">Une intervention d\u00e9j\u00e0 cl\u00f4tur\u00e9e, elle, reste dans l\'historique '
+      +'et dans vos commissions : elle ne sera plus rattach\u00e9e \u00e0 aucune demande.</p>',
+      '<button class="btn ghost" data-act="dlg-close">Annuler</button>'
+      +'<button class="btn" style="background:var(--urg)" data-act="dem-suppr-go" data-id="'+E(ds.id)+'">Supprimer d\u00e9finitivement</button>');
+    return;
+  }
+  if(act==="dem-suppr-go"){
+    if(!db)return;
+    supprimerDemande(id).then(function(){
+      closeDlg();toast("Demande supprim\u00e9e");navigate("demandes");
+    }).catch(function(e){
+      toast("Suppression impossible : "+((e&&(e.message||e.code))||"erreur"));
+    });
+    return;
+  }
+  if(act==="piece-ouvrir"){
+    ouvrirPiece(DATA.documents.filter(function(x){return x.id===b.dataset.id})[0]);
+    return;
+  }
   if(act==="doc-suppr"){
     var dc3=DATA.documents.filter(function(x){return x.id===b.dataset.id})[0];
     if(!dc3||!db)return;
     openDlg("Supprimer la pièce",E(dc3.nom),
-      '<p class="warn">Le fichier et ses informations lues seront définitivement supprimés. La fiche partenaire n\'est pas modifiée.</p>',
+      '<p class="warn">Le fichier sera définitivement supprimé. '
+        +(dc3.type==="devis"?"La demande et son bordereau ne sont pas modifiés."
+          :"Ce qui a déjà été repris sur la fiche partenaire n\'est pas modifié.")+'</p>',
       '<button class="btn ghost" data-act="dlg-close">Annuler</button>'
       +'<button class="btn" data-act="doc-suppr-go" data-id="'+E(dc3.id)+'">Supprimer</button>');
     return;
@@ -3623,7 +3757,7 @@ document.addEventListener("click",function(ev){
       +'<div class="two">'+fld("v-rcsville","Ville du RCS",v2.rcsville)+fld("v-repnom","Représentant",v2.repnom)+'</div>'
       +'<div class="two">'+dl("v-repqualite","Qualité",v2.repqualite,QUALITES,"Président")+fld("v-tel","Téléphone",v2.tel,"tel")+'</div>'
       +fld("v-email","E-mail",v2.email,"email")
-      +fld("v-url","Adresse du formulaire QR",baseUrl(),"text","https://vd-services.fr/copro")
+      +fld("v-url","Adresse du formulaire QR",baseUrl(),"text","https://vd-services.fr/formulaire")
       +fld("v-mdp","Mot de passe du back-office",motdepasse(),"text","laissez vide pour un accès ouvert")
       +'<p class="note">Ce mot de passe filtre l\'entrée du back-office. Les syndics, eux, entrent avec le code d\'accès affiché sur leur fiche client.</p>',
       '<button class="btn ghost" data-act="dlg-close">Annuler</button><button class="btn" data-act="reglages-save">Enregistrer</button>');
@@ -3778,8 +3912,9 @@ document.addEventListener("click",function(ev){
     });
     closeDlg();bdSave();paint();return;
   }
-  if(act==="bd-del"){BD.lignes.splice(Number(b.dataset.i),1);
-    Object.keys(BD.prix).forEach(function(k){BD.prix[k].splice(Number(b.dataset.i),1)});bdSave();paint();return}
+  if(act==="bd-del"){var bi=Number(b.dataset.i);
+    BD.lignes.splice(bi,1);BD.force.splice(bi,1);
+    Object.keys(BD.prix).forEach(function(k){BD.prix[k].splice(bi,1)});bdSave();paint();return}
   if(act==="bd-envoye"){
     BD.envoye=!BD.envoye;bdSave();
     if(BD.envoye&&d)maj(d.id,{etat:"devis",journal:journalise(d,"Bordereau de prix envoyé aux entreprises.")});
@@ -4009,6 +4144,12 @@ document.addEventListener("change",function(ev){
     ev.target.value="";
     return;
   }
+  if(ev.target.id==="up-devis"){
+    var fd=ev.target.files;
+    if(fd&&fd.length)televerserDevis(fd,route.id);
+    ev.target.value="";
+    return;
+  }
   if(ev.target.id!=="up")return;
   var f=ev.target.files;
   if(f&&f.length)televerser(f,route.id,docTab);
@@ -4028,7 +4169,9 @@ document.addEventListener("drop",function(ev){
   if(!z)return;
   ev.preventDefault();z.classList.remove("sur");
   var f=ev.dataTransfer&&ev.dataTransfer.files;
-  if(f&&f.length)televerser(f,route.id,docTab);
+  if(!f||!f.length)return;
+  if(z.getAttribute("for")==="up-devis")televerserDevis(f,route.id);
+  else televerser(f,route.id,docTab);
 });
 document.addEventListener("input",function(ev){
   var t=ev.target;
@@ -4046,12 +4189,27 @@ document.addEventListener("input",function(ev){
   }
   if(t.id==="cq"){flt.cq=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
   if(t.id==="sq"){flt.sq=t.value;clearTimeout(qTimer);qTimer=setTimeout(paint,220);return}
+  if(t.dataset.dvDoc){
+    /* ecrit avec un temps d'arret : on ne veut pas une requete par frappe. */
+    var cible=t.dataset.id,champ=t.dataset.dvDoc,brut=t.value;
+    clearTimeout(dvDocTimer);
+    dvDocTimer=setTimeout(function(){
+      if(!db)return;
+      var patch={};patch[champ]=(champ==="montantHt")?(brut===""?null:Number(brut)):brut;
+      db.doc("documents/"+cible).update(patch).catch(function(e){
+        toast("Enregistrement impossible : "+((e&&(e.message||e.code))||"erreur"));
+      });
+    },700);
+    return;
+  }
   if(t.dataset.act==="bd-marge"){BD.marge=Number(t.value)||0;bdRefresh();return}
   if(t.dataset.bd){
     var i=Number(t.dataset.i);
     if(t.dataset.bd==="p"){
       var pid=t.dataset.p;BD.prix[pid]=BD.prix[pid]||[];
       BD.prix[pid][i]=t.value===""?null:Number(t.value);
+    }else if(t.dataset.bd==="f"){
+      BD.force[i]=t.value===""?null:Number(t.value);
     }else BD.lignes[i][t.dataset.bd]=t.dataset.bd==="q"?Number(t.value):t.value;
     bdRefresh();
   }

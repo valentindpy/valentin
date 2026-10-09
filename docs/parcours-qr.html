@@ -261,7 +261,9 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
 .opt.p{border-left-color:var(--pro)} .opt.p b{color:var(--pro)}
 .opt.e{border-left-color:var(--ene)} .opt.e b{color:var(--ene)}
 .opt.a{border-left-color:var(--accent)} .opt.a b{color:var(--accent-ink)}
-.marque{display:flex;flex-direction:column;gap:3px;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:16px}
+.marque{display:flex;flex-direction:column;gap:3px;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:16px;text-decoration:none;color:inherit}
+/* Le titre ramene a l'accueil : c'est la seule sortie depuis le premier ecran. */
+.marque:hover strong{text-decoration:underline;text-underline-offset:3px}
 .marque strong{font-family:var(--display);font-weight:700;font-size:1.1rem;letter-spacing:-.01em;color:var(--ink)}
 .marque span{font-family:var(--mono);font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
 .etoile{background:none;border:0;padding:0;margin-top:14px;text-align:left;font:inherit;font-size:.79rem;
@@ -639,7 +641,7 @@ function render(){
   var keep=(lastStep===step)?sc.scrollTop:0;
   if(step==="intent"){
     h+=dots();
-    h+='<div class="marque"><strong>VD SERVICES</strong><span>Consultation · Pilotage · Coordination et assistance</span></div>';
+    h+='<a class="marque" href="/"><strong>VD SERVICES</strong><span>Consultation · Pilotage · Coordination et assistance</span></a>';
     h+='<p class="q">Que se passe-t-il ?</p><p class="qs">Une seule réponse. Si c\'est grave, vous n\'aurez rien à remplir.</p>';
     h+='<div class="col">'
       +'<button class="opt u" data-intent="urgence"><b>C\'est une urgence</b><span>Fuite qui coule, plus d\'électricité, porte bloquée, dégât en cours</span></button>'

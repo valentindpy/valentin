@@ -43,7 +43,8 @@ var TABLES={
 var RENOMME={
   precision:"precision_lieu",   /* `precision` est réservé en SQL */
   date:"date_inter",            /* interventions */
-  dateDevis:"date_devis"
+  dateDevis:"date_devis",
+  force:"prix_forces"           /* bordereaux : `force`, Postgres l'emploie ailleurs */
 };
 var RENOMME_INV={};
 Object.keys(RENOMME).forEach(function(k){RENOMME_INV[RENOMME[k]]=k});

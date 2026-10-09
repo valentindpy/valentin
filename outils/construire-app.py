@@ -221,6 +221,71 @@ rep(u"""      (window.claude&&window.claude.use?window.claude.use("downloads"):P
     "export PNG du QR code")
 
 # le fichier d'une pi\u00e8ce supprim\u00e9e part du casier
+# ---------------------------------------------------------------------
+# 5 ter. Les pièces : ouverture, dépôt des devis, effacement
+#        Le casier Supabase est privé : aucune pièce n'a d'adresse fixe,
+#        il faut en demander une, valable une heure, au moment du clic.
+# ---------------------------------------------------------------------
+vieux_ouvrir = src[src.index("/* Ouvre une piece stockee. Version artifact"):
+                   src.index("async function televerserDevis(files,did){")]
+neuf_ouvrir = u"""/* Ouvre une piece stockee. Le casier est prive : on demande un lien
+   signe, valable une heure. La fenetre est ouverte AVANT l'aller-retour,
+   sinon le navigateur la prend pour une fenetre surgissante et la bloque. */
+function ouvrirPiece(doc){
+  if(!doc||!doc.chemin){toast("Fichier introuvable");return}
+  var w=window.open("","_blank");
+  sbLienSigne("documents",doc.chemin).then(function(u){
+    if(w)w.location=u; else window.open(u,"_blank","noopener");
+  }).catch(function(e){
+    if(w)w.close();
+    toast("Ouverture impossible : "+((e&&(e.message||e.code))||"erreur"));
+  });
+}
+"""
+assert src.count(vieux_ouvrir) == 1, u"le bloc d'ouverture des pièces a changé"
+src = src.replace(vieux_ouvrir, neuf_ouvrir, 1)
+
+# l'effacement du fichier : l'asset de la page devient l'objet du casier
+rep(u"""/* Efface le fichier d'une piece. Version artifact : l'asset de la page. */
+function effacerFichierPiece(doc){
+  if(!doc||!doc.assetId)return Promise.resolve();
+  return (window.claude&&window.claude.use?window.claude.use("assets"):Promise.resolve(null))
+    .then(function(as){if(as)return as.delete(doc.assetId)}).catch(function(){});
+}""",
+    u"""/* Efface le fichier d'une piece : l'objet quitte le casier Supabase. */
+function effacerFichierPiece(doc){
+  if(!doc||!doc.chemin)return Promise.resolve();
+  return sbSupprimerFichier("documents",doc.chemin).catch(function(){});
+}""",
+    u"effacement du fichier d'une pièce")
+
+vieux_dev = src[src.index("async function televerserDevis(files,did){"):
+                src.index("/* ---------- vue : bordereau de prix ---------- */")]
+neuf_dev = u"""async function televerserDevis(files,did){
+  var etat=document.getElementById("dv-etat");
+  function dire(t){if(etat)etat.textContent=t}
+  if(!db){dire("Base indisponible.");return}
+  for(var i=0;i<files.length;i++){
+    var f=files[i];
+    try{
+      dire("Envoi de "+f.name+"…");
+      var ext=(f.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"");
+      var chemin="devis/"+did+"/"+Date.now()+"."+ext;
+      await sbEnvoyerFichier("documents",chemin,f);
+      await db.collection("documents").add({demandeId:did,type:"devis",nom:f.name,
+        chemin:chemin,typeMime:f.type,taille:f.size,
+        entreprise:"",montantHt:null,ajouteLe:new Date().toISOString()});
+      dire("");toast(f.name+" enregistre");
+    }catch(err){
+      dire("Echec sur "+f.name+" : "+((err&&(err.message||err.code))||"erreur"));
+    }
+  }
+}
+
+"""
+assert src.count(vieux_dev) == 1, u"le depot des devis a change"
+src = src.replace(vieux_dev, neuf_dev, 1)
+
 rep(u"""    if(dc4.assetId){
       (window.claude&&window.claude.use?window.claude.use("assets"):Promise.resolve(null))
         .then(function(as){if(as)as.delete(dc4.assetId).catch(function(){})});
