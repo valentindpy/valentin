@@ -237,17 +237,21 @@ Directory : `site`**, framework *Other*, aucune commande de build. Ou, sans
 dépôt, glisser le dossier `site/` dans l'écran de déploiement. Le domaine se
 branche ensuite dans *Settings* › *Domains*.
 
-### Avant la mise en ligne
+### Le dépôt d'une demande
 
-Trois valeurs en tête du script de `site/formulaire/index.html` :
+Le formulaire écrit directement dans la base Supabase, sans bibliothèque :
+l'API se parle en HTTP ordinaire. Une demande déposée crée une ligne dans
+`demandes`, puis les photos partent dans le casier `photos` et une ligne par
+photo dans la table du même nom. La clé utilisée est la clé **publique** : elle
+n'autorise que le dépôt, jamais la lecture, et c'est le SQL qui l'impose.
 
-- `endpoint` — l'adresse qui reçoit la demande. **Tant qu'elle est vide**, la
-  demande ne part pas toute seule : le dernier écran ouvre la messagerie du
-  visiteur avec le récapitulatif déjà rédigé, et le lui dit franchement. Dès
-  qu'une adresse est renseignée, la page l'appelle en POST JSON et affiche
-  « Demande enregistrée ».
-- `mail` — l'adresse de repli utilisée dans ce cas.
-- `telAstreinte` et `telSecond` — les numéros affichés sur le parcours urgence.
+Si la base refuse ou ne répond pas, le dernier écran ne ment pas : il bascule
+sur l'envoi par messagerie, récapitulatif déjà rédigé. Une demande n'est
+jamais perdue sans que le demandeur le sache.
+
+Réglages en tête du script de `site/formulaire/index.html` : `base` et `cle`
+pour Supabase, `mail` pour le repli, `tel` pour les boutons d'appel,
+`telAstreinte` et `telSecond` pour le parcours urgence.
 
 Et dans `site/index.html`, par `docs/site-accueil.html` : le téléphone,
 l'adresse du siège, le SIREN et l'hébergeur, signalés en rouge sur la page.

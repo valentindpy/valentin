@@ -43,6 +43,17 @@ new_tel2 = """    h+='<a class="cta" style="margin-top:0;background:var(--ink)" 
 assert moteur.count(old_tel2) == 1
 moteur = moteur.replace(old_tel2, new_tel2)
 
+# le prototype cochait une case « photo » ; ici le fichier part vraiment
+old_photo = ("""    h+='<button class="opt n" data-photo="1" aria-pressed="'+S.photo+'">"""
+             """<b>'+(S.photo?"Photo jointe ✓":"Prendre une photo")+'</b>"""
+             """<span>'+(S.photo?"Touchez pour retirer":"Souvent suffisant pour chiffrer sans déplacement")+'</span></button>';""")
+new_photo = ("""    h+='<label class="opt n" for="f-photo" style="display:block;cursor:pointer">'
+      +'<b>'+(FICHIERS.length?FICHIERS.length+" photo(s) jointe(s) ✓":"Ajouter une photo")+'</b>'
+      +'<span>'+(FICHIERS.length?"Touchez pour refaire votre choix":"Souvent suffisant pour chiffrer sans déplacement")+'</span>'
+      +'<input id="f-photo" type="file" accept="image/*" multiple hidden></label>';""")
+assert moteur.count(old_photo) == 1, "le bouton photo du prototype a changé"
+moteur = moteur.replace(old_photo, new_photo)
+
 page = u'''<!doctype html>
 <html lang="fr">
 <head>
@@ -120,7 +131,12 @@ var METIERS={plomberie:"Plomberie",electricite:"Électricité",chauffage:"Chauff
   peinture:"Peinture",platrerie:"Plâtrerie",carrelage:"Carrelage, sols",menuiserie:"Menuiserie",
   verts:"Espaces verts",menage:"Ménage, nettoyage",autre:"Autre"};
 var CONFIG={
-  endpoint:"",
+  /* La base. La clé ci-dessous est la clé PUBLIQUE : elle est faite pour
+     partir dans le navigateur de chaque visiteur, et ce sont les règles
+     du SQL qui protègent. Elle n'autorise qu'une chose, déposer une
+     demande ; elle ne permet d'en relire aucune. */
+  base:"https://xunxejadiyaodhwbjqrn.supabase.co",
+  cle:"sb_publishable_wkNhgamhbc4wzJ-L_aR73g_hlTHCdIl",
   mail:"vdpy05@gmail.com",
   tel:"+33646843082",
   telAstreinte:"+33646843082",
@@ -129,7 +145,7 @@ var CONFIG={
 
 __CONSTS__
 
-var S,step,REF,ENVOI,RECAP,RESCODE,lastStep=null;
+var S,step,REF,ENVOI,RECAP,RESCODE,FICHIERS=[],lastStep=null;
 /* le prototype mesurait le temps de remplissage : sans objet ici */
 function startClock(){}
 function stopClock(){}
@@ -141,7 +157,7 @@ function param(n){
 }
 function init(){
   S={intent:null,defi:false,projet:null,trades:[],presta:[],gestes:[],entite:null,organisme:"",service:"",fonction:"",nature:null,site:"",nbDevis:null,montant:null,dateLimite:"",pieces:[],refInterne:"",logement:null,anciennete:null,occupation:null,usage:null,personnes:null,revenus:null,chauffage:null,dpe:null,devisSigne:null,lieu:null,statut:null,residence:"",adresse:"",precision:"",ag:null,delai:null,budget:null,description:"",nom:"",tel:"",email:"",photo:false,creneau:null,consent:false};
-  step="intent";REF="";ENVOI="";RECAP="";
+  step="intent";REF="";ENVOI="";RECAP="";FICHIERS=[];
   RESCODE=param("res");
   if(RESCODE)S.residence=RESCODE.replace(/-/g," ").replace(/\\b\\w/g,function(c){return c.toUpperCase()});
   var b=param("besoin")||param("i");
@@ -197,7 +213,7 @@ function recapitulatif(){
   a("Échéance",[lib(DELAIS,S.delai),S.budget||"",S.ag?"vote AG : "+S.ag:""].filter(Boolean).join(" — "));
   a("Description",S.description);
   a("Créneau souhaité",lib(CRENEAUX,S.creneau));
-  a("Photos à joindre",S.photo?"oui":"");
+  a("Photos jointes",FICHIERS.length?String(FICHIERS.length):"");
   L.push("");
   a("Nom",S.nom);
   a("Téléphone",S.tel);
@@ -219,16 +235,72 @@ function lienMail(){
     +"?subject="+encodeURIComponent("Demande "+REF+" — "+(S.nom||"")+" "+(S.residence||S.adresse||""))
     +"&body="+encodeURIComponent(RECAP);
 }
+/* ---------- écriture dans la base ----------
+   Pas de bibliothèque : l'API de Supabase se parle en HTTP ordinaire.
+   Une page de moins à charger sur un téléphone en 4G dans une cave. */
+function entetes(extra){
+  var h={"apikey":CONFIG.cle,"Authorization":"Bearer "+CONFIG.cle};
+  if(extra)Object.keys(extra).forEach(function(k){h[k]=extra[k]});
+  return h;
+}
+function uuid(){
+  if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){
+    var r=Math.random()*16|0;return (c==="x"?r:(r&0x3|0x8)).toString(16);
+  });
+}
+function ligneDemande(id){
+  return {
+    id:id, ref:REF, recu:new Date().toISOString(),
+    intent:S.intent, trades:S.trades, presta:S.presta, gestes:S.gestes, projet:S.projet,
+    lieu:S.lieu, statut_demandeur:S.statut,
+    residence:S.residence, res_code:RESCODE||null,
+    adresse:S.adresse, ville:"", precision_lieu:S.precision,
+    nom:S.nom, tel:S.tel, email:S.email, description:S.description,
+    delai:S.delai, budget:S.budget, ag:S.ag, creneau:S.creneau,
+    extra:{entite:S.entite,organisme:S.organisme,service:S.service,fonction:S.fonction,
+      nature:S.nature,site:S.site,nbDevis:S.nbDevis,montant:S.montant,dateLimite:S.dateLimite,
+      pieces:S.pieces,refInterne:S.refInterne,logement:S.logement,anciennete:S.anciennete,
+      occupation:S.occupation,usage:S.usage,personnes:S.personnes,revenus:S.revenus,
+      chauffage:S.chauffage,dpe:S.dpe,devisSigne:S.devisSigne},
+    source:param("depuis")||"qr",
+    etat:"nouvelle", exemple:false,
+    journal:[{t:new Date().toISOString(),texte:"Demande déposée depuis le formulaire."}]
+  };
+}
+function deposerPhotos(id){
+  if(!FICHIERS.length)return Promise.resolve();
+  return Promise.all(FICHIERS.slice(0,6).map(function(f,i){
+    var ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+    var chemin=id+"/"+(i+1)+"."+ext;
+    return fetch(CONFIG.base+"/storage/v1/object/photos/"+chemin,
+        {method:"POST",headers:entetes({"Content-Type":f.type||"image/jpeg"}),body:f})
+      .then(function(r){
+        if(!r.ok)throw new Error("photo "+r.status);
+        return fetch(CONFIG.base+"/rest/v1/photos",{method:"POST",
+          headers:entetes({"Content-Type":"application/json","Prefer":"return=minimal"}),
+          body:JSON.stringify({demande_id:id,moment:"avant",chemin:chemin,
+            nom:f.name,taille:f.size,type_mime:f.type})});
+      });
+  }));
+}
 function envoyer(){
   REF=reference();RECAP=recapitulatif();
-  if(!CONFIG.endpoint){ENVOI="mail";step="done";render();return}
+  if(!CONFIG.base||!CONFIG.cle){ENVOI="mail";step="done";render();return}
   step="envoi";render();
-  var fini=false;
-  var stop=setTimeout(function(){if(!fini){fini=true;ENVOI="erreur";step="done";render()}},12000);
-  fetch(CONFIG.endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(charge())})
-    .then(function(r){if(!r.ok)throw new Error(r.status);return r})
-    .then(function(){if(fini)return;fini=true;clearTimeout(stop);ENVOI="ok";step="done";render()})
-    .catch(function(){if(fini)return;fini=true;clearTimeout(stop);ENVOI="erreur";step="done";render()});
+  var id=uuid(),fini=false;
+  function fin(etat){if(fini)return;fini=true;clearTimeout(stop);ENVOI=etat;step="done";render()}
+  var stop=setTimeout(function(){fin("erreur")},20000);
+  fetch(CONFIG.base+"/rest/v1/demandes",{method:"POST",
+      headers:entetes({"Content-Type":"application/json","Prefer":"return=minimal"}),
+      body:JSON.stringify(ligneDemande(id))})
+    .then(function(r){
+      if(!r.ok)return r.text().then(function(t){throw new Error(r.status+" "+t)});
+      /* la demande est passée : les photos ne doivent plus la faire échouer */
+      return deposerPhotos(id).catch(function(e){console.warn("photos",e)});
+    })
+    .then(function(){fin("ok")})
+    .catch(function(e){console.warn("depot",e);fin("erreur")});
 }
 function ecranFinal(){
   var suite={urgence:"Je vous rappelle dans les minutes qui viennent.",
@@ -346,6 +418,12 @@ document.getElementById("screen").addEventListener("click",function(e){
   else if(d.creneau){S.creneau=d.creneau}
   else if(d.go){step=d.go}
   else return;
+  render();
+});
+document.getElementById("screen").addEventListener("change",function(e){
+  if(e.target.id!=="f-photo")return;
+  FICHIERS=[].slice.call(e.target.files||[]).slice(0,6);
+  S.photo=FICHIERS.length>0;
   render();
 });
 document.getElementById("screen").addEventListener("input",function(e){
