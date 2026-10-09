@@ -107,7 +107,11 @@ __ECRAN__
                    Make, n8n…). Tant qu'elle est vide, la demande part par la
                    messagerie du visiteur, et la page le dit franchement.
    mail          : adresse de repli, utilisée dans ce cas.
+   tel           : votre ligne, pour les rappels et les boutons « appeler ».
    telAstreinte  : numéro affiché en urgence. telSecond : le second contact.
+                   Tant que le réseau d'astreinte n'est pas constitué, les
+                   deux pointent sur votre ligne : en urgence, mieux vaut
+                   sonner chez vous que dans le vide.
    ------------------------------------------------------------------------- */
 /* libellés des corps de métier tels qu'ils apparaissent dans la plateforme :
    l'écran dit « Eau, fuite, WC » au demandeur, le récapitulatif dit « Plomberie ». */
@@ -117,9 +121,10 @@ var METIERS={plomberie:"Plomberie",electricite:"Électricité",chauffage:"Chauff
   verts:"Espaces verts",menage:"Ménage, nettoyage",autre:"Autre"};
 var CONFIG={
   endpoint:"",
-  mail:"contact@vdservices.fr",
-  telAstreinte:"+33400000010",
-  telSecond:"+33400000011"
+  mail:"vdpy05@gmail.com",
+  tel:"+33646843082",
+  telAstreinte:"+33646843082",
+  telSecond:"+33646843082"
 };
 
 __CONSTS__
@@ -241,7 +246,7 @@ function ecranFinal(){
     return '<div class="ok"><div class="mark mark-err">!</div><p class="q">L\\'envoi n\\'a pas abouti</p>'
       +'<p class="qs">Rien n\\'est perdu : envoyez-la par message, ou appelez.</p>'
       +'<a class="cta" href="'+esc(lienMail())+'">Envoyer par e-mail</a>'
-      +'<a class="cta sec" href="tel:'+esc(CONFIG.telAstreinte)+'">Appeler VD Services</a>'
+      +'<a class="cta sec" href="tel:'+esc(CONFIG.tel)+'">Appeler VD Services</a>'
       +'<button class="cta sec" data-copier="1">Copier le récapitulatif</button>'
       +'<div class="recap" id="recap">'+esc(RECAP)+'</div></div>';
   }
@@ -249,7 +254,7 @@ function ecranFinal(){
     +'<p class="qs">Votre demande est prête. Touchez le bouton, votre messagerie s\\'ouvre avec le récapitulatif déjà écrit. '
     +'Il ne reste qu\\'à l\\'envoyer'+(S.photo?", et à y joindre vos photos":"")+'.</p>'
     +'<a class="cta" href="'+esc(lienMail())+'">Envoyer ma demande</a>'
-    +'<a class="cta sec" href="tel:'+esc(CONFIG.telAstreinte)+'">Préférer un appel</a>'
+    +'<a class="cta sec" href="tel:'+esc(CONFIG.tel)+'">Préférer un appel</a>'
     +'<button class="cta sec" data-copier="1">Copier le récapitulatif</button>'
     +'<span class="ref">réf. '+esc(REF)+'</span>'
     +'<div class="recap" id="recap">'+esc(RECAP)+'</div>'

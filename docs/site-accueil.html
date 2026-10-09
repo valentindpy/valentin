@@ -336,8 +336,8 @@ footer a{text-decoration:none;color:var(--ink-2)}
       <p>Pour une urgence, passez par le formulaire : il vous met en relation directe avec l'entreprise d'astreinte, c'est plus rapide.</p>
     </div>
     <div class="coord">
-      <a href="tel:+33400000000"><span class="l">Téléphone</span><span class="v acompleter" data-champ="tel">04 00 00 00 00</span></a>
-      <a href="mailto:contact@vdservices.fr"><span class="l">E-mail</span><span class="v acompleter" data-champ="mail">contact@vdservices.fr</span></a>
+      <a href="tel:+33646843082"><span class="l">Téléphone</span><span class="v" data-champ="tel">06 46 84 30 82</span></a>
+      <a href="mailto:vdpy05@gmail.com"><span class="l">E-mail</span><span class="v" data-champ="mail">vdpy05@gmail.com</span></a>
       <div><span class="l">Secteur</span><span class="v">Fréjus → Nice</span></div>
       <div><span class="l">Horaires</span><span class="v">8 h – 19 h, 6j/7</span></div>
     </div>
@@ -373,7 +373,10 @@ footer a{text-decoration:none;color:var(--ink-2)}
 /* Adresse du formulaire de demande. À remplacer par l'adresse définitive
    le jour de la mise en ligne, par exemple https://vdservices.fr/demande */
 var FORMULAIRE="https://claude.ai/artifact/S1hvTF1fVn4QCeM41UTFoo";
-var MAIL_CONTACT="contact@vdservices.fr";
+/* Boîte de réception, en attendant une adresse sur le domaine : le jour où
+   contact@vdservices.fr existe, cette ligne et les deux du bloc Contact
+   suffisent à basculer. */
+var MAIL_CONTACT="vdpy05@gmail.com";
 
 function lienForm(parcours){
   return FORMULAIRE+(FORMULAIRE.indexOf("?")>=0?"&":"?")+"depuis=site"+(parcours?"&besoin="+encodeURIComponent(parcours):"");
