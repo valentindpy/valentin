@@ -386,7 +386,7 @@ old = 'var FORMULAIRE="https://claude.ai/artifact/S1hvTF1fVn4QCeM41UTFoo";'
 assert acc.count(old) == 1, "le lien du formulaire a changé dans docs/site-accueil.html"
 acc = acc.replace(old, 'var FORMULAIRE="/formulaire";')
 acc = acc.replace(
-  "/* Adresse du formulaire de demande. \u00c0 remplacer par l'adresse d\u00e9finitive\n   le jour de la mise en ligne, par exemple https://vdservices.fr/demande */",
+  "/* Adresse du formulaire de demande. \u00c0 remplacer par l'adresse d\u00e9finitive\n   le jour de la mise en ligne, par exemple https://vd-services.fr/demande */",
   "/* Adresse du formulaire de demande, servi par le m\u00eame domaine. */")
 
 i = acc.index("</style>") + len("</style>")
