@@ -53,7 +53,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 .shell{display:grid;grid-template-columns:224px minmax(0,1fr);min-height:100vh}
 .rail{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:22px;padding:20px 14px;position:sticky;top:0;height:100vh}
-.brand{font-family:var(--display);font-weight:700;font-size:1.12rem;letter-spacing:-.02em;padding:0 8px}
+.brand{font-family:var(--display);font-weight:700;font-size:1.12rem;letter-spacing:-.02em;padding:0 8px;display:block;width:100%;background:none;border:0;color:inherit;text-align:left;cursor:pointer}
+/* Le nom ramene a l'accueil : au tableau de bord pour vous,
+   a la carte du parc pour un syndic. */
+.brand:hover{text-decoration:underline;text-underline-offset:4px}
+.brand:hover span{text-decoration:none}
 .brand span{display:block;font-family:var(--mono);font-size:.58rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:5px;line-height:1.7}
 .rail nav{display:flex;flex-direction:column;gap:2px}
 .rail nav button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;background:none;border:0;border-radius:7px;padding:9px 10px;cursor:pointer;color:var(--ink-2);font-size:.93rem}
@@ -403,7 +407,7 @@ dialog::backdrop{background:rgba(10,15,22,.55)}
 
 <div class="shell" id="shell">
   <aside class="rail">
-    <div class="brand">VD SERVICES<span>Consultation · Pilotage<br>Coordination et assistance</span></div>
+    <button class="brand" data-act="brand-accueil" aria-label="VD Services, revenir à l’accueil">VD SERVICES<span>Consultation · Pilotage<br>Coordination et assistance</span></button>
     <nav id="nav"></nav>
     <div class="railfoot" id="railfoot"></div>
   </aside>
@@ -3697,7 +3701,7 @@ function formCopro(k){
 
 /* ---------- actions ---------- */
 var editId=null,editIx=null,convId=null;
-var ACTS_SYNDIC=["deconnexion","fin-apercu","dlg-close","reconnecter","s-pin","s-fermer",
+var ACTS_SYNDIC=["deconnexion","fin-apercu","dlg-close","reconnecter","brand-accueil","s-pin","s-fermer",
   "s-copro","s-dem","s-retour","s-reset","qr-print","qr-png","qr-copy"];
 document.addEventListener("click",function(ev){
   var b=ev.target.closest("[data-act],[data-nav],[data-open],[data-flt]");
@@ -3943,6 +3947,10 @@ document.addEventListener("click",function(ev){
     db.doc("prestataires/"+dc2.prestataireId).update(patch)
       .then(function(){closeDlg();toast(Object.keys(patch).length+" champ(s) repris dans la fiche")})
       .catch(function(){toast("Écriture refusée")});
+    return;
+  }
+  if(act==="brand-accueil"){
+    navigate(SESS.role==="syndic"?"syndic":"dashboard");
     return;
   }
   if(act==="dem-suppr"){

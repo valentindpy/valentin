@@ -60,7 +60,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .entete .bande i:nth-child(3){background:var(--pro)}
 .entete .bande i:nth-child(4){background:var(--ene)}
 .nav{display:flex;align-items:center;gap:18px;padding-block:14px;flex-wrap:wrap}
-.marque{display:flex;flex-direction:column;margin-right:auto}
+.marque{display:flex;flex-direction:column;margin-right:auto;text-decoration:none;color:inherit}
+/* Le nom ramene a l'accueil : rien ne le dit, on l'essaie. */
+.marque:hover b{text-decoration:underline;text-underline-offset:4px}
 .marque b{font-family:var(--display);font-weight:800;font-size:1.22rem;letter-spacing:-.025em}
 .marque span{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-top:2px}
 .nav a.lien{font-size:.92rem;color:var(--ink-2);text-decoration:none}
@@ -169,7 +171,7 @@ footer a{text-decoration:none;color:var(--ink-2)}
 <header class="entete">
   <div class="bande"><i></i><i></i><i></i><i></i></div>
   <div class="wrap nav">
-    <span class="marque"><b>VD SERVICES</b><span>Consultation · Pilotage · Coordination</span></span>
+    <a class="marque" href="/" aria-label="VD Services, retour à l’accueil"><b>VD SERVICES</b><span>Consultation · Pilotage · Coordination</span></a>
     <a class="lien" href="#besoins">Vos besoins</a>
     <a class="lien" href="#partenaires">Devenir partenaire</a>
     <a class="lien" href="#contact">Contact</a>
