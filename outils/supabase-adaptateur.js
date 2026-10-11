@@ -246,6 +246,31 @@ function sbGarder(j){
   }catch(e){}
 }
 
+/* ---------- les envois ---------- */
+/* Le texte part de la plateforme vers une fonction, et la fonction
+   l'envoie. La clé du service d'envoi ne descend jamais jusqu'ici :
+   cette page est servie à un navigateur, elle n'a rien à savoir.
+   La fonction, elle, vérifie que l'appel vient bien de vous. */
+function sbEnvoyer(charge){
+  return fetch(SB.url+"/functions/v1/envoyer",{
+      method:"POST",
+      headers:{"apikey":SB.cle,"Authorization":"Bearer "+(SB.jeton||SB.cle),
+        "Content-Type":"application/json"},
+      body:JSON.stringify(charge)})
+    .then(function(r){
+      return r.text().then(function(txt){
+        var j=null;
+        try{j=txt?JSON.parse(txt):null}catch(e){j=null}
+        if(!r.ok)throw new Error((j&&j.erreur)||("envoi refusé ("+r.status+")"));
+        if(j&&j.ok===false){
+          var premier=(j.envois||[]).filter(function(e){return !e.ok})[0];
+          throw new Error((premier&&premier.erreur)||"envoi partiel");
+        }
+        return j||{};
+      });
+    });
+}
+
 /* ---------- les fichiers ---------- */
 function sbEnvoyerFichier(casier,chemin,fichier){
   return fetch(SB.url+"/storage/v1/object/"+casier+"/"+chemin,{

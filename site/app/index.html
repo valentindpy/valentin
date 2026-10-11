@@ -973,6 +973,31 @@ function sbGarder(j){
   }catch(e){}
 }
 
+/* ---------- les envois ---------- */
+/* Le texte part de la plateforme vers une fonction, et la fonction
+   l'envoie. La clé du service d'envoi ne descend jamais jusqu'ici :
+   cette page est servie à un navigateur, elle n'a rien à savoir.
+   La fonction, elle, vérifie que l'appel vient bien de vous. */
+function sbEnvoyer(charge){
+  return fetch(SB.url+"/functions/v1/envoyer",{
+      method:"POST",
+      headers:{"apikey":SB.cle,"Authorization":"Bearer "+(SB.jeton||SB.cle),
+        "Content-Type":"application/json"},
+      body:JSON.stringify(charge)})
+    .then(function(r){
+      return r.text().then(function(txt){
+        var j=null;
+        try{j=txt?JSON.parse(txt):null}catch(e){j=null}
+        if(!r.ok)throw new Error((j&&j.erreur)||("envoi refusé ("+r.status+")"));
+        if(j&&j.ok===false){
+          var premier=(j.envois||[]).filter(function(e){return !e.ok})[0];
+          throw new Error((premier&&premier.erreur)||"envoi partiel");
+        }
+        return j||{};
+      });
+    });
+}
+
 /* ---------- les fichiers ---------- */
 function sbEnvoyerFichier(casier,chemin,fichier){
   return fetch(SB.url+"/storage/v1/object/"+casier+"/"+chemin,{
@@ -3754,13 +3779,31 @@ document.addEventListener("click",function(ev){
       '<div class="field"><label>Destinataire</label><input id="ar-dest" value="'+E(d.email||d.tel||"")+'"></div>'
       +'<div class="field"><label for="ar-corps">Message</label><textarea class="mail" id="ar-corps">'+E(ac.corps)+'</textarea></div>'
       +'<div class="field"><label for="ar-sms">Version SMS</label><textarea class="fld" id="ar-sms" rows="3">'+E(ac.sms)+'</textarea></div>'
-      +'<p class="note">Tant que le site public n\'envoie rien, c\'est vous qui l\'envoyez. Le texte est identique à celui que l\'automatisation enverra.</p>',
+      +'<p class="note">L\'accusé part tout seul à chaque demande déposée sur le formulaire, dans ce texte exactement. Ce bouton sert aux demandes saisies ici, et aux envois à refaire.</p>',
       '<button class="btn ghost" data-act="ar-sms">Copier le SMS</button>'
       +'<button class="btn ghost" data-act="ar-copy">Copier le mail</button>'
-      +'<button class="btn" data-act="ar-envoye" data-id="'+E(d.id)+'">Marquer comme envoyé</button>');
+      +'<button class="btn ghost" data-act="ar-envoye" data-id="'+E(d.id)+'">Envoyé à la main</button>'
+      +'<button class="btn" data-act="ar-envoi" data-id="'+E(d.id)+'">Envoyer</button>');
     return;
   }
   if(act==="ar-copy"){copier(val("ar-dest")+"\n\n"+val("ar-corps"),"Message copié");return}
+  if(act==="ar-envoi"){
+    var dest=(val("ar-dest")||"").trim();
+    if(!dest){toast("Aucun destinataire");return}
+    /* L'adresse décide du canal : un accusé n'a pas à partir deux fois. */
+    var parMail=dest.indexOf("@")>0;
+    b.disabled=true;b.textContent="Envoi…";
+    sbEnvoyer({demandeId:d.id,genre:"accuse",canal:parMail?"email":"sms",destinataires:dest,
+        corps:parMail?val("ar-corps"):val("ar-sms"),
+        suivi:"Accusé de réception envoyé"+(parMail?"":" par SMS")})
+      .then(function(){return rafraichir("demandes")})
+      .then(function(){closeDlg();toast(parMail?"Accusé envoyé par e-mail":"Accusé envoyé par SMS")})
+      .catch(function(e){
+        b.disabled=false;b.textContent="Envoyer";
+        toast("Envoi refusé : "+((e&&e.message)||"erreur"));
+      });
+    return;
+  }
   if(act==="ar-sms"){copier(val("ar-sms"),"SMS copié");return}
   if(act==="ar-envoye"){
     maj(d.id,{journal:journalise(d,"Accusé de réception envoyé au demandeur.")});
@@ -4146,10 +4189,33 @@ document.addEventListener("click",function(ev){
       +'<p class="note">Relisez avant d\'envoyer. Le prix n\'est jamais évoqué ici : les entreprises chiffrent, vous arbitrez.</p>',
       '<button class="btn ghost" data-act="mail-copy">Copier le message</button>'
       +'<button class="btn ghost" data-act="mail-open">Ouvrir ma messagerie</button>'
-      +'<button class="btn" data-act="mail-sent" data-id="'+E(d.id)+'">Marquer comme envoyée</button>');
+      +'<button class="btn ghost" data-act="mail-sent" data-id="'+E(d.id)+'">Envoyée à la main</button>'
+      +'<button class="btn" data-act="mail-envoi" data-id="'+E(d.id)+'">Envoyer</button>');
     return;
   }
   if(act==="mail-copy"){copier(val("m-dest")+"\n\n"+val("m-corps"),"Message copié");return}
+  if(act==="mail-envoi"){
+    var dest=val("m-dest");
+    if(!dest){toast("Aucun destinataire");return}
+    var retenues=(d.assignes||[]).map(function(pid){var p=DATA.prestataires.filter(function(x){return x.id===pid})[0];return p?p.nom:pid});
+    b.disabled=true;b.textContent="Envoi…";
+    /* Un message par entreprise, la fonction s'en charge : aucune ne
+       voit la liste des autres. Le suivi, lui, garde les noms. */
+    sbEnvoyer({demandeId:d.id,genre:"devis",canal:"email",destinataires:dest,corps:val("m-corps"),
+        suivi:"Demande de devis envoyée à "+(retenues.join(", ")||"des entreprises")})
+      .then(function(r){
+        /* le suivi vient d'être écrit par la fonction : on ne touche
+           qu'à l'état, sinon on le réécrirait avec un journal périmé */
+        return maj(d.id,{etat:"devis"}).then(function(){
+          closeDlg();toast((r.envoyes||0)+" demande(s) de devis envoyée(s)");
+        });
+      })
+      .catch(function(e){
+        b.disabled=false;b.textContent="Envoyer";
+        toast("Envoi refusé : "+((e&&e.message)||"erreur"));
+      });
+    return;
+  }
   if(act==="mail-open"){
     var corps=val("m-corps"),obj=(corps.split("\n")[0]||"").replace(/^Objet\s*:\s*/,"");
     window.open("mailto:"+encodeURIComponent(val("m-dest"))+"?subject="+encodeURIComponent(obj)

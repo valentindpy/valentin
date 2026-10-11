@@ -45,8 +45,8 @@ société. Elle présente les quatre besoins, la méthode, les publics, l'identi
 le recrutement des entreprises partenaires et le contact. Le taux de
 commission n'est pas affiché : il se négocie au premier rendez-vous. Les deux formulaires fonctionnent sans serveur, par
 ouverture de la messagerie, et sont prêts à être branchés sur un point de
-réception. Trois valeurs sont à compléter avant mise en ligne : le téléphone,
-l'adresse du siège et le SIREN, signalées en rouge sur la page.
+réception. Trois valeurs sont à compléter avant mise en ligne : l'adresse du
+siège, le SIREN et l'hébergeur, signalées en rouge sur la page.
 
 ## `docs/audit.html` — la revue avant lancement
 
@@ -202,11 +202,36 @@ Les **accusés de réception** sont générés par la fiche de chaque demande, d
 texte exact que l'automatisation enverra. La spécification complète est dans
 `docs/modeles/mails-automatiques.md`.
 
-### Reste à brancher
+### Reste à brancher, ici
+
+Ces trois points ne valent que pour la plateforme publiée comme artifact.
+L'application de `site/app/` les a tous les trois, et c'est elle qui tourne
+sur votre domaine.
 
 - L'envoi réel du formulaire vers la base de la plateforme.
 - Le stockage des photos jointes.
-- L'envoi des mails depuis la plateforme, aujourd'hui préparés puis copiés.
+- L'envoi des mails, ici préparés puis copiés.
+
+## `supabase/` — la base, et ce qui en part
+
+Quatre scripts à passer dans l'ordre, dans l'éditeur SQL du projet. Chacun est
+rejouable : il ne casse rien s'il tourne deux fois.
+
+| Fichier | Ce qu'il pose |
+|---|---|
+| `01-schema.sql` | les douze tables, les règles d'accès, les deux casiers de fichiers |
+| `02-fichiers.sql` | les limites de taille, et le numéro de demande attribué par la base |
+| `03-devis-recus.sql` | les devis reçus des entreprises, et le prix fixé à la main |
+| `04-messages.sql` | le journal des envois, et le déclencheur de l'accusé de réception |
+
+La règle de base est que tout est fermé, et qu'on ouvre ligne par ligne. Le seul
+droit donné au public est de **déposer** une demande : il ne peut pas la relire,
+ni voir quoi que ce soit d'autre. Un syndic connecté lit son parc, et rien
+au-delà. Ce n'est pas le rendu de la page qui le décide, c'est la base.
+
+`supabase/functions/` tient les deux fonctions d'envoi, et
+`supabase/00-reglages.md` tout ce qui se branche à la main : les clés, le
+webhook, le domaine d'expédition.
 
 ## `site/` — le site public, à déposer sur Vercel
 
@@ -253,8 +278,8 @@ Réglages en tête du script de `site/formulaire/index.html` : `base` et `cle`
 pour Supabase, `mail` pour le repli, `tel` pour les boutons d'appel,
 `telAstreinte` et `telSecond` pour le parcours urgence.
 
-Et dans `site/index.html`, par `docs/site-accueil.html` : le téléphone,
-l'adresse du siège, le SIREN et l'hébergeur, signalés en rouge sur la page.
+Et dans `site/index.html`, par `docs/site-accueil.html` : l'adresse du siège,
+le SIREN et l'hébergeur, signalés en rouge sur la page.
 
 La plateforme `docs/regie-copro.html` **ne peut pas** aller sur Vercel : sa base
 de données est celle de l'artifact claude.ai. Elle reste là où elle est.
@@ -285,6 +310,7 @@ Ce qui change pour de bon :
 | Qui voit quoi | le rendu de la page | les règles de la base, incontournables |
 | Photos | des noms de fichiers | de vrais fichiers, affichés par lien signé |
 | Sauvegarde | capacité de la plateforme | téléchargement ordinaire |
+| Accusés et devis | un texte à copier à la main | ils partent, et la base garde la preuve |
 | Lecture des attestations | Claude lisait le PDF | **perdue** : saisie à la main |
 
 La lecture automatique des attestations d'assurance passait par Claude, qui
@@ -294,3 +320,33 @@ serveur et une clé d'API facturée à l'usage.
 
 La plateforme est servie sur `/app`, en `noindex` : elle n'a rien à faire
 dans un moteur de recherche.
+
+### Les messages qui partent
+
+Le dernier écran du formulaire annonçait un rappel, et rien ne partait — ni
+vers la personne, ni vers vous. Deux fonctions, dans `supabase/functions/`,
+tiennent maintenant cette promesse.
+
+| Fonction | Qui l'appelle | Ce qui part |
+|---|---|---|
+| `accuse-reception` | la base, à chaque demande déposée | l'accusé au demandeur, l'alerte à vous par mail et par SMS |
+| `envoyer` | la plateforme, sur un bouton | la demande de devis aux entreprises, un message par entreprise |
+
+Le texte de l'accusé est écrit deux fois : la plateforme le montre, la fonction
+l'envoie. C'est une règle de `docs/modeles/mails-automatiques.md`, et elle se
+vérifie sur les cinq parcours :
+
+```
+node --experimental-strip-types outils/verifier-accuse.mjs
+```
+
+Chaque envoi laisse une ligne dans la table `messages` — destinataire, date,
+texte complet — et un échec s'écrit aussi, sur la fiche de la demande. C'est
+cette ligne qui rend opposable le délai de cinq jours ouvrés de la convention
+d'apport : un message copié à la main n'en laissait aucune.
+
+La clé du service d'envoi est un secret de la fonction : elle ne descend jamais
+dans une page. Le service est Brevo, appelé en deux endroits précis d'un seul
+fichier — en changer ne touche à rien d'autre. Ce qu'il reste à faire chez lui,
+et sans quoi rien ne part, est dans `supabase/00-reglages.md` : vérifier le
+domaine, et déclarer une adresse d'expédition dessus.

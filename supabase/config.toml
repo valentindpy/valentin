@@ -1,0 +1,18 @@
+# =====================================================================
+#  VD SERVICES — ce que la CLI Supabase doit savoir
+#  Sert au déploiement des fonctions ; la base, elle, se monte par les
+#  quatre scripts SQL de ce dossier.
+# =====================================================================
+
+project_id = "xunxejadiyaodhwbjqrn"
+
+# Les deux fonctions exigent un jeton signé par le projet. Ce n'est pas
+# suffisant en soi — la clé publique du formulaire est un jeton valable,
+# elle aussi — et c'est pourquoi chaque fonction lit le rôle qu'il porte :
+# `service_role` pour l'accusé, appelé par la base ; un administrateur
+# connecté pour l'envoi, appelé par la plateforme.
+[functions.accuse-reception]
+verify_jwt = true
+
+[functions.envoyer]
+verify_jwt = true

@@ -364,6 +364,84 @@ vieux_pa = src[src.index(u'  if(act==="photo-apres"){'):src.index(u'  if(act==="
 src = src.replace(vieux_pa, u"", 1)
 
 # ---------------------------------------------------------------------
+# 6 ter. Les envois : le message part, et la base s'en souvient
+#        La plateforme rédigeait, puis votre messagerie faisait le
+#        reste : aucune date gardée, aucun destinataire, aucune preuve.
+#        Ici le texte relu part par la fonction `envoyer`, qui l'écrit
+#        dans la table `messages`. C'est cette ligne qui rend opposable
+#        le délai de cinq jours ouvrés de la convention d'apport.
+#
+#        Les boutons de copie restent : un service d'envoi peut tomber,
+#        et une demande de devis, non.
+# ---------------------------------------------------------------------
+rep(r'''      '<button class="btn ghost" data-act="mail-copy">Copier le message</button>'
+      +'<button class="btn ghost" data-act="mail-open">Ouvrir ma messagerie</button>'
+      +'<button class="btn" data-act="mail-sent" data-id="'+E(d.id)+'">Marquer comme envoyée</button>');''',
+    r'''      '<button class="btn ghost" data-act="mail-copy">Copier le message</button>'
+      +'<button class="btn ghost" data-act="mail-open">Ouvrir ma messagerie</button>'
+      +'<button class="btn ghost" data-act="mail-sent" data-id="'+E(d.id)+'">Envoyée à la main</button>'
+      +'<button class="btn" data-act="mail-envoi" data-id="'+E(d.id)+'">Envoyer</button>');''',
+    "bouton d'envoi de la demande de devis")
+
+rep(r'''  if(act==="mail-copy"){copier(val("m-dest")+"\n\n"+val("m-corps"),"Message copié");return}''',
+    r'''  if(act==="mail-copy"){copier(val("m-dest")+"\n\n"+val("m-corps"),"Message copié");return}
+  if(act==="mail-envoi"){
+    var dest=val("m-dest");
+    if(!dest){toast("Aucun destinataire");return}
+    var retenues=(d.assignes||[]).map(function(pid){var p=DATA.prestataires.filter(function(x){return x.id===pid})[0];return p?p.nom:pid});
+    b.disabled=true;b.textContent="Envoi…";
+    /* Un message par entreprise, la fonction s'en charge : aucune ne
+       voit la liste des autres. Le suivi, lui, garde les noms. */
+    sbEnvoyer({demandeId:d.id,genre:"devis",canal:"email",destinataires:dest,corps:val("m-corps"),
+        suivi:"Demande de devis envoyée à "+(retenues.join(", ")||"des entreprises")})
+      .then(function(r){
+        /* le suivi vient d'être écrit par la fonction : on ne touche
+           qu'à l'état, sinon on le réécrirait avec un journal périmé */
+        return maj(d.id,{etat:"devis"}).then(function(){
+          closeDlg();toast((r.envoyes||0)+" demande(s) de devis envoyée(s)");
+        });
+      })
+      .catch(function(e){
+        b.disabled=false;b.textContent="Envoyer";
+        toast("Envoi refusé : "+((e&&e.message)||"erreur"));
+      });
+    return;
+  }''',
+    "envoi réel de la demande de devis")
+
+rep(r'''      +'<p class="note">Tant que le site public n\'envoie rien, c\'est vous qui l\'envoyez. Le texte est identique à celui que l\'automatisation enverra.</p>',
+      '<button class="btn ghost" data-act="ar-sms">Copier le SMS</button>'
+      +'<button class="btn ghost" data-act="ar-copy">Copier le mail</button>'
+      +'<button class="btn" data-act="ar-envoye" data-id="'+E(d.id)+'">Marquer comme envoyé</button>');''',
+    r'''      +'<p class="note">L\'accusé part tout seul à chaque demande déposée sur le formulaire, dans ce texte exactement. Ce bouton sert aux demandes saisies ici, et aux envois à refaire.</p>',
+      '<button class="btn ghost" data-act="ar-sms">Copier le SMS</button>'
+      +'<button class="btn ghost" data-act="ar-copy">Copier le mail</button>'
+      +'<button class="btn ghost" data-act="ar-envoye" data-id="'+E(d.id)+'">Envoyé à la main</button>'
+      +'<button class="btn" data-act="ar-envoi" data-id="'+E(d.id)+'">Envoyer</button>');''',
+    "bouton d'envoi de l'accusé de réception")
+
+rep(r'''  if(act==="ar-copy"){copier(val("ar-dest")+"\n\n"+val("ar-corps"),"Message copié");return}''',
+    r'''  if(act==="ar-copy"){copier(val("ar-dest")+"\n\n"+val("ar-corps"),"Message copié");return}
+  if(act==="ar-envoi"){
+    var dest=(val("ar-dest")||"").trim();
+    if(!dest){toast("Aucun destinataire");return}
+    /* L'adresse décide du canal : un accusé n'a pas à partir deux fois. */
+    var parMail=dest.indexOf("@")>0;
+    b.disabled=true;b.textContent="Envoi…";
+    sbEnvoyer({demandeId:d.id,genre:"accuse",canal:parMail?"email":"sms",destinataires:dest,
+        corps:parMail?val("ar-corps"):val("ar-sms"),
+        suivi:"Accusé de réception envoyé"+(parMail?"":" par SMS")})
+      .then(function(){return rafraichir("demandes")})
+      .then(function(){closeDlg();toast(parMail?"Accusé envoyé par e-mail":"Accusé envoyé par SMS")})
+      .catch(function(e){
+        b.disabled=false;b.textContent="Envoyer";
+        toast("Envoi refusé : "+((e&&e.message)||"erreur"));
+      });
+    return;
+  }''',
+    "envoi réel de l'accusé de réception")
+
+# ---------------------------------------------------------------------
 # 7. Le document complet
 # ---------------------------------------------------------------------
 i = src.index("</style>") + len("</style>")

@@ -1,21 +1,27 @@
 # Messages automatiques — spécification
 
-Ce que le site public devra envoyer dès qu'une demande est validée. Les textes
-sont déjà écrits et générés par la plateforme : la fonction `accuseReception(d)`
-dans `docs/regie-copro.html` produit exactement le corps de message et la version
-SMS décrits ici. Tant que le site n'existe pas, le bouton **Accusé de réception**
-sur chaque fiche de demande permet de les envoyer à la main, avec le même texte.
+Ce que le système envoie dès qu'une demande est validée. Le texte est écrit à
+deux endroits, et c'est volontaire : la fonction `accuseReception(d)` de
+`docs/regie-copro.html` le montre dans la plateforme, celle de
+`supabase/functions/_commun/texte.ts` l'envoie. Les deux doivent dire la même
+chose au caractère près — `outils/verifier-accuse.mjs` le vérifie sur les cinq
+parcours et sort en erreur au premier écart.
 
 ## Déclencheurs
 
-| Quand | Vers qui | Canal | Délai |
-|---|---|---|---|
-| Demande validée sur le formulaire | Le demandeur | E-mail si fourni, SMS sinon | Immédiat |
-| Demande validée sur le formulaire | VD Services | E-mail et SMS | Immédiat |
-| Urgence validée | VD Services | SMS prioritaire | Immédiat |
-| Demande de devis envoyée aux entreprises | Le demandeur | E-mail | À l'envoi |
-| Intervention clôturée | Le demandeur | E-mail | À la clôture |
-| Demande sans action depuis 48 h | VD Services | E-mail de rappel | Quotidien |
+| Quand | Vers qui | Canal | Délai | État |
+|---|---|---|---|---|
+| Demande validée sur le formulaire | Le demandeur | E-mail si fourni, SMS sinon | Immédiat | **branché** |
+| Demande validée sur le formulaire | VD Services | E-mail et SMS | Immédiat | **branché** |
+| Urgence validée | VD Services | SMS prioritaire | Immédiat | **branché**, en tête du SMS |
+| Demande de devis envoyée aux entreprises | Les entreprises | E-mail | À l'envoi | **branché**, sur bouton |
+| Demande de devis envoyée aux entreprises | Le demandeur | E-mail | À l'envoi | reste à faire |
+| Intervention clôturée | Le demandeur | E-mail | À la clôture | reste à faire |
+| Demande sans action depuis 48 h | VD Services | E-mail de rappel | Quotidien | reste à faire |
+
+Les trois lignes automatiques partent de `accuse-reception`, appelée par la base
+à chaque dépôt. La quatrième part de `envoyer`, appelée par la plateforme quand
+vous cliquez : le texte qui part est celui que vous venez de relire.
 
 ## Variables disponibles
 
@@ -59,14 +65,25 @@ Finalité du traitement, destinataire unique, durée de conservation de trois an
 moyen d'exercer ses droits. Le texte exact est dans la fonction
 `accuseReception`, il doit rester identique des deux côtés.
 
-## Ce qu'il faut brancher
+## Comment c'est branché
 
-1. Un domaine et une boîte professionnelle, par exemple `contact@` sur le
-   domaine du site.
-2. Un service d'envoi transactionnel. Une page statique ne peut pas envoyer
-   d'e-mail elle-même : il faut un point de réception côté serveur.
-3. Un service de SMS pour l'urgence et la confirmation courte.
-4. Une clé d'envoi stockée côté serveur, jamais dans la page publique.
+Une page statique ne peut pas envoyer d'e-mail : il faut un point de réception
+côté serveur. Ce sont les deux fonctions de `supabase/functions/`. Le service
+d'envoi est Brevo, e-mail et SMS sur le même compte, appelé à deux endroits
+précis — `envoyerMail` et `envoyerSms` dans `_commun/envoi.ts`.
+
+La clé d'envoi est un secret de la fonction. Elle ne descend jamais dans une
+page servie à un navigateur, et la fonction refuse tout appel qui ne vient pas
+de la base ou d'un administrateur connecté.
+
+Chaque envoi, réussi ou raté, laisse une ligne dans la table `messages` :
+destinataire, date, texte complet. C'est cette ligne qui rend opposable le délai
+de cinq jours ouvrés de la convention d'apport — un message copié à la main n'en
+laissait aucune.
+
+Reste à faire chez le prestataire d'envoi, et rien ne part avant : vérifier le
+domaine `vd-services.fr` par ses trois lignes DNS, et déclarer une adresse
+d'expédition sur ce domaine. Tout est détaillé dans `supabase/00-reglages.md`.
 
 ## Règle à ne pas enfreindre
 
