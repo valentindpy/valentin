@@ -149,13 +149,6 @@ form{display:flex;flex-direction:column;gap:12px;margin-top:18px}
 .sortie.on{display:block}
 
 /* ----- contact ----- */
-.coord{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:26px}
-.coord a,.coord div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;
-  text-decoration:none;display:flex;flex-direction:column;gap:6px;min-width:0}
-.coord a:hover{box-shadow:var(--shadow);border-color:var(--line-strong)}
-.coord .l{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);line-height:1.3}
-.coord .v{display:block;font-family:var(--display);font-weight:600;font-size:1.02rem;line-height:1.3;
-  overflow-wrap:anywhere;hyphens:none}
 .acompleter{color:var(--urg);border-bottom:1px dotted var(--urg)}
 
 footer{border-top:1px solid var(--line);padding-block:26px 46px;font-size:.85rem;color:var(--ink-3);line-height:1.65}
@@ -187,10 +180,10 @@ footer a{text-decoration:none;color:var(--ink-2)}
     <h1>Un souci ? On s'en occupe.</h1>
     <ol class="promesse">
       <li>Décrivez le problème à l'aide de notre <a class="lienf" id="lien-form">formulaire</a> en seulement quelques secondes.</li>
-      <li>Je choisis dans mon réseau les meilleures entreprises locales et certifiées, adaptées à votre projet.</li>
-      <li>Je compare et négocie les devis pour vous.</li>
-      <li>Je suis l'avancée et la réception des travaux.</li>
-      <li class="uneligne">Vous êtes satisfait(e). L'artisan est satisfait. Je suis satisfait.</li>
+      <li>Nous choisissons dans notre réseau les meilleures entreprises locales et certifiées, adaptées à votre projet.</li>
+      <li>Nous comparons et négocions les devis pour vous.</li>
+      <li>Nous suivons l'avancée et la réception des travaux.</li>
+      <li class="uneligne">Vous êtes satisfait(e). L'artisan est satisfait. Nous sommes satisfaits.</li>
     </ol>
     <div class="cta">
       <a class="btn" id="cta-form" href="#besoins">Déclarer un besoin</a>
@@ -219,7 +212,7 @@ footer a{text-decoration:none;color:var(--ink-2)}
       <a class="besoin d" data-form="depannage">
         <span class="q">Sous 72 heures</span>
         <h3>Dépannage</h3>
-        <p>Ça fonctionne mal, ça peut attendre demain. Je vous rappelle le jour même pour caler le passage.</p>
+        <p>Ça fonctionne mal, ça peut attendre demain. On vous rappelle le jour même pour caler le passage.</p>
         <span class="go">Décrire la panne →</span>
       </a>
       <a class="besoin p" data-form="projet">
@@ -245,7 +238,7 @@ footer a{text-decoration:none;color:var(--ink-2)}
     </div>
     <div class="pour">
       <div><h3>Particuliers</h3><p>Propriétaires et locataires, en appartement comme en maison. Du robinet qui fuit à la rénovation complète.</p></div>
-      <div><h3>Syndics et gestionnaires</h3><p>Je prends les appels techniques de vos copropriétés, je trouve les entreprises et je vous rends un tableau chaque mois.</p></div>
+      <div><h3>Syndics et gestionnaires</h3><p>Nous prenons les appels techniques de vos copropriétés, nous trouvons les entreprises et nous vous rendons un tableau chaque mois.</p></div>
       <div><h3>Conseils syndicaux</h3><p>Ravalement, cage d'escalier, toiture, chaufferie. Des devis comparables à présenter en assemblée générale.</p></div>
       <div><h3>Collectivités et bailleurs</h3><p>Mise en concurrence organisée, devis au même format, pièces administratives vérifiées et jointes.</p></div>
     </div>
@@ -253,17 +246,17 @@ footer a{text-decoration:none;color:var(--ink-2)}
 
   <section>
     <div class="stitre">
-      <p class="eyebrow">Qui je suis</p>
+      <p class="eyebrow">Qui nous sommes</p>
       <h2>VD Services</h2>
     </div>
     <div class="moi">
       <div>
-        <p>Je m'appelle Valentin Dupuy. J'ai monté VD Services à Mandelieu-la-Napoule pour régler un problème que tout le monde connaît : trouver la bonne entreprise, obtenir un devis, et s'assurer que le travail est fait correctement.</p>
-        <p>Mon métier, c'est le réseau et la méthode. Je travaille avec des plombiers, électriciens, chauffagistes, climaticiens, serruriers, couvreurs, peintres, plaquistes, carreleurs, menuisiers, paysagistes et entreprises de nettoyage, de Fréjus à Nice. Chacun a un dossier à jour chez moi : assurance décennale, responsabilité civile, attestation de vigilance.</p>
-        <p>Quand une demande arrive, je choisis celui qui convient au métier, à la commune et au délai. Je fais chiffrer sur un descriptif unique pour que les devis soient comparables. Et je reste joignable jusqu'à la fin du chantier.</p>
+        <p>VD Services a été fondée à Mandelieu-la-Napoule par Valentin Dupuy, pour régler un problème que tout le monde connaît : trouver la bonne entreprise, obtenir un devis, et s'assurer que le travail est fait correctement.</p>
+        <p>Notre métier, c'est le réseau et la méthode. Nous travaillons avec des plombiers, électriciens, chauffagistes, climaticiens, serruriers, couvreurs, peintres, plaquistes, carreleurs, menuisiers, paysagistes et entreprises de nettoyage, de Fréjus à Nice. Chacun a un dossier à jour chez nous : assurance décennale, responsabilité civile, attestation de vigilance.</p>
+        <p>Quand une demande arrive, nous choisissons celui qui convient au métier, à la commune et au délai. Nous faisons chiffrer sur un descriptif unique pour que les devis soient comparables. Et nous restons joignables jusqu'à la fin du chantier.</p>
         <div class="nefait">
-          <h3>Ce que je ne fais pas</h3>
-          <p>Je ne réalise pas les travaux et je ne vends rien au client. Le devis et la facture sont établis par l'entreprise, directement à votre nom. Vous restez maître de votre choix, et vous ne me payez rien.</p>
+          <h3>Ce que nous ne faisons pas</h3>
+          <p>Nous ne réalisons pas les travaux et nous ne vendons rien au client. Le devis et la facture sont établis par l'entreprise, directement à votre nom. Vous restez maître de votre choix, et vous ne nous payez rien.</p>
         </div>
       </div>
       <div class="carte">
@@ -296,7 +289,7 @@ footer a{text-decoration:none;color:var(--ink-2)}
           </ul>
         </div>
         <div>
-          <h3 style="font-size:1.05rem">Ce que je vous demande</h3>
+          <h3 style="font-size:1.05rem">Ce que nous vous demandons</h3>
           <ul class="liste">
             <li>Assurances à jour, décennale et responsabilité civile, attestation de vigilance URSSAF.</li>
             <li>Une réponse sous quarante-huit heures, même pour dire non.</li>
@@ -306,9 +299,9 @@ footer a{text-decoration:none;color:var(--ink-2)}
         </div>
       </div>
 
-      <h3 style="font-size:1.05rem;margin-top:26px">Comment je me rémunère</h3>
+      <h3 style="font-size:1.05rem;margin-top:26px">Comment nous nous rémunérons</h3>
       <p class="note" style="margin-top:6px">Une commission d'apport d'affaires, payée par vous, uniquement sur les affaires réellement réalisées et encaissées. Rien à payer pour entrer dans le réseau, rien d'avance, et rien du tout si l'affaire ne se fait pas.</p>
-      <p class="note" style="margin-top:10px">Le taux se fixe ensemble au moment de la convention, selon votre métier, vos marges et le volume que je vous apporte. Nous en parlons au premier rendez-vous, avant que vous ne signiez quoi que ce soit.</p>
+      <p class="note" style="margin-top:10px">Le taux se fixe ensemble au moment de la convention, selon votre métier, vos marges et le volume que nous vous apportons. Nous en parlons au premier rendez-vous, avant que vous ne signiez quoi que ce soit.</p>
 
       <h3 style="font-size:1.05rem;margin-top:28px">Rejoindre le réseau</h3>
       <form id="f-part">
@@ -340,13 +333,8 @@ footer a{text-decoration:none;color:var(--ink-2)}
     <div class="stitre">
       <p class="eyebrow">Contact</p>
       <h2>Parler à quelqu'un</h2>
-      <p>Pour une urgence, passez par le formulaire : il vous met en relation directe avec l'entreprise d'astreinte, c'est plus rapide.</p>
-    </div>
-    <div class="coord">
-      <a href="tel:+33646843082"><span class="l">Téléphone</span><span class="v" data-champ="tel">06 46 84 30 82</span></a>
-      <a href="mailto:vdpy05@gmail.com"><span class="l">E-mail</span><span class="v" data-champ="mail">vdpy05@gmail.com</span></a>
-      <div><span class="l">Secteur</span><span class="v">Fréjus → Nice</span></div>
-      <div><span class="l">Horaires</span><span class="v">8 h – 19 h, 6j/7</span></div>
+      <p>Laissez-nous vos coordonnées, on vous rappelle. De Fréjus à Nice, 8 h – 19 h, six jours sur sept.</p>
+      <p>Pour une urgence, passez plutôt par le formulaire : il vous met en relation directe avec l'entreprise d'astreinte, c'est plus rapide.</p>
     </div>
 
     <form id="f-contact" style="max-width:640px">
