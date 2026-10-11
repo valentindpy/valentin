@@ -329,11 +329,11 @@ function envoyer(){
    sans cela, la page du QR code est un cul-de-sac. */
 var RETOUR_ACCUEIL="<a class='cta sec' href='/' style='margin-top:22px'>Retour \u00e0 la page d'accueil</a>";
 function ecranFinal(){
-  var suite={urgence:"Je vous rappelle dans les minutes qui viennent.",
-    depannage:"Je vous rappelle aujourd'hui, intervention sous 72 heures.",
-    energie:"Je vous rappelle sous 48 heures avec le point sur les aides mobilisables.",
-    public:"Je vous rappelle sous 48 heures et je lance la consultation auprès des entreprises du secteur."}[S.intent]
-    ||"Je vous rappelle sous 48 heures pour convenir d'une visite.";
+  var suite={urgence:"Nous vous rappelons dans les minutes qui viennent.",
+    depannage:"Nous vous rappelons aujourd'hui, intervention sous 72 heures.",
+    energie:"Nous vous rappelons sous 48 heures avec le point sur les aides mobilisables.",
+    public:"Nous vous rappelons sous 48 heures et nous lançons la consultation auprès des entreprises du secteur."}[S.intent]
+    ||"Nous vous rappelons sous 48 heures pour convenir d'une visite.";
   if(ENVOI==="ok"){
     return '<div class="ok"><div class="mark">\\u2713</div><p class="q">Demande enregistrée</p>'
       +'<p class="qs">'+suite+'</p><span class="ref">réf. '+esc(REF)+'</span>'
@@ -503,7 +503,8 @@ head = (u'<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
         u'<meta name="theme-color" content="#2E4E77">\n'
         u'<link rel="icon" href="/favicon.svg" type="image/svg+xml">\n<link rel="icon" href="/favicon.ico" sizes="32x32">\n'
         u'<meta name="description" content="VD Services, Mandelieu-la-Napoule. Vous d\u00e9crivez le probl\u00e8me, '
-        u'je choisis l\u2019entreprise, je n\u00e9gocie les devis et je suis les travaux. Secteur Fr\u00e9jus \u2013 Nice.">\n'
+        u'nous choisissons l\u2019entreprise, nous n\u00e9gocions les devis et nous suivons les travaux. '
+        u'Secteur Fr\u00e9jus \u2013 Nice.">\n'
         u'<meta name="robots" content="index,follow">\n'
         u'<meta property="og:title" content="VD Services \u2014 un souci ? On s\u2019en occupe.">\n'
         u'<meta property="og:description" content="Courtier en travaux sur la C\u00f4te d\u2019Azur, de Fr\u00e9jus \u00e0 Nice.">\n'

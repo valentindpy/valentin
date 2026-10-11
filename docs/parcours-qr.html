@@ -82,7 +82,7 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
 <header class="hero">
   <span class="kicker"><span class="dot"></span>VD Services — note de conception de la page du QR code</span>
   <h1>Trois portes d'entrée,<br>une seule fiche en sortie.</h1>
-  <p class="lede">Le QR est collé dans un hall d'immeuble. La personne qui le scanne est debout, pressée, souvent agacée. La page doit lui faire dire en moins d'une minute qui elle est, où elle est, et ce qui la dérange — et me dire à moi si j'envoie une entreprise ou si je prends la coordination.</p>
+  <p class="lede">Le QR est collé dans un hall d'immeuble. La personne qui le scanne est debout, pressée, souvent agacée. La page doit lui faire dire en moins d'une minute qui elle est, où elle est, et ce qui la dérange — et nous dire si nous envoyons une entreprise ou si nous prenons la coordination.</p>
   <dl class="spec">
     <div><dt>Cible urgence</dt><dd>3 taps · 10 s</dd></div>
     <div><dt>Cible dépannage</dt><dd>5 taps · 45 s</dd></div>
@@ -222,11 +222,11 @@ figcaption{font-size:.9rem;color:var(--ink-3);max-width:62ch}
         <text class="d-edge" x="556" y="200" text-anchor="middle">2 métiers et + · ou commun</text>
 
         <rect x="618" y="34" width="302" height="62" rx="4" fill="var(--surface)" stroke="var(--dep)" stroke-width="1.5"/>
-        <text class="d-title" x="638" y="60" fill="var(--dep)">J'envoie l'entreprise</text>
-        <text class="d-sub" x="638" y="79" fill="var(--dep)">mise en relation, je garde la main sur le prix</text>
+        <text class="d-title" x="638" y="60" fill="var(--dep)">Nous envoyons l'entreprise</text>
+        <text class="d-sub" x="638" y="79" fill="var(--dep)">mise en relation, nous gardons la main sur le prix</text>
 
         <rect x="618" y="196" width="302" height="62" rx="4" fill="var(--surface)" stroke="var(--pro)" stroke-width="1.5"/>
-        <text class="d-title" x="638" y="222" fill="var(--pro)">Je prends la coordination</text>
+        <text class="d-title" x="638" y="222" fill="var(--pro)">Nous prenons la coordination</text>
         <text class="d-sub" x="638" y="241" fill="var(--pro)">visite, lots chiffrés, planning, suivi de chantier</text>
 
         <path d="M769 96 L769 196" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#ar)"/>
@@ -763,10 +763,10 @@ function render(){
   }
   else if(step==="consultation"){
     h+=dots()+back("besoin");
-    h+='<p class="q">La mise en concurrence</p><p class="qs">Je consulte mon réseau et vous renvoie des devis comparables, au même format.</p>';
+    h+='<p class="q">La mise en concurrence</p><p class="qs">Nous consultons notre réseau et vous renvoyons des devis comparables, au même format.</p>';
     h+='<p class="qn">Combien de devis vous faut-il ?</p><div class="chips">'+["1","2","3","4 ou plus"].map(function(v){
       return '<button class="chip" data-nbdevis="'+esc(v)+'" aria-pressed="'+(S.nbDevis===v)+'">'+v+'</button>'}).join("")+'</div>';
-    h+='<p class="note">Trois est la pratique courante pour justifier la mise en concurrence d\'un achat sans procédure formalisée. Vous connaissez le seuil appliqué chez vous mieux que moi.</p>';
+    h+='<p class="note">Trois est la pratique courante pour justifier la mise en concurrence d\'un achat sans procédure formalisée. Vous connaissez le seuil appliqué chez vous mieux que nous.</p>';
     h+='<p class="qn">Montant estimé</p><div class="chips">'+Object.keys(MONTANTS).map(function(k){
       return '<button class="chip" data-montant="'+k+'" aria-pressed="'+(S.montant===k)+'">'+MONTANTS[k]+'</button>'}).join("")+'</div>';
     h+='<p class="qn">Date limite de remise des offres</p>';
@@ -809,12 +809,12 @@ function render(){
       return '<button class="chip" data-dpe="'+k+'" aria-pressed="'+(S.dpe===k)+'">'+DPES[k]+'</button>'}).join("")+'</div>';
     h+='<p class="qn">Avez-vous déjà signé un devis pour ces travaux ?</p><div class="chips">'+["Non","Oui"].map(function(v){
       return '<button class="chip" data-devis="'+v+'" aria-pressed="'+(S.devisSigne===v)+'">'+v+'</button>'}).join("")+'</div>';
-    if(S.devisSigne==="Oui")h+='<p class="note" style="color:var(--urg)">Attention : les aides se demandent avant la signature du devis. Appelez-moi avant d\'aller plus loin.</p>';
+    if(S.devisSigne==="Oui")h+='<p class="note" style="color:var(--urg)">Attention : les aides se demandent avant la signature du devis. Appelez-nous avant d\'aller plus loin.</p>';
     h+='<button class="cta" data-go="contact" '+(S.personnes&&S.revenus&&S.chauffage&&S.devisSigne?"":"disabled")+'>Continuer</button>';
   }
   else if(step==="contact"){
     h+=dots()+back(S.intent==="projet"?"scope":S.intent==="energie"?"foyer":S.intent==="public"?"consultation":"where");
-    h+='<p class="q">Comment je vous rappelle ?</p><p class="qs">Je réponds moi-même, pas un standard.</p>';
+    h+='<p class="q">Comment vous rappeler ?</p><p class="qs">Nous répondons nous-mêmes, pas un standard.</p>';
     h+='<div class="col">'
       +'<input class="fld" id="c-nom" placeholder="Prénom et nom" value="'+esc(S.nom)+'" data-set="nom">'
       +'<input class="fld" id="c-tel" type="tel" inputmode="tel" placeholder="Téléphone" value="'+esc(S.tel)+'" data-set="tel">'
@@ -829,14 +829,14 @@ function render(){
   }
   else if(step==="done"){
     stopClock();
-    var d=S.intent==="urgence"?"Je vous rappelle dans les minutes qui viennent."
-      :S.intent==="depannage"?"Je vous rappelle aujourd'hui, intervention sous 72 h."
-      :S.intent==="energie"?"Je vous rappelle sous 48 h avec le point sur les aides mobilisables."
-      :S.intent==="public"?"Je vous rappelle sous 48 h et je lance la consultation auprès des entreprises du secteur."
-      :"Je vous rappelle sous 48 h pour convenir d'une visite.";
+    var d=S.intent==="urgence"?"Nous vous rappelons dans les minutes qui viennent."
+      :S.intent==="depannage"?"Nous vous rappelons aujourd'hui, intervention sous 72 h."
+      :S.intent==="energie"?"Nous vous rappelons sous 48 h avec le point sur les aides mobilisables."
+      :S.intent==="public"?"Nous vous rappelons sous 48 h et nous lançons la consultation auprès des entreprises du secteur."
+      :"Nous vous rappelons sous 48 h pour convenir d'une visite.";
     h+='<div class="ok"><div class="mark">✓</div><p class="q">Demande enregistrée</p><p class="qs">'+d+'</p>'
       +'<span class="ref">réf. VD-260912-'+(S.intent==="urgence"?"U":S.intent==="projet"?"P":S.intent==="energie"?"E":S.intent==="public"?"C":"D")+String(taps*7%90+10)+'</span>'
-      +'<a class="cta" href="#" data-noop="1">Enregistrer mon numéro</a>'
+      +'<a class="cta" href="#" data-noop="1">Enregistrer notre numéro</a>'
       +'<p class="note"><strong>VD SERVICES</strong> — le même contact pour toute la copropriété, en urgence comme en projet.</p></div>';
   }
   sc.innerHTML=h;

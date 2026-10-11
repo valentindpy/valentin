@@ -477,10 +477,10 @@ function render(){
   }
   else if(step==="consultation"){
     h+=dots()+back("besoin");
-    h+='<p class="q">La mise en concurrence</p><p class="qs">Je consulte mon réseau et vous renvoie des devis comparables, au même format.</p>';
+    h+='<p class="q">La mise en concurrence</p><p class="qs">Nous consultons notre réseau et vous renvoyons des devis comparables, au même format.</p>';
     h+='<p class="qn">Combien de devis vous faut-il ?</p><div class="chips">'+["1","2","3","4 ou plus"].map(function(v){
       return '<button class="chip" data-nbdevis="'+esc(v)+'" aria-pressed="'+(S.nbDevis===v)+'">'+v+'</button>'}).join("")+'</div>';
-    h+='<p class="note">Trois est la pratique courante pour justifier la mise en concurrence d\'un achat sans procédure formalisée. Vous connaissez le seuil appliqué chez vous mieux que moi.</p>';
+    h+='<p class="note">Trois est la pratique courante pour justifier la mise en concurrence d\'un achat sans procédure formalisée. Vous connaissez le seuil appliqué chez vous mieux que nous.</p>';
     h+='<p class="qn">Montant estimé</p><div class="chips">'+Object.keys(MONTANTS).map(function(k){
       return '<button class="chip" data-montant="'+k+'" aria-pressed="'+(S.montant===k)+'">'+MONTANTS[k]+'</button>'}).join("")+'</div>';
     h+='<p class="qn">Date limite de remise des offres</p>';
@@ -523,12 +523,12 @@ function render(){
       return '<button class="chip" data-dpe="'+k+'" aria-pressed="'+(S.dpe===k)+'">'+DPES[k]+'</button>'}).join("")+'</div>';
     h+='<p class="qn">Avez-vous déjà signé un devis pour ces travaux ?</p><div class="chips">'+["Non","Oui"].map(function(v){
       return '<button class="chip" data-devis="'+v+'" aria-pressed="'+(S.devisSigne===v)+'">'+v+'</button>'}).join("")+'</div>';
-    if(S.devisSigne==="Oui")h+='<p class="note" style="color:var(--urg)">Attention : les aides se demandent avant la signature du devis. Appelez-moi avant d\'aller plus loin.</p>';
+    if(S.devisSigne==="Oui")h+='<p class="note" style="color:var(--urg)">Attention : les aides se demandent avant la signature du devis. Appelez-nous avant d\'aller plus loin.</p>';
     h+='<button class="cta" data-go="contact" '+(S.personnes&&S.revenus&&S.chauffage&&S.devisSigne?"":"disabled")+'>Continuer</button>';
   }
   else if(step==="contact"){
     h+=dots()+back(S.intent==="projet"?"scope":S.intent==="energie"?"foyer":S.intent==="public"?"consultation":"where");
-    h+='<p class="q">Comment je vous rappelle ?</p><p class="qs">Je réponds moi-même, pas un standard.</p>';
+    h+='<p class="q">Comment vous rappeler ?</p><p class="qs">Nous répondons nous-mêmes, pas un standard.</p>';
     h+='<div class="col">'
       +'<input class="fld" id="c-nom" placeholder="Prénom et nom" value="'+esc(S.nom)+'" data-set="nom">'
       +'<input class="fld" id="c-tel" type="tel" inputmode="tel" placeholder="Téléphone" value="'+esc(S.tel)+'" data-set="tel">'
@@ -695,11 +695,11 @@ function envoyer(){
    sans cela, la page du QR code est un cul-de-sac. */
 var RETOUR_ACCUEIL="<a class='cta sec' href='/' style='margin-top:22px'>Retour à la page d'accueil</a>";
 function ecranFinal(){
-  var suite={urgence:"Je vous rappelle dans les minutes qui viennent.",
-    depannage:"Je vous rappelle aujourd'hui, intervention sous 72 heures.",
-    energie:"Je vous rappelle sous 48 heures avec le point sur les aides mobilisables.",
-    public:"Je vous rappelle sous 48 heures et je lance la consultation auprès des entreprises du secteur."}[S.intent]
-    ||"Je vous rappelle sous 48 heures pour convenir d'une visite.";
+  var suite={urgence:"Nous vous rappelons dans les minutes qui viennent.",
+    depannage:"Nous vous rappelons aujourd'hui, intervention sous 72 heures.",
+    energie:"Nous vous rappelons sous 48 heures avec le point sur les aides mobilisables.",
+    public:"Nous vous rappelons sous 48 heures et nous lançons la consultation auprès des entreprises du secteur."}[S.intent]
+    ||"Nous vous rappelons sous 48 heures pour convenir d'une visite.";
   if(ENVOI==="ok"){
     return '<div class="ok"><div class="mark">\u2713</div><p class="q">Demande enregistrée</p>'
       +'<p class="qs">'+suite+'</p><span class="ref">réf. '+esc(REF)+'</span>'

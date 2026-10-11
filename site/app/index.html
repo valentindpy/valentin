@@ -1274,7 +1274,7 @@ function supportsQR(code,nom){
   html+='<div class="board a5"><div class="rule"><i></i><i></i><i></i><i></i></div><div class="body">'
     +'<p class="kicker">'+E(res)+'</p>'
     +'<h2>Un souci<br>dans l\'immeuble ?</h2>'
-    +'<p class="sub">Scannez le code. Vous décrivez le problème en trente secondes, je m\'occupe de trouver la bonne entreprise et de suivre l\'intervention.</p>'
+    +'<p class="sub">Scannez le code. Vous décrivez le problème en trente secondes, nous nous occupons de trouver la bonne entreprise et de suivre l\'intervention.</p>'
     +'<div class="qbox"><canvas class="qr-print" data-lien="'+E(lien)+'" style="width:52mm;height:52mm"></canvas></div>'
     +menu
     +'<p class="why">Fuite, panne, serrure bloquée, projet de travaux ou économies d\'énergie. Parties privatives comme parties communes. Entreprises assurées et vérifiées, devis gratuit.</p>'
@@ -3436,10 +3436,10 @@ function mailConvention(p){
   var v=societe();
   return "Bonjour "+(p.repnom||p.contact||"")+",\n\n"
     +"Comme convenu, vous trouverez ci-joint la convention d'apport d'affaires entre "+v.nom+" et "+(p.nom||"votre société)")+".\n\n"
-    +"Le principe est simple : je vous transmets des demandes de travaux et de dépannage sur le secteur, vous restez maître de vos devis, de vos prix et de votre relation client. Une commission d'apport n'est due que sur les affaires effectivement réalisées et encaissées, selon la grille de l'article 5.\n\n"
-    +"Il n'y a ni exclusivité, ni volume minimum, ni engagement de ma part sur un chiffre d'affaires.\n\n"
-    +"Merci de me retourner la convention signée, accompagnée de votre attestation d'assurance en cours de validité.\n\n"
-    +"Je reste disponible pour en discuter.\n\n"
+    +"Le principe est simple : nous vous transmettons des demandes de travaux et de dépannage sur le secteur, vous restez maître de vos devis, de vos prix et de votre relation client. Une commission d'apport n'est due que sur les affaires effectivement réalisées et encaissées, selon la grille de l'article 5.\n\n"
+    +"Il n'y a ni exclusivité, ni volume minimum, ni engagement de notre part sur un chiffre d'affaires.\n\n"
+    +"Merci de nous retourner la convention signée, accompagnée de votre attestation d'assurance en cours de validité.\n\n"
+    +"Nous restons disponibles pour en discuter.\n\n"
     +"Cordialement,\n"+v.repnom+"\n"+v.nom+" — consultation, pilotage, coordination et assistance\n"
     +(v.tel?v.tel+"\n":"")+(v.email||"");
 }
@@ -3452,34 +3452,34 @@ function accuseReception(d){
   }
   if(d.intent==="urgence"){
     ligne1="Votre demande urgente est enregistrée.";
-    delai=ast?("Vous avez été mis en relation avec "+ast.nom+(ast.tel?" au "+ast.tel:"")+". Si personne ne décroche, rappelez-moi directement.")
-      :"Je vous rappelle dans les minutes qui viennent.";
+    delai=ast?("Vous avez été mis en relation avec "+ast.nom+(ast.tel?" au "+ast.tel:"")+". Si personne ne décroche, rappelez-nous directement.")
+      :"Nous vous rappelons dans les minutes qui viennent.";
   }else if(d.intent==="depannage"){
     ligne1="Votre demande de dépannage est enregistrée.";
-    delai="Je vous rappelle aujourd'hui pour confirmer le créneau. L'intervention est programmée sous 72 heures.";
+    delai="Nous vous rappelons aujourd'hui pour confirmer le créneau. L'intervention est programmée sous 72 heures.";
   }else if(d.intent==="projet"){
     ligne1="Votre projet de travaux est enregistré.";
-    delai="Je vous rappelle sous 48 heures pour convenir d'une visite sur place. Vous recevrez ensuite des devis comparables, établis sur le même descriptif.";
+    delai="Nous vous rappelons sous 48 heures pour convenir d'une visite sur place. Vous recevrez ensuite des devis comparables, établis sur le même descriptif.";
   }else if(d.intent==="energie"){
     ligne1="Votre demande de travaux énergétiques est enregistrée.";
-    delai="Je vous rappelle sous 48 heures avec le point sur le financement mobilisable. Important : ne signez aucun devis avant cet échange, la plupart des aides doivent être demandées avant la signature.";
+    delai="Nous vous rappelons sous 48 heures avec le point sur le financement mobilisable. Important : ne signez aucun devis avant cet échange, la plupart des aides doivent être demandées avant la signature.";
   }else if(d.intent==="public"){
     ligne1="Votre consultation est enregistrée.";
-    delai="Je lance la mise en concurrence auprès des entreprises du secteur et je vous reviens avec "
+    delai="Nous lançons la mise en concurrence auprès des entreprises du secteur et nous vous revenons avec "
       +(d.nbDevis||"plusieurs")+" devis comparables"+(d.dateLimite?", avant le "+jour(d.dateLimite):"")+".";
   }else{
     ligne1="Votre demande est enregistrée.";
-    delai="Je vous rappelle rapidement.";
+    delai="Nous vous rappelons rapidement.";
   }
   L.push("Objet : "+v.nom+" — votre demande "+d.ref+" est bien arrivée");
   L.push("");
   L.push("Bonjour"+(d.nom?" "+d.nom:"")+",");
   L.push("");
-  L.push(ligne1+" Elle porte la référence "+d.ref+", à rappeler si vous m'écrivez.");
+  L.push(ligne1+" Elle porte la référence "+d.ref+", à rappeler si vous nous écrivez.");
   L.push("");
   L.push(delai);
   L.push("");
-  L.push("CE QUE J'AI NOTÉ");
+  L.push("CE QUE NOUS AVONS NOTÉ");
   L.push("  Nature : "+((INTENT[d.intent]||{}).l||"—"));
   if((d.trades||[]).length)L.push("  Corps de métier : "+metiersOf(d).join(", "));
   if(prestaLabels(d).length)L.push("  Prestations : "+prestaLabels(d).join(", "));
@@ -3490,7 +3490,7 @@ function accuseReception(d){
   L.push("");
   L.push("Si l'une de ces informations est inexacte, répondez simplement à ce message.");
   L.push("");
-  L.push("Ce que je fais pour vous : je cherche l'entreprise qui convient parmi celles de mon réseau, toutes assurées et vérifiées, je vous transmets le devis et je suis l'intervention jusqu'à la fin. Vous n'avez qu'un seul interlocuteur.");
+  L.push("Ce que nous faisons pour vous : nous cherchons l'entreprise qui convient parmi celles de notre réseau, toutes assurées et vérifiées, nous vous transmettons le devis et nous suivons l'intervention jusqu'à la fin. Vous n'avez qu'un seul interlocuteur.");
   L.push("");
   L.push("Cordialement,");
   L.push(v.repnom);
@@ -3502,9 +3502,9 @@ function accuseReception(d){
   L.push("--");
   L.push("Vos coordonnées ne servent qu'au traitement de cette demande et ne sont transmises qu'à l'entreprise retenue. Elles sont conservées trois ans. Pour les faire supprimer, répondez à ce message.");
   var sms=v.nom+" : demande "+d.ref+" bien reçue. "
-    +(d.intent==="urgence"?(ast?"Appelez "+ast.nom+(ast.tel?" au "+ast.tel:""):"Je vous rappelle tout de suite")
-      :d.intent==="depannage"?"Je vous rappelle aujourd'hui"
-      :"Je vous rappelle sous 48 h")
+    +(d.intent==="urgence"?(ast?"Appelez "+ast.nom+(ast.tel?" au "+ast.tel:""):"Nous vous rappelons tout de suite")
+      :d.intent==="depannage"?"Nous vous rappelons aujourd'hui"
+      :"Nous vous rappelons sous 48 h")
     +". "+(v.tel||"");
   return {corps:L.join("\n"),sms:sms};
 }
@@ -3516,8 +3516,8 @@ function texteMail(d,ents){
   L.push("Bonjour,");
   L.push("");
   L.push(d.intent==="public"
-    ? "Je vous consulte dans le cadre d'une mise en concurrence pour un donneur d'ordre public."
-    : "Je vous consulte pour une intervention en copropriété.");
+    ? "Nous vous consultons dans le cadre d'une mise en concurrence pour un donneur d'ordre public."
+    : "Nous vous consultons pour une intervention en copropriété.");
   if(d.intent==="public"){
     L.push("");
     L.push("Donneur d'ordre : "+[ENTITES[d.entite],d.organisme].filter(Boolean).join(" — "));
@@ -3540,9 +3540,9 @@ function texteMail(d,ents){
   if(d.delai)L.push("Échéance souhaitée : "+d.delai+(d.budget?" — enveloppe annoncée "+d.budget:""));
   L.push("");
   L.push(d.intent==="urgence"
-    ? "Intervention urgente : merci de me rappeler avant tout déplacement."
-    : "Merci de me retourner votre devis détaillé poste par poste"+(d.intent==="depannage"?" sous 72 heures.":" sous 8 jours."));
-  L.push("J'interviens en coordination pour le compte du client : le devis m'est adressé et n'est pas transmis tel quel.");
+    ? "Intervention urgente : merci de nous rappeler avant tout déplacement."
+    : "Merci de nous retourner votre devis détaillé poste par poste"+(d.intent==="depannage"?" sous 72 heures.":" sous 8 jours."));
+  L.push("Nous intervenons en coordination pour le compte du client : le devis nous est adressé et n'est pas transmis tel quel.");
   L.push("Merci de joindre votre attestation de responsabilité décennale à jour.");
   L.push("");
   L.push("Cordialement,");
