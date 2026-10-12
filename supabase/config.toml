@@ -16,3 +16,6 @@ verify_jwt = true
 
 [functions.envoyer]
 verify_jwt = true
+
+[functions.rappels]
+verify_jwt = true

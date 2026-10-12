@@ -15,19 +15,42 @@ parcours et sort en erreur au premier écart.
 | Demande validée sur le formulaire | VD Services | E-mail, et SMS si ouvert | Immédiat | **branché** |
 | Urgence validée | VD Services | objet `URGENCE`, SMS si ouvert | Immédiat | **branché** |
 | Demande de devis envoyée aux entreprises | Les entreprises | E-mail | À l'envoi | **branché**, sur bouton |
-| Demande de devis envoyée aux entreprises | Le demandeur | E-mail | À l'envoi | reste à faire |
-| Intervention clôturée | Le demandeur | E-mail | À la clôture | reste à faire |
-| Demande sans action depuis 48 h | VD Services | E-mail de rappel | Quotidien | reste à faire |
+| Demande de devis envoyée aux entreprises | Le demandeur | E-mail | À l'envoi | **branché**, dans la foulée |
+| Intervention clôturée | Le demandeur | E-mail | À la clôture | **branché**, dans la foulée |
+| Demande sans action depuis son délai | VD Services | E-mail de rappel | Quotidien | **branché** |
+| Facture de commissions | L'entreprise | E-mail | Sur bouton | **branché** |
 
-Les trois lignes automatiques partent de `accuse-reception`, appelée par la base
-à chaque dépôt. La quatrième part de `envoyer`, appelée par la plateforme quand
-vous cliquez : le texte qui part est celui que vous venez de relire.
+Trois origines, et elles disent qui décide :
+
+- la **base**, quand une demande est déposée (`accuse-reception`) ou chaque
+  matin pour les demandes qui dorment (`rappels`) : personne ne clique ;
+- la **plateforme**, dans la foulée d'un geste que vous venez de faire — la
+  demande de devis entraîne le point d'avancement, la clôture entraîne le mot
+  de fin de chantier ;
+- la **plateforme, sur un bouton**, quand le message se relit avant de partir :
+  la demande de devis elle-même, et la facture de commissions.
+
+Le texte qui part est toujours celui que la plateforme montre. Les deux
+messages de suivi ont leur bouton « Prévenir le demandeur » sur la fiche, qui
+sert à les relire, les corriger et les renvoyer.
 
 Le SMS est un canal fermé par défaut, parce qu'il est le seul qui se paie à
 l'unité. Tant que le secret `SMS_ACTIF` ne vaut pas `oui`, aucune des deux
 fonctions n'en tente un : un demandeur qui n'a pas donné d'adresse e-mail ne
 reçoit alors pas d'accusé, et sa fiche le dit en clair plutôt que de laisser
 croire qu'il a été prévenu.
+
+## Ce que les messages de suivi ne disent jamais
+
+Le point d'avancement annonce « trois entreprises du secteur », jamais
+lesquelles. Le mot de fin de chantier donne le montant des travaux et le numéro
+de facture de l'entreprise, jamais la commission.
+
+Ce n'est pas de la discrétion pour la forme. Le client qui a les noms et les
+prix d'achat n'a plus besoin de nous à la deuxième affaire, et l'article 9 de la
+convention ne protège que douze mois, sur le papier. La protection réelle est
+d'usage : rester dans le flux. C'est la même règle que les colonnes de prix du
+bordereau, que le syndic ne voit pas.
 
 ## Variables disponibles
 
@@ -74,22 +97,28 @@ moyen d'exercer ses droits. Le texte exact est dans la fonction
 ## Comment c'est branché
 
 Une page statique ne peut pas envoyer d'e-mail : il faut un point de réception
-côté serveur. Ce sont les deux fonctions de `supabase/functions/`. Le service
-d'envoi est Brevo, e-mail et SMS sur le même compte, appelé à deux endroits
-précis — `envoyerMail` et `envoyerSms` dans `_commun/envoi.ts`.
+côté serveur. Ce sont les trois fonctions de `supabase/functions/`.
 
-La clé d'envoi est un secret de la fonction. Elle ne descend jamais dans une
-page servie à un navigateur, et la fonction refuse tout appel qui ne vient pas
-de la base ou d'un administrateur connecté.
+C'est la **boîte du domaine** qui expédie, par le serveur d'envoi de son
+hébergeur : l'adresse qui signe est celle qui envoie vraiment, sans tiers et
+sans mention ajoutée en pied de message. Un service d'envoi tiers reste
+disponible en repli, par un secret à changer, pour le jour où le port ne
+sortirait pas de l'environnement des fonctions.
+
+Le mot de passe de la boîte est un secret de la fonction. Il ne descend jamais
+dans une page servie à un navigateur, et chaque fonction refuse tout appel qui
+ne vient pas de la base ou d'un administrateur connecté.
 
 Chaque envoi, réussi ou raté, laisse une ligne dans la table `messages` :
 destinataire, date, texte complet. C'est cette ligne qui rend opposable le délai
 de cinq jours ouvrés de la convention d'apport — un message copié à la main n'en
 laissait aucune.
 
-Reste à faire chez le prestataire d'envoi, et rien ne part avant : vérifier le
-domaine `vd-services.fr` par ses trois lignes DNS, et déclarer une adresse
-d'expédition sur ce domaine. Tout est détaillé dans `supabase/00-reglages.md`.
+Il reste à créer la boîte sur le domaine et à poser ses identifiants dans les
+secrets des fonctions : rien ne part avant. Aucune ligne DNS à ajouter, en
+revanche — le courrier du domaine est déjà hébergé là, donc les signatures qui
+prouvent l'identité de l'expéditeur sont valables pour les messages qui partent
+de ses serveurs. Tout est détaillé dans `supabase/00-reglages.md`.
 
 ## Règle à ne pas enfreindre
 

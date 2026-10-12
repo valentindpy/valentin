@@ -442,6 +442,104 @@ rep(r'''  if(act==="ar-copy"){copier(val("ar-dest")+"\n\n"+val("ar-corps"),"Mess
     "envoi réel de l'accusé de réception")
 
 # ---------------------------------------------------------------------
+# 6 quater. Les trois autres messages : avancement, fin de chantier,
+#           facture de commissions
+#           Les textes sont ecrits dans la plateforme, donc visibles et
+#           copiables partout. Ici ils partent : les deux premiers tout
+#           seuls dans la foulee du geste qui les justifie, le troisieme
+#           sur un bouton, parce qu'une facture se relit.
+# ---------------------------------------------------------------------
+# le point d'avancement suit la demande de devis, sans un clic de plus
+rep(r'''        return maj(d.id,{etat:"devis"}).then(function(){
+          closeDlg();toast((r.envoyes||0)+" demande(s) de devis envoyée(s)");
+        });''',
+    r'''        return maj(d.id,{etat:"devis"}).then(function(){
+          closeDlg();toast((r.envoyes||0)+" demande(s) de devis envoyée(s)");
+          /* Le demandeur apprend que sa demande est partie en
+             consultation. C'est la premiere cause d'appels entrants
+             dans ce metier : autant la devancer. Sans adresse, rien ne
+             part et le suivi le dit. */
+          if(!d.email)return;
+          var av=texteAvancement(d);
+          return sbEnvoyer({demandeId:d.id,genre:"avancement",canal:"email",
+              destinataires:d.email,objet:av.objet,corps:av.corps,
+              suivi:"Point d'avancement envoyé au demandeur"})
+            .catch(function(e){toast("Le demandeur n'a pas été prévenu : "+((e&&e.message)||"erreur"))});
+        });''',
+    "avancement dans la foulee de la demande de devis")
+
+# le mot de fin de chantier part a la cloture
+rep(r'''    closeDlg();toast(ancienne?"Réalisation mise à jour":"Intervention enregistrée");return;''',
+    r'''    closeDlg();toast(ancienne?"Réalisation mise à jour":"Intervention enregistrée");
+    /* Avec les chiffres qui viennent d'etre saisis, et non ceux que la
+       base n'a pas encore relus. Une correction de realisation ne
+       renvoie rien : le demandeur a deja ete prevenu une fois. */
+    if(d.email&&!ancienne){
+      var cl=texteCloture(d,body);
+      sbEnvoyer({demandeId:d.id,genre:"cloture",canal:"email",destinataires:d.email,
+          objet:cl.objet,corps:cl.corps,suivi:"Mot de fin de chantier envoyé au demandeur"})
+        .catch(function(e){toast("Le demandeur n'a pas été prévenu : "+((e&&e.message)||"erreur"))});
+    }
+    return;''',
+    "mot de fin de chantier a la cloture")
+
+# le bouton d'envoi du point d'avancement, pour le renvoyer ou le corriger
+rep(r'''      '<button class="btn ghost" data-act="av-copy">Copier le message</button>'
+      +'<button class="btn ghost" data-act="av-envoye" data-id="'+E(d.id)+'">Envoyé à la main</button>');''',
+    r'''      '<button class="btn ghost" data-act="av-copy">Copier le message</button>'
+      +'<button class="btn ghost" data-act="av-envoye" data-id="'+E(d.id)+'">Envoyé à la main</button>'
+      +'<button class="btn" data-act="av-envoi" data-id="'+E(d.id)+'">Envoyer</button>');''',
+    "bouton d'envoi du point d'avancement")
+
+rep(r'''  if(act==="av-copy"){copier(val("av-dest")+"\n\n"+val("av-corps"),"Message copié");return}''',
+    r'''  if(act==="av-copy"){copier(val("av-dest")+"\n\n"+val("av-corps"),"Message copié");return}
+  if(act==="av-envoi"){
+    var dest=(val("av-dest")||"").trim();
+    if(!dest){toast("Aucun destinataire");return}
+    var parMail=dest.indexOf("@")>0;
+    if(!parMail){toast("Ce message n'existe qu'en version e-mail");return}
+    b.disabled=true;b.textContent="Envoi…";
+    sbEnvoyer({demandeId:d.id,genre:d.etat==="close"?"cloture":"avancement",canal:"email",
+        destinataires:dest,corps:val("av-corps"),
+        suivi:(d.etat==="close"?"Mot de fin de chantier":"Point d'avancement")+" envoyé au demandeur"})
+      .then(function(){return rafraichir("demandes")})
+      .then(function(){closeDlg();toast("Message envoyé")})
+      .catch(function(e){
+        b.disabled=false;b.textContent="Envoyer";
+        toast("Envoi refusé : "+((e&&e.message)||"erreur"));
+      });
+    return;
+  }''',
+    "envoi du point d'avancement")
+
+# la facture de commissions part a l'entreprise
+rep(r'''      +'<button class="btn sm ghost" data-act="fact-copy" data-id="'+E(pid)+'">Copier cette facture</button></div>';''',
+    r'''      +'<button class="btn sm ghost" data-act="fact-copy" data-id="'+E(pid)+'">Copier cette facture</button>'
+      +(p.email?'<button class="btn sm" data-act="fact-envoi" data-id="'+E(pid)+'">Envoyer</button>':"")+'</div>';''',
+    "bouton d'envoi de la facture")
+
+rep(r'''  if(act==="fact-copy"){copier(texteFacture(b.dataset.id),"Facture copiée");return}''',
+    r'''  if(act==="fact-copy"){copier(texteFacture(b.dataset.id),"Facture copiée");return}
+  if(act==="fact-envoi"){
+    var pidf=b.dataset.id;
+    var pf=DATA.prestataires.filter(function(x){return x.id===pidf})[0]||{};
+    if(!pf.email){toast("Cette entreprise n'a pas d'adresse e-mail");return}
+    /* Une facture par entreprise et par mois : l'objet porte la
+       periode, c'est ce qu'elle cherchera dans sa boite. */
+    b.disabled=true;b.textContent="Envoi…";
+    sbEnvoyer({genre:"facture",canal:"email",destinataires:pf.email,
+        objet:societe().nom+" — facture de commissions "+moisLong(flt.mois),
+        corps:texteFacture(pidf)})
+      .then(function(){b.textContent="Envoyée";toast("Facture envoyée à "+pf.nom)})
+      .catch(function(e){
+        b.disabled=false;b.textContent="Envoyer";
+        toast("Envoi refusé : "+((e&&e.message)||"erreur"));
+      });
+    return;
+  }''',
+    "envoi de la facture de commissions")
+
+# ---------------------------------------------------------------------
 # 7. Le document complet
 # ---------------------------------------------------------------------
 i = src.index("</style>") + len("</style>")

@@ -51,7 +51,13 @@ function morceauxDeLaPlateforme() {
     jusquEnFinDeLigne("function prestaLabels(d){"),
     jusquEnFinDeLigne("function jour(iso){"),
     expression(/function societe\(\)\{[\s\S]*?\n\}/),
-    parBornes("function accuseReception(d){", "function texteMail(d,ents){"),
+    /* le pied de message, commun a l'accuse, au point d'avancement et
+       au mot de fin de chantier */
+    expression(/function signature\(v\)\{[\s\S]*?\n\}/),
+    /* la borne de fin est le commentaire du point d'avancement, qui suit
+       immediatement : prendre jusqu'a texteMail embarquerait les trois
+       fonctions voisines, et signature() deux fois */
+    parBornes("function accuseReception(d){", "/* ---------- le point d'avancement"),
     "export {accuseReception};",
   ].join("\n");
 }

@@ -223,15 +223,16 @@ rejouable : il ne casse rien s'il tourne deux fois.
 | `02-fichiers.sql` | les limites de taille, et le numéro de demande attribué par la base |
 | `03-devis-recus.sql` | les devis reçus des entreprises, et le prix fixé à la main |
 | `04-messages.sql` | le journal des envois, et le déclencheur de l'accusé de réception |
+| `05-rappels.sql` | la tâche quotidienne qui signale les demandes qui dorment |
 
 La règle de base est que tout est fermé, et qu'on ouvre ligne par ligne. Le seul
 droit donné au public est de **déposer** une demande : il ne peut pas la relire,
 ni voir quoi que ce soit d'autre. Un syndic connecté lit son parc, et rien
 au-delà. Ce n'est pas le rendu de la page qui le décide, c'est la base.
 
-`supabase/functions/` tient les deux fonctions d'envoi, et
-`supabase/00-reglages.md` tout ce qui se branche à la main : les clés, le
-webhook, le domaine d'expédition.
+`supabase/functions/` tient les trois fonctions d'envoi, et
+`supabase/00-reglages.md` tout ce qui se branche à la main : la boîte
+d'expédition, le webhook, la tâche quotidienne.
 
 ## `site/` — le site public, à déposer sur Vercel
 
@@ -330,7 +331,20 @@ tiennent maintenant cette promesse.
 | Fonction | Qui l'appelle | Ce qui part |
 |---|---|---|
 | `accuse-reception` | la base, à chaque demande déposée | l'accusé au demandeur, et votre alerte |
-| `envoyer` | la plateforme, sur un bouton | la demande de devis aux entreprises, un message par entreprise |
+| `envoyer` | la plateforme | les devis aux entreprises, le point d'avancement, le mot de fin de chantier, les factures de commissions |
+| `rappels` | la base, chaque matin | la liste des demandes qui dépassent leur délai |
+
+Six messages, et ce qui les déclenche dit qui décide. La base envoie seule
+l'accusé de réception et le rappel du matin. La plateforme enchaîne sans
+demander quand le geste vient d'être fait : la demande de devis entraîne le
+point d'avancement du demandeur, la clôture entraîne le mot de fin de chantier.
+Et deux messages gardent leur bouton, parce qu'ils se relisent avant de partir
+— la demande de devis elle-même, et la facture de commissions.
+
+Ce que les messages de suivi ne disent jamais : le nom des entreprises
+consultées, leurs prix, et la commission. Le client voit le prix qu'on retient,
+jamais ce qu'il y a dessous. C'est la même règle que les colonnes du bordereau,
+et c'est aussi ce qui nous garde dans le flux.
 
 Le texte de l'accusé est écrit deux fois : la plateforme le montre, la fonction
 l'envoie. C'est une règle de `docs/modeles/mails-automatiques.md`, et elle se
@@ -345,15 +359,19 @@ texte complet — et un échec s'écrit aussi, sur la fiche de la demande. C'est
 cette ligne qui rend opposable le délai de cinq jours ouvrés de la convention
 d'apport : un message copié à la main n'en laissait aucune.
 
-La clé du service d'envoi est un secret de la fonction : elle ne descend jamais
-dans une page. Le service est Brevo, appelé en deux endroits précis d'un seul
-fichier — en changer ne touche à rien d'autre. Ce qu'il reste à faire chez lui,
-et sans quoi rien ne part, est dans `supabase/00-reglages.md` : vérifier le
-domaine, et déclarer une adresse d'expédition dessus.
+C'est **la boîte du domaine qui expédie**, par le serveur d'envoi de son
+hébergeur : l'adresse qui signe est celle qui envoie vraiment, sans tiers et
+sans mention ajoutée en pied de message. Rien à ajouter dans le DNS — le
+courrier du domaine est hébergé là, donc les signatures qui prouvent
+l'identité de l'expéditeur valent pour ce qui part de ses serveurs.
 
-Tout cela tient dans l'offre gratuite, qui plafonne à trois cents e-mails par
-jour là où le besoin est de quatre ou cinq. Le SMS, lui, n'est gratuit nulle
-part : le canal reste fermé tant que le secret `SMS_ACTIF` ne vaut pas `oui`.
-Vous êtes donc prévenu par e-mail, avec `URGENCE` en tête de l'objet quand
-c'en est une, et un demandeur qui n'a laissé que son numéro ne reçoit pas
-d'accusé — sa fiche l'écrit, et c'est votre rappel qui en tient lieu.
+Son mot de passe est un secret de la fonction : il ne descend jamais dans une
+page. Un service d'envoi tiers reste en repli, par un secret à changer
+(`MODE_ENVOI`), pour le jour où le port ne sortirait pas de l'environnement des
+fonctions — cela ne se vérifie qu'en l'essayant.
+
+Le SMS, lui, n'est gratuit nulle part : le canal reste fermé tant que le secret
+`SMS_ACTIF` ne vaut pas `oui`. Vous êtes donc prévenu par e-mail, avec
+`URGENCE` en tête de l'objet quand c'en est une, et un demandeur qui n'a laissé
+que son numéro ne reçoit pas d'accusé — sa fiche l'écrit, et c'est votre rappel
+qui en tient lieu.

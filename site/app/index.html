@@ -1334,7 +1334,8 @@ function vFacturation(){
     var tot=0,accord=0,volEnt=0;
     h+='<div class="fact"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">'
       +'<div><h3>'+E(p.nom)+'</h3><p class="sub">'+E(p.contact||"")+(p.email?' · '+E(p.email):"")+'</p></div>'
-      +'<button class="btn sm ghost" data-act="fact-copy" data-id="'+E(pid)+'">Copier cette facture</button></div>';
+      +'<button class="btn sm ghost" data-act="fact-copy" data-id="'+E(pid)+'">Copier cette facture</button>'
+      +(p.email?'<button class="btn sm" data-act="fact-envoi" data-id="'+E(pid)+'">Envoyer</button>':"")+'</div>';
     h+='<div class="scroll"><table class="tbl"><thead><tr><th>Date</th><th>Réf</th><th>Client</th><th>Ville</th>'
       +'<th class="num">Travaux HT</th><th class="num">Base</th><th class="num">Commission HT</th></tr></thead><tbody>';
     lignes.forEach(function(i){
@@ -1609,6 +1610,7 @@ function vDemande(){
   h+='<div class="actions">'
     +(d.tel?'<a class="btn" href="tel:'+E(tel(d.tel))+'">Appeler '+E(d.nom||"le demandeur")+'</a>':"")
     +'<button class="btn ghost" data-act="accuse" data-id="'+E(d.id)+'">Accusé de réception</button>'
+    +((d.etat&&d.etat!=="nouvelle")?'<button class="btn ghost" data-act="avis" data-id="'+E(d.id)+'">Prévenir le demandeur</button>':"")
     +'<button class="btn ghost" data-act="note" data-id="'+E(d.id)+'">Ajouter une note</button>'
     +'<button class="btn ghost" data-act="bordereau" data-id="'+E(d.id)+'">'+(bd?"Ouvrir le bordereau de prix":"Créer un bordereau de prix")+'</button>'
     +'<button class="btn ghost" data-act="cloturer" data-id="'+E(d.id)+'">Clôturer l\'intervention</button>'
@@ -3517,12 +3519,7 @@ function accuseReception(d){
   L.push("");
   L.push("Ce que nous faisons pour vous : nous cherchons l'entreprise qui convient parmi celles de notre réseau, toutes assurées et vérifiées, nous vous transmettons le devis et nous suivons l'intervention jusqu'à la fin. Vous n'avez qu'un seul interlocuteur.");
   L.push("");
-  L.push("Cordialement,");
-  L.push(v.repnom);
-  L.push(v.nom+" — consultation, pilotage, coordination et assistance");
-  L.push("Mandelieu-la-Napoule — secteur Fréjus / Nice");
-  if(v.tel)L.push(v.tel);
-  if(v.email)L.push(v.email);
+  L.push(signature(v));
   L.push("");
   L.push("--");
   L.push("Vos coordonnées ne servent qu'au traitement de cette demande et ne sont transmises qu'à l'entreprise retenue. Elles sont conservées trois ans. Pour les faire supprimer, répondez à ce message.");
@@ -3532,6 +3529,83 @@ function accuseReception(d){
       :"Nous vous rappelons sous 48 h")
     +". "+(v.tel||"");
   return {corps:L.join("\n"),sms:sms};
+}
+/* ---------- le point d'avancement ----------
+   Deux moments ou le demandeur doit entendre parler de nous sans avoir
+   a appeler : quand sa demande part en consultation, et quand le
+   chantier est termine. C'est la premiere cause d'appels entrants dans
+   ce metier, et chacun coute cinq minutes.
+
+   Ce qui ne figure jamais dans ces messages : le nom des entreprises
+   consultees, les prix qu'elles ont donnes, et la commission. Le client
+   voit le prix qu'on retient, jamais ce qu'il y a dessous — c'est la
+   meme regle que les colonnes du bordereau, et c'est aussi ce qui nous
+   garde dans le flux. */
+function texteAvancement(d){
+  var v=societe(),L=[],n=(d.assignes||[]).length;
+  var objet=v.nom+" — votre demande "+d.ref+" est en consultation";
+  L.push("Objet : "+objet);
+  L.push("");
+  L.push("Bonjour"+(d.nom?" "+d.nom:"")+",");
+  L.push("");
+  L.push("Votre demande "+d.ref+" est partie en consultation auprès de "
+    +(n>1?n+" entreprises":"une entreprise")+" du secteur, sur le même descriptif.");
+  L.push("");
+  L.push(d.intent==="depannage"
+    ? "Les devis nous reviennent sous 72 heures. Nous vous rappelons dès que nous avons de quoi comparer."
+    : "Les devis nous reviennent sous 8 jours, poste par poste. Nous vous rappelons dès que nous avons de quoi comparer.");
+  L.push("");
+  L.push("CE QUI A ÉTÉ TRANSMIS");
+  L.push("  Nature : "+((INTENT[d.intent]||{}).l||"—"));
+  if((d.trades||[]).length)L.push("  Corps de métier : "+metiersOf(d).join(", "));
+  L.push("  Situation : "+(d.lieu==="commun"?"parties communes":d.lieu==="privatif"?"partie privative":"à déterminer sur place"));
+  if(d.description)L.push("  Votre description : « "+d.description+" »");
+  L.push("");
+  L.push("Vous n'avez rien à faire d'ici là : les entreprises passent par nous, et c'est nous qui relançons celles qui tardent.");
+  L.push("");
+  L.push(signature(v));
+  return {objet:objet,corps:L.join("\n")};
+}
+/* `ivf` : la realisation telle qu'elle vient d'etre saisie, avant que la
+   base ne soit relue. Sans elle, le mot de fin de chantier partirait avec
+   les chiffres d'avant la cloture. */
+function texteCloture(d,ivf){
+  var v=societe(),iv=ivf||interDe(d)||{},L=[];
+  var ent=DATA.prestataires.filter(function(x){return x.id===iv.prestataireId})[0];
+  var objet=v.nom+" — intervention terminée, demande "+d.ref;
+  L.push("Objet : "+objet);
+  L.push("");
+  L.push("Bonjour"+(d.nom?" "+d.nom:"")+",");
+  L.push("");
+  L.push("L'intervention est terminée"+(iv.date?" et réceptionnée le "+jour(iv.date):"")+".");
+  L.push("");
+  L.push("CE QUI A ÉTÉ FAIT");
+  if(ent)L.push("  Entreprise : "+ent.nom);
+  if((d.trades||[]).length)L.push("  Corps de métier : "+metiersOf(d).join(", "));
+  if(iv.montant)L.push("  Montant des travaux : "+eur(iv.montant)+" HT"
+    +(iv.factureNum?" — facture n° "+iv.factureNum:""));
+  if((iv.photosApres||[]).length)L.push("  Photos de fin de chantier : "+(iv.photosApres||[]).length);
+  L.push("");
+  L.push("La facture vous est adressée par l'entreprise. Si quelque chose ne va pas, répondez à ce message : nous reprenons le dossier avec elle.");
+  L.push("");
+  L.push(signature(v));
+  return {objet:objet,corps:L.join("\n")};
+}
+/* Le meme pied partout : c'est ce qui fait qu'un accuse, un point
+   d'avancement et un mot de fin de chantier se lisent comme venant de
+   la meme maison. */
+function signature(v){
+  var L=["Cordialement,",v.repnom,
+    v.nom+" — consultation, pilotage, coordination et assistance",
+    "Mandelieu-la-Napoule — secteur Fréjus / Nice"];
+  if(v.tel)L.push(v.tel);
+  if(v.email)L.push(v.email);
+  return L.join("\n");
+}
+/* Lequel des deux, et a qui : l'etat de la demande le dit mieux qu'un
+   menu de plus. */
+function avisDuMoment(d){
+  return d.etat==="close" ? texteCloture(d) : texteAvancement(d);
 }
 function texteMail(d,ents){
   var lieu=[d.residence,d.adresse,[d.cp,d.ville].filter(Boolean).join(" ")].filter(Boolean).join(", ");
@@ -3807,6 +3881,39 @@ document.addEventListener("click",function(ev){
   if(act==="ar-sms"){copier(val("ar-sms"),"SMS copié");return}
   if(act==="ar-envoye"){
     maj(d.id,{journal:journalise(d,"Accusé de réception envoyé au demandeur.")});
+    closeDlg();toast("Envoi enregistré dans le suivi");return;
+  }
+  if(act==="avis"){
+    var av=avisDuMoment(d);
+    openDlg(d.etat==="close"?"Fin de chantier":"Point d'avancement",E(d.ref)+" · "+E(d.nom||""),
+      '<div class="field"><label>Destinataire</label><input id="av-dest" value="'+E(d.email||d.tel||"")+'"></div>'
+      +'<div class="field"><label for="av-corps">Message</label><textarea class="mail" id="av-corps">'+E(av.corps)+'</textarea></div>'
+      +'<p class="note">Ni le nom des entreprises consultées, ni leurs prix : le demandeur voit ce que vous retenez, pas ce qu\'il y a dessous.</p>',
+      '<button class="btn ghost" data-act="av-copy">Copier le message</button>'
+      +'<button class="btn ghost" data-act="av-envoye" data-id="'+E(d.id)+'">Envoyé à la main</button>'
+      +'<button class="btn" data-act="av-envoi" data-id="'+E(d.id)+'">Envoyer</button>');
+    return;
+  }
+  if(act==="av-copy"){copier(val("av-dest")+"\n\n"+val("av-corps"),"Message copié");return}
+  if(act==="av-envoi"){
+    var dest=(val("av-dest")||"").trim();
+    if(!dest){toast("Aucun destinataire");return}
+    var parMail=dest.indexOf("@")>0;
+    if(!parMail){toast("Ce message n'existe qu'en version e-mail");return}
+    b.disabled=true;b.textContent="Envoi…";
+    sbEnvoyer({demandeId:d.id,genre:d.etat==="close"?"cloture":"avancement",canal:"email",
+        destinataires:dest,corps:val("av-corps"),
+        suivi:(d.etat==="close"?"Mot de fin de chantier":"Point d'avancement")+" envoyé au demandeur"})
+      .then(function(){return rafraichir("demandes")})
+      .then(function(){closeDlg();toast("Message envoyé")})
+      .catch(function(e){
+        b.disabled=false;b.textContent="Envoyer";
+        toast("Envoi refusé : "+((e&&e.message)||"erreur"));
+      });
+    return;
+  }
+  if(act==="av-envoye"){
+    maj(d.id,{journal:journalise(d,(d.etat==="close"?"Mot de fin de chantier":"Point d'avancement")+" envoyé au demandeur.")});
     closeDlg();toast("Envoi enregistré dans le suivi");return;
   }
   if(act==="sauv-json"){
@@ -4128,6 +4235,23 @@ document.addEventListener("click",function(ev){
     toast("Mise en relation enregistrée");return;
   }
   if(act==="fact-copy"){copier(texteFacture(b.dataset.id),"Facture copiée");return}
+  if(act==="fact-envoi"){
+    var pidf=b.dataset.id;
+    var pf=DATA.prestataires.filter(function(x){return x.id===pidf})[0]||{};
+    if(!pf.email){toast("Cette entreprise n'a pas d'adresse e-mail");return}
+    /* Une facture par entreprise et par mois : l'objet porte la
+       periode, c'est ce qu'elle cherchera dans sa boite. */
+    b.disabled=true;b.textContent="Envoi…";
+    sbEnvoyer({genre:"facture",canal:"email",destinataires:pf.email,
+        objet:societe().nom+" — facture de commissions "+moisLong(flt.mois),
+        corps:texteFacture(pidf)})
+      .then(function(){b.textContent="Envoyée";toast("Facture envoyée à "+pf.nom)})
+      .catch(function(e){
+        b.disabled=false;b.textContent="Envoyer";
+        toast("Envoi refusé : "+((e&&e.message)||"erreur"));
+      });
+    return;
+  }
   if(act==="fact-copy-all"){
     var idsf={};
     DATA.interventions.forEach(function(i){if(moisDe(i.date)===flt.mois)idsf[i.prestataireId]=1});
@@ -4208,6 +4332,16 @@ document.addEventListener("click",function(ev){
            qu'à l'état, sinon on le réécrirait avec un journal périmé */
         return maj(d.id,{etat:"devis"}).then(function(){
           closeDlg();toast((r.envoyes||0)+" demande(s) de devis envoyée(s)");
+          /* Le demandeur apprend que sa demande est partie en
+             consultation. C'est la premiere cause d'appels entrants
+             dans ce metier : autant la devancer. Sans adresse, rien ne
+             part et le suivi le dit. */
+          if(!d.email)return;
+          var av=texteAvancement(d);
+          return sbEnvoyer({demandeId:d.id,genre:"avancement",canal:"email",
+              destinataires:d.email,objet:av.objet,corps:av.corps,
+              suivi:"Point d'avancement envoyé au demandeur"})
+            .catch(function(e){toast("Le demandeur n'a pas été prévenu : "+((e&&e.message)||"erreur"))});
         });
       })
       .catch(function(e){
@@ -4414,7 +4548,17 @@ document.addEventListener("click",function(ev){
     }
     maj(d.id,{etat:"close",journal:journalise(d,(ancienne?"Réalisation corrigée. ":"Clôturée. ")+"Intervention par "+(p2.nom||"—")
       +(mt?" pour "+eur(mt)+" HT, commission "+(cm.accord?"à convenir":eur(cm.v||0)):"")+".")});
-    closeDlg();toast(ancienne?"Réalisation mise à jour":"Intervention enregistrée");return;
+    closeDlg();toast(ancienne?"Réalisation mise à jour":"Intervention enregistrée");
+    /* Avec les chiffres qui viennent d'etre saisis, et non ceux que la
+       base n'a pas encore relus. Une correction de realisation ne
+       renvoie rien : le demandeur a deja ete prevenu une fois. */
+    if(d.email&&!ancienne){
+      var cl=texteCloture(d,body);
+      sbEnvoyer({demandeId:d.id,genre:"cloture",canal:"email",destinataires:d.email,
+          objet:cl.objet,corps:cl.corps,suivi:"Mot de fin de chantier envoyé au demandeur"})
+        .catch(function(e){toast("Le demandeur n'a pas été prévenu : "+((e&&e.message)||"erreur"))});
+    }
+    return;
   }
   if(act==="demande-manuelle"){
     openDlg("Saisir une demande","Pour un appel reçu directement, hors QR code.",

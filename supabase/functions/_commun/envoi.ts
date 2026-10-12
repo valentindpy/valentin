@@ -16,6 +16,13 @@
    réécrire ces deux fonctions, et rien d'autre.
    ===================================================================== */
 
+/* Seule bibliothèque de tout le dépôt, et c'est assumé : SMTP est un
+   protocole, pas une API en HTTP. L'écrire à la main tiendrait en
+   quatre-vingts lignes qu'aucun test d'ici ne pourrait exercer — les
+   fins de ligne, l'échappement du point en début de ligne, l'encodage
+   d'un objet accentué. La version est épinglée, jamais « la dernière ». */
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
+
 /* ---------- les réglages, tous au même endroit ---------- */
 /* Rien n'est écrit en dur ici. Les clés se posent une fois dans
    Supabase › Edge Functions › Secrets, et n'apparaissent jamais dans
@@ -76,7 +83,7 @@ export async function societe(): Promise<Societe> {
     nom: v.nom || "VD SERVICES",
     repnom: v.repnom || "Valentin Dupuy",
     tel: v.tel || reglage("TEL_CONTACT"),
-    email: v.email || reglage("EXPEDITEUR_EMAIL"),
+    email: v.email || expediteur(),
   };
 }
 
@@ -107,10 +114,96 @@ export function smsActif(): boolean {
 }
 
 /* ---------- l'envoi d'un e-mail ---------- */
+/* Deux chemins, un seul appelant. `MODE_ENVOI` tranche :
+
+     smtp   la boîte du domaine envoie elle-même, par le serveur de
+            l'hébergeur. C'est votre adresse qui parle, sans tiers,
+            sans mention ajoutée en pied de message.
+     brevo  un service d'envoi expédie pour vous, votre adresse en
+            expéditeur. Plus de traçabilité, des rebonds gérés, mais un
+            compte de plus et un pied imposé sur l'offre gratuite.
+
+   Sans réglage, le mode est déduit : `SMTP_HOTE` renseigné vaut smtp,
+   sinon brevo. Basculer de l'un à l'autre est un secret à changer, pas
+   une ligne de code — et c'est volontaire : l'envoi par SMTP suppose
+   que le port sorte de l'environnement des fonctions, ce qui ne se
+   vérifie qu'en l'essayant. */
+export function modeEnvoi(): string {
+  const choisi = reglage("MODE_ENVOI").toLowerCase();
+  if (choisi === "smtp" || choisi === "brevo") return choisi;
+  return reglage("SMTP_HOTE") ? "smtp" : "brevo";
+}
+
+/* L'adresse qui signe. En SMTP, le serveur de l'hébergeur refuse
+   d'expédier au nom d'une autre boîte que celle qui s'authentifie :
+   l'expéditeur vaut donc la boîte, sauf alias déclaré chez lui. */
+export function expediteur(): string {
+  return reglage("EXPEDITEUR_EMAIL") || reglage("SMTP_UTILISATEUR");
+}
+
 /* Le texte part en clair, sans HTML : c'est un message de service, pas
    une infolettre. Un corps en texte simple traverse tous les filtres,
    s'affiche partout, et ne ressemble pas à de la publicité. */
-export async function envoyerMail(
+export function envoyerMail(
+  dest: string,
+  objet: string,
+  corps: string,
+  soc: Societe,
+): Promise<string> {
+  return modeEnvoi() === "smtp"
+    ? envoyerMailSmtp(dest, objet, corps, soc)
+    : envoyerMailBrevo(dest, objet, corps, soc);
+}
+
+/* ---------- par la boîte du domaine ---------- */
+async function envoyerMailSmtp(
+  dest: string,
+  objet: string,
+  corps: string,
+  soc: Societe,
+): Promise<string> {
+  const hote = reglage("SMTP_HOTE");
+  const utilisateur = reglage("SMTP_UTILISATEUR");
+  const motdepasse = reglage("SMTP_MOTDEPASSE");
+  if (!hote || !utilisateur || !motdepasse) {
+    throw new Error("réglages SMTP incomplets : SMTP_HOTE, SMTP_UTILISATEUR, SMTP_MOTDEPASSE");
+  }
+  const port = Number(reglage("SMTP_PORT", "465")) || 465;
+  const de = expediteur();
+
+  /* 465 chiffre dès la poignée de main, 587 commence en clair puis
+     passe en TLS. Les deux sont offerts par les hébergeurs ; le
+     premier traverse mieux les réseaux qui filtrent. */
+  const client = new SMTPClient({
+    connection: {
+      hostname: hote,
+      port: port,
+      tls: port !== 587,
+      auth: { username: utilisateur, password: motdepasse },
+    },
+  });
+  try {
+    await client.send({
+      from: reglage("EXPEDITEUR_NOM", soc.nom) + " <" + de + ">",
+      to: dest,
+      replyTo: soc.email || de,
+      /* Une copie cachée vers la boîte elle-même : c'est ce qui donne
+         une trace dans les « Envoyés », que le SMTP ne laisse pas de
+         lui-même. Fermé par défaut, pour ne pas doubler le courrier. */
+      bcc: /^(oui|1|true)$/i.test(reglage("COPIE_ENVOIS")) ? de : undefined,
+      subject: objet,
+      content: corps,
+    });
+  } finally {
+    try {
+      await client.close();
+    } catch { /* la connexion était déjà retombée : le message est parti */ }
+  }
+  return "smtp";
+}
+
+/* ---------- par un service d'envoi ---------- */
+async function envoyerMailBrevo(
   dest: string,
   objet: string,
   corps: string,
@@ -118,15 +211,15 @@ export async function envoyerMail(
 ): Promise<string> {
   const cle = reglage("BREVO_CLE");
   if (!cle) throw new Error("BREVO_CLE n'est pas renseignée dans les secrets de la fonction");
-  const expediteur = reglage("EXPEDITEUR_EMAIL");
-  if (!expediteur) throw new Error("EXPEDITEUR_EMAIL n'est pas renseignée");
+  const de = expediteur();
+  if (!de) throw new Error("EXPEDITEUR_EMAIL n'est pas renseignée");
 
   const r = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: { "api-key": cle, "Content-Type": "application/json", accept: "application/json" },
     body: JSON.stringify({
-      sender: { name: reglage("EXPEDITEUR_NOM", soc.nom), email: expediteur },
-      replyTo: { email: soc.email || expediteur, name: soc.nom },
+      sender: { name: reglage("EXPEDITEUR_NOM", soc.nom), email: de },
+      replyTo: { email: soc.email || de, name: soc.nom },
       to: [{ email: dest }],
       subject: objet,
       textContent: corps,
