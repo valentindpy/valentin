@@ -27,6 +27,7 @@ import {
   json,
   reglage,
   roleDuJeton,
+  smsActif,
   societe,
 } from "../_commun/envoi.ts";
 
@@ -83,6 +84,12 @@ Deno.serve(async (req: Request) => {
   const canal = dem.canal === "sms" ? "sms" : "email";
   const corps = String(dem.corps || "").trim();
   if (!corps) return json({ erreur: "message vide" }, 400);
+  /* Dit en clair dans la plateforme, plutôt qu'une erreur du service
+     d'envoi que personne ne sait lire : le canal est fermé, voilà le
+     secret qui l'ouvre. */
+  if (canal === "sms" && !smsActif()) {
+    return json({ erreur: "les SMS ne sont pas activés (secret SMS_ACTIF)" }, 400);
+  }
 
   /* La plateforme met l'objet sur la première ligne du texte, comme
      dans un brouillon qu'on relit. On le reprend là, et on ne le laisse

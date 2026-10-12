@@ -45,18 +45,46 @@ est écrit en commentaire dans `04-messages.sql`.
 | `BREVO_CLE` | la clé d'API Brevo | rien ne part, et la fiche le dit |
 | `EXPEDITEUR_EMAIL` | l'adresse d'envoi, **vérifiée chez Brevo** | rien ne part |
 | `EXPEDITEUR_NOM` | le nom affiché | le nom de la société |
-| `SMS_EXPEDITEUR` | l'expéditeur des SMS, 11 caractères max | `VDSERVICES` |
 | `ALERTE_EMAIL` | où vous recevez les demandes | l'e-mail de la société |
-| `ALERTE_SMS` | où vous recevez les urgences | le téléphone de la société |
 | `ORIGINE_AUTORISEE` | le domaine de la plateforme, pour `envoyer` | toutes origines |
+
+Et pour le jour où vous ouvrirez les SMS, fermés tant que le premier de
+ces trois secrets n'existe pas :
+
+| Secret | Ce que c'est | Sans lui |
+|---|---|---|
+| `SMS_ACTIF` | `oui` ouvre le canal SMS | aucun SMS n'est tenté |
+| `SMS_EXPEDITEUR` | l'expéditeur des SMS, 11 caractères max | `VDSERVICES` |
+| `ALERTE_SMS` | où vous recevez les urgences par SMS | le téléphone de la société |
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` et `SUPABASE_SERVICE_ROLE_KEY` sont
 posés par Supabase : ne les créez pas.
 
 ## Le service d'envoi
 Brevo — société française, hébergement européen, e-mail et SMS sur le
-même compte. Le palier gratuit couvre trois cents e-mails par jour ; les
-SMS se paient à l'unité.
+même compte.
+
+**L'offre gratuite suffit, et de loin.** Trois cents e-mails par jour,
+sans date de fin : une demande en fait partir deux, une consultation
+trois de plus. Même à cinq cents demandes par an, on reste à quatre ou
+cinq messages par jour.
+
+Deux choses à savoir sur ce palier gratuit :
+
+- chaque message porte la mention **« Sent with Brevo »** dans son pied,
+  transactionnels compris, et elle ne peut pas être retirée. La faire
+  disparaître demande l'offre payante, une dizaine d'euros par mois ;
+- les **SMS ne sont jamais gratuits**, chez Brevo comme ailleurs : quatre
+  à six centimes HT le message vers la France, en crédits achetés
+  d'avance. Le canal reste donc fermé : tant que `SMS_ACTIF` ne vaut pas
+  `oui`, aucune fonction n'essaie d'en envoyer un.
+
+Ce que cela change au quotidien : vous êtes prévenu par e-mail, et
+l'objet commence par `URGENCE` quand c'en est une — de quoi régler une
+sonnerie dessus. Et un demandeur qui n'a laissé que son numéro ne reçoit
+pas d'accusé : la fiche de sa demande l'écrit noir sur blanc, c'est
+votre rappel qui en tient lieu. Le champ e-mail du formulaire est
+facultatif, sauf pour les entités publiques.
 
 Deux choses à faire chez eux avant le premier envoi, et rien ne part
 avant :

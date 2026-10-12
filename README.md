@@ -329,7 +329,7 @@ tiennent maintenant cette promesse.
 
 | Fonction | Qui l'appelle | Ce qui part |
 |---|---|---|
-| `accuse-reception` | la base, à chaque demande déposée | l'accusé au demandeur, l'alerte à vous par mail et par SMS |
+| `accuse-reception` | la base, à chaque demande déposée | l'accusé au demandeur, et votre alerte |
 | `envoyer` | la plateforme, sur un bouton | la demande de devis aux entreprises, un message par entreprise |
 
 Le texte de l'accusé est écrit deux fois : la plateforme le montre, la fonction
@@ -350,3 +350,10 @@ dans une page. Le service est Brevo, appelé en deux endroits précis d'un seul
 fichier — en changer ne touche à rien d'autre. Ce qu'il reste à faire chez lui,
 et sans quoi rien ne part, est dans `supabase/00-reglages.md` : vérifier le
 domaine, et déclarer une adresse d'expédition dessus.
+
+Tout cela tient dans l'offre gratuite, qui plafonne à trois cents e-mails par
+jour là où le besoin est de quatre ou cinq. Le SMS, lui, n'est gratuit nulle
+part : le canal reste fermé tant que le secret `SMS_ACTIF` ne vaut pas `oui`.
+Vous êtes donc prévenu par e-mail, avec `URGENCE` en tête de l'objet quand
+c'en est une, et un demandeur qui n'a laissé que son numéro ne reçoit pas
+d'accusé — sa fiche l'écrit, et c'est votre rappel qui en tient lieu.

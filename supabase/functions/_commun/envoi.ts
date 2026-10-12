@@ -96,6 +96,16 @@ export function estMail(x: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(x || "").trim());
 }
 
+/* ---------- le SMS est fermé par défaut ---------- */
+/* L'e-mail est gratuit, le SMS ne l'est chez personne : quatre à six
+   centimes le message, en crédits achetés d'avance. Tant que le secret
+   SMS_ACTIF ne vaut pas « oui », aucune fonction n'essaie d'en envoyer
+   un — mieux vaut dire sur la fiche qu'aucun accusé n'est parti que
+   collectionner des échecs chez un service sans crédit. */
+export function smsActif(): boolean {
+  return /^(oui|1|true)$/i.test(reglage("SMS_ACTIF"));
+}
+
 /* ---------- l'envoi d'un e-mail ---------- */
 /* Le texte part en clair, sans HTML : c'est un message de service, pas
    une infolettre. Un corps en texte simple traverse tous les filtres,

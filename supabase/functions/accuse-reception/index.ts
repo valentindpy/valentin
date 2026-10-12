@@ -30,6 +30,7 @@ import {
   json,
   reglage,
   roleDuJeton,
+  smsActif,
   societe,
 } from "../_commun/envoi.ts";
 import { accuseReception, alerteInterne, type Demande } from "../_commun/texte.ts";
@@ -142,7 +143,7 @@ Deno.serve(async (req: Request) => {
       ac.corps,
       "Accusé de réception envoyé à " + d.email.trim() + ".",
     );
-  } else if (d.tel) {
+  } else if (d.tel && smsActif()) {
     await envoyer(
       "accusé au demandeur",
       "accuse",
@@ -152,15 +153,30 @@ Deno.serve(async (req: Request) => {
       ac.sms,
       "Accusé de réception envoyé par SMS au " + d.tel + ".",
     );
+  } else if (d.tel) {
+    /* Pas d'adresse, et les SMS ne sont pas ouverts : personne n'a
+       accusé cette demande. C'est votre appel qui en tiendra lieu, et
+       la fiche le dit clairement plutôt que de rester muette. */
+    await ajouterAuSuivi(
+      d.id,
+      "Aucun accusé envoyé : pas d'adresse e-mail, et les SMS ne sont pas activés. Rappelez le " +
+        d.tel + ".",
+    );
   } else {
     await ajouterAuSuivi(d.id, "Aucun accusé envoyé : la demande ne porte ni e-mail ni téléphone.");
   }
 
-  /* --- vous : l'alerte, par les deux canaux --- */
-  const versMoi = reglage("ALERTE_EMAIL", soc.email);
-  const smsMoi = reglage("ALERTE_SMS", soc.tel);
-  await envoyer("alerte interne", "autre", "email", versMoi, al.objet, al.corps);
-  await envoyer("alerte interne", "autre", "sms", smsMoi, al.objet, al.sms);
+  /* --- vous : l'alerte --- */
+  /* Par e-mail, et par SMS seulement si vous avez ouvert ce canal.
+     L'objet commence par URGENCE pour les urgences : c'est ce qui
+     permet à un téléphone de sonner pour celles-là et de se taire
+     pour le reste. */
+  await envoyer("alerte interne", "autre", "email", reglage("ALERTE_EMAIL", soc.email),
+    al.objet, al.corps);
+  if (smsActif()) {
+    await envoyer("alerte interne", "autre", "sms", reglage("ALERTE_SMS", soc.tel),
+      al.objet, al.sms);
+  }
 
   /* Toujours 200 : le webhook n'a pas à réessayer un envoi déjà
      consigné, il recommencerait en double. Ce qui a raté est écrit

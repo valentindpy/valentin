@@ -11,9 +11,9 @@ parcours et sort en erreur au premier écart.
 
 | Quand | Vers qui | Canal | Délai | État |
 |---|---|---|---|---|
-| Demande validée sur le formulaire | Le demandeur | E-mail si fourni, SMS sinon | Immédiat | **branché** |
-| Demande validée sur le formulaire | VD Services | E-mail et SMS | Immédiat | **branché** |
-| Urgence validée | VD Services | SMS prioritaire | Immédiat | **branché**, en tête du SMS |
+| Demande validée sur le formulaire | Le demandeur | E-mail si fourni, SMS sinon | Immédiat | **branché** ; le SMS demande `SMS_ACTIF` |
+| Demande validée sur le formulaire | VD Services | E-mail, et SMS si ouvert | Immédiat | **branché** |
+| Urgence validée | VD Services | objet `URGENCE`, SMS si ouvert | Immédiat | **branché** |
 | Demande de devis envoyée aux entreprises | Les entreprises | E-mail | À l'envoi | **branché**, sur bouton |
 | Demande de devis envoyée aux entreprises | Le demandeur | E-mail | À l'envoi | reste à faire |
 | Intervention clôturée | Le demandeur | E-mail | À la clôture | reste à faire |
@@ -22,6 +22,12 @@ parcours et sort en erreur au premier écart.
 Les trois lignes automatiques partent de `accuse-reception`, appelée par la base
 à chaque dépôt. La quatrième part de `envoyer`, appelée par la plateforme quand
 vous cliquez : le texte qui part est celui que vous venez de relire.
+
+Le SMS est un canal fermé par défaut, parce qu'il est le seul qui se paie à
+l'unité. Tant que le secret `SMS_ACTIF` ne vaut pas `oui`, aucune des deux
+fonctions n'en tente un : un demandeur qui n'a pas donné d'adresse e-mail ne
+reçoit alors pas d'accusé, et sa fiche le dit en clair plutôt que de laisser
+croire qu'il a été prévenu.
 
 ## Variables disponibles
 

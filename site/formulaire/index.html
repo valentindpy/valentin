@@ -532,8 +532,12 @@ function render(){
     h+='<div class="col">'
       +'<input class="fld" id="c-nom" placeholder="Prénom et nom" value="'+esc(S.nom)+'" data-set="nom">'
       +'<input class="fld" id="c-tel" type="tel" inputmode="tel" placeholder="Téléphone" value="'+esc(S.tel)+'" data-set="tel">'
-      +'<input class="fld" id="c-mail" type="email" inputmode="email" placeholder="E-mail'+(S.intent==="public"?" professionnel":" (facultatif)")+'" value="'+esc(S.email)+'" data-set="email">'
+      +'<input class="fld" id="c-mail" type="email" inputmode="email" placeholder="E-mail'+(S.intent==="public"?" professionnel":" (recommandé)")+'" value="'+esc(S.email)+'" data-set="email">'
       +'</div>';
+    /* L'adresse reste facultative — un habitant n'en a pas toujours —
+       mais elle n'est plus présentée comme un détail : c'est elle qui
+       décide si la personne reçoit un accusé ou seulement un appel. */
+    if(S.intent!=="public")h+='<p class="note">Avec une adresse e-mail, vous recevez l\'accusé de réception portant la référence de votre demande. Sans, nous vous rappelons simplement.</p>';
     h+='<p class="qn">Une photo vaut dix questions <span style="text-transform:none;letter-spacing:0">(facultatif)</span></p>';
     h+='<label class="opt n" for="f-photo" style="display:block;cursor:pointer">'
       +'<b>'+(FICHIERS.length?FICHIERS.length+" photo(s) jointe(s) ✓":"Ajouter une photo")+'</b>'
