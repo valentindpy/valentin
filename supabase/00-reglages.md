@@ -86,18 +86,98 @@ pas d'accusé : la fiche de sa demande l'écrit noir sur blanc, c'est
 votre rappel qui en tient lieu. Le champ e-mail du formulaire est
 facultatif, sauf pour les entités publiques.
 
-Deux choses à faire chez eux avant le premier envoi, et rien ne part
-avant :
-
-1. **Vérifier le domaine `vd-services.fr`** — trois lignes DNS à ajouter
-   chez le registrar (DKIM, SPF, DMARC). Sans cela un message part dans
-   les indésirables, ou ne part pas du tout.
-2. **Déclarer l'adresse d'expédition**, par exemple `contact@vd-services.fr`.
-   Une adresse en `gmail.com` ne peut pas servir d'expéditeur : Gmail
-   interdit qu'un tiers envoie en son nom, et le message est rejeté.
-
 En changer demande de réécrire `envoyerMail` et `envoyerSms` dans
 `supabase/functions/_commun/envoi.ts`, et rien d'autre.
+
+## Pas à pas, la première fois
+
+Une heure en tout, dont une attente de propagation DNS. Les écrans de
+Brevo bougent d'une année sur l'autre ; les noms de menus sont ceux
+d'octobre 2026.
+
+### 0. Le domaine, avant tout
+Il faut `vd-services.fr` **enregistré**, et l'accès à sa zone DNS. C'est
+le seul vrai prérequis : sans domaine à soi, aucun service d'envoi
+sérieux n'accepte d'expédier. Une adresse en `gmail.com` ne peut pas
+servir d'expéditeur — Google interdit qu'un tiers envoie en son nom, et
+le message est rejeté avant d'arriver.
+
+Pas besoin d'acheter une boîte aux lettres pour autant : une
+**redirection** `contact@vd-services.fr` → `vdpy05@gmail.com`, gratuite
+chez la plupart des registrars, suffit à recevoir les réponses.
+
+### 1. Le compte
+`brevo.com`, *Sign up free*. Aucune carte bancaire. À la question du
+volume, répondez au plus juste : c'est ce qui déclenche ou non une
+vérification manuelle du compte.
+
+### 2. Authentifier le domaine
+*Senders, Domains & Dedicated IPs* › onglet **Domains** › *Add a
+domain*, puis `vd-services.fr`.
+
+Brevo affiche alors les enregistrements à publier — un code de
+vérification, le DKIM (une ligne TXT, ou deux CNAME selon le compte),
+et un DMARC. **Copiez ceux qu'il affiche**, ils sont propres à votre
+compte : aucune valeur n'est à inventer ni à reprendre d'un tutoriel.
+Chez le registrar, dans la zone DNS, un enregistrement par ligne.
+
+Puis revenez cliquer sur *Verify*. Comptez quelques minutes, parfois
+quelques heures. Le DKIM et le DMARC passent au vert quand c'est bon.
+
+Si vous avez déjà un DMARC sur le domaine, ne l'écrasez pas :
+l'article d'aide de Brevo décrit le cas.
+
+### 3. L'expéditeur
+Même page, onglet **Senders** › *Add a sender* : `contact@vd-services.fr`,
+nom affiché `VD SERVICES`. Brevo envoie un code de confirmation à cette
+adresse — c'est là que la redirection de l'étape 0 sert.
+
+### 4. La clé d'API
+Menu du compte › *Settings* › **SMTP & API** › onglet *API Keys* ›
+*Generate a new API key*. Nommez-la `vd-services-fonctions`.
+
+**Elle ne s'affiche qu'une fois.** Copiez-la tout de suite.
+
+Attention à ne pas confondre avec une clé SMTP, créée dans l'onglet
+voisin : elle ne marche pas pour l'API, et l'erreur renvoyée ne le dit
+pas clairement.
+
+### 5. Les secrets, côté Supabase
+*Edge Functions* › **Secrets** :
+
+```
+BREVO_CLE        = la clé de l'étape 4
+EXPEDITEUR_EMAIL = contact@vd-services.fr
+EXPEDITEUR_NOM   = VD SERVICES
+ALERTE_EMAIL     = vdpy05@gmail.com
+```
+
+Rien d'autre. `SMS_ACTIF` reste absent : le canal SMS est fermé.
+
+### 6. Les fonctions et le webhook
+Déployez les deux fonctions, puis créez le webhook sur `demandes` :
+tout est écrit plus haut, et en commentaire dans `04-messages.sql`.
+
+### 7. Vérifier que ça marche
+Déposez une vraie demande sur `/formulaire`, avec votre propre adresse
+e-mail. Trois endroits doivent le confirmer :
+
+1. votre boîte : l'accusé, et l'alerte avec la référence en objet ;
+2. Brevo, *Transactional* › **Logs** : deux lignes, *delivered* ;
+3. la plateforme : le suivi de la fiche porte « Accusé de réception
+   envoyé à … », et la table `messages` la ligne complète.
+
+### Quand ça ne part pas
+| Ce que vous voyez | Ce que c'est |
+|---|---|
+| la fiche dit « Échec de l'envoi — … 401 » | la clé d'API : absente, mal copiée, ou c'est une clé SMTP |
+| « sender not valid » ou 400 | l'expéditeur de l'étape 3 n'est pas confirmé |
+| rien du tout dans le suivi | le webhook n'est pas créé, ou pointe sur la mauvaise fonction |
+| le message arrive dans les indésirables | le DKIM n'est pas encore vert, ou pas propagé |
+| « les SMS ne sont pas activés » | c'est voulu : voyez le tableau des secrets SMS |
+
+Les journaux des fonctions sont dans Supabase, *Edge Functions* › la
+fonction › **Logs** : chaque échec y est écrit en clair.
 
 ## Domaine
 - `vd-services.fr`
