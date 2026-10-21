@@ -3268,6 +3268,13 @@ function texteCloture(d,ivf){
   L.push("");
   L.push("La facture vous est adressée par l'entreprise. Si quelque chose ne va pas, répondez à ce message : nous reprenons le dossier avec elle.");
   L.push("");
+  /* La demande d'avis est ici et nulle part ailleurs : au moment ou le
+     chantier vient d'etre receptionne, c'est-a-dire le seul ou la
+     personne a quelque chose a dire. L'accord est demande dans la meme
+     phrase que l'avis — publier un temoignage sans lui revient a le
+     fabriquer a moitie. */
+  L.push("Un dernier mot : si vous avez deux minutes, dites-nous comment cela s'est passé, en répondant simplement à ce message. Avec votre accord, nous publierons votre retour sur notre site, avec votre prénom et votre commune — jamais votre nom complet ni votre adresse.");
+  L.push("");
   L.push(signature(v));
   return {objet:objet,corps:L.join("\n")};
 }

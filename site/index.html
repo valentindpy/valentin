@@ -37,18 +37,26 @@
    ===================================================================== */
 
 :root{
-  /* --- couleurs --- */
-  --ground:#EBEDF1; --surface:#FFFFFF; --surface-2:#F4F6F9;
-  --ink:#111822; --ink-2:#3C4759; --ink-3:#697485;
-  --line:#CFD5DE; --line-strong:#A9B2C0;
-  --accent:#2E4E77; --accent-2:#3A6396; --accent-soft:#DEE7F2; --accent-ink:#28456B;
-  --urg:#BC2F26; --dep:#8A5F06; --pro:#1F6248; --ene:#1B6680;
+  /* --- couleurs ---
+     Les gris de la premiere version etaient bleutes : #EBEDF1, c'est la
+     couleur d'un ecran eteint. Le fond devient du papier, le noir du
+     texte se rechauffe, et une terre cuite accompagne le bleu marine.
+     Le marine reste : c'est la couleur des autocollants de hall et de
+     la plateforme, et c'est elle qui porte la confiance. La terre cuite
+     ne sert jamais a un bouton principal, seulement a rechauffer — un
+     trait, une etoile, un liseret. */
+  --ground:#F7F4EE; --surface:#FFFFFF; --surface-2:#F2EDE4;
+  --ink:#1E1A16; --ink-2:#4C453C; --ink-3:#7B7268;
+  --line:#E2DACD; --line-strong:#C5B9A7;
+  --accent:#2E4E77; --accent-2:#3A6396; --accent-soft:#E3E9F2; --accent-ink:#28456B;
+  --chaud:#B0532C; --chaud-soft:#F6E5D9;
+  --urg:#B8392B; --dep:#8A5F06; --pro:#1F6248; --ene:#1B6680;
   --sur-accent:#FFFFFF;          /* ce qui s'ecrit sur la couleur d'accent */
-  --shadow-1:0 1px 2px rgba(17,24,34,.05);
-  --shadow-2:0 2px 4px rgba(17,24,34,.05), 0 18px 44px -26px rgba(17,24,34,.38);
+  --shadow-1:0 1px 2px rgba(60,44,28,.06);
+  --shadow-2:0 2px 4px rgba(60,44,28,.05), 0 18px 44px -26px rgba(60,44,28,.34);
   /* --- rythme : une seule suite, partout --- */
   --e1:8px; --e2:12px; --e3:18px; --e4:28px; --e5:44px; --e6:72px;
-  --r:10px;                      /* le seul rayon */
+  --r:14px;                      /* le seul rayon, arrondi plutot que coupant */
   --t:150ms cubic-bezier(.2,.6,.3,1);
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
@@ -57,22 +65,24 @@
 
 
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --ground:#0C1118; --surface:#151C25; --surface-2:#1C242F;
-  --ink:#E8EDF4; --ink-2:#B4BDCA; --ink-3:#848F9E;
-  --line:#27303C; --line-strong:#3D4857;
-  --accent:#8CB2DC; --accent-2:#A8C7E8; --accent-soft:#1B2B40; --accent-ink:#9CBEE4;
+  --ground:#15110D; --surface:#1E1914; --surface-2:#262019;
+  --ink:#F2EDE5; --ink-2:#C3B9AC; --ink-3:#93897C;
+  --line:#322A22; --line-strong:#4A4036;
+  --accent:#8CB2DC; --accent-2:#A8C7E8; --accent-soft:#1E2B3A; --accent-ink:#9CBEE4;
+  --chaud:#E08B5E; --chaud-soft:#38241A;
   --urg:#EE8F84; --dep:#DCB25C; --pro:#78C8A0; --ene:#74BCD4;
-  --sur-accent:#0C1118;
+  --sur-accent:#15110D;
   --shadow-1:0 1px 2px rgba(0,0,0,.5);
   --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 20px 48px -28px rgba(0,0,0,.95);
 }}
 :root[data-theme="dark"]{
-  --ground:#0C1118; --surface:#151C25; --surface-2:#1C242F;
-  --ink:#E8EDF4; --ink-2:#B4BDCA; --ink-3:#848F9E;
-  --line:#27303C; --line-strong:#3D4857;
-  --accent:#8CB2DC; --accent-2:#A8C7E8; --accent-soft:#1B2B40; --accent-ink:#9CBEE4;
+  --ground:#15110D; --surface:#1E1914; --surface-2:#262019;
+  --ink:#F2EDE5; --ink-2:#C3B9AC; --ink-3:#93897C;
+  --line:#322A22; --line-strong:#4A4036;
+  --accent:#8CB2DC; --accent-2:#A8C7E8; --accent-soft:#1E2B3A; --accent-ink:#9CBEE4;
+  --chaud:#E08B5E; --chaud-soft:#38241A;
   --urg:#EE8F84; --dep:#DCB25C; --pro:#78C8A0; --ene:#74BCD4;
-  --sur-accent:#0C1118;
+  --sur-accent:#15110D;
   --shadow-1:0 1px 2px rgba(0,0,0,.5);
   --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 20px 48px -28px rgba(0,0,0,.95);
 }
@@ -167,6 +177,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 section{padding-block:var(--e6);scroll-margin-top:76px}
 section.pose{background:var(--surface);border-block:1px solid var(--line)}
 .stitre{max-width:62ch;margin-bottom:var(--e5);display:flex;flex-direction:column;gap:var(--e2)}
+/* Un trait de terre cuite avant chaque surtitre : trois fois rien, et
+   la page cesse d'etre une suite de blocs gris. */
+.stitre .eyebrow,.hero .eyebrow{display:inline-flex;align-items:center;gap:10px}
+.stitre .eyebrow::before,.hero .eyebrow::before{content:"";width:20px;height:2px;background:var(--chaud);flex:none}
 
 /* ----- hero -------------------------------------------------------- */
 .hero{padding-block:var(--e6) var(--e5)}
@@ -199,8 +213,8 @@ section.pose .besoin{background:var(--surface-2)}
 /* ----- la méthode, en quatre temps --------------------------------- */
 .etapes{list-style:none;margin:0;padding:0;display:grid;gap:var(--e4);
   grid-template-columns:repeat(auto-fit,minmax(230px,1fr));counter-reset:et}
-.etapes li{counter-increment:et;padding-top:var(--e3);border-top:2px solid var(--accent-soft);position:relative}
-.etapes li::before{content:counter(et);font-family:var(--mono);font-size:.78rem;color:var(--accent-ink);
+.etapes li{counter-increment:et;padding-top:var(--e3);border-top:2px solid var(--chaud-soft);position:relative}
+.etapes li::before{content:counter(et);font-family:var(--mono);font-size:.78rem;color:var(--chaud);
   display:block;margin-bottom:var(--e1)}
 .etapes h3{font-size:1.05rem}
 .etapes p{font-size:.97rem;color:var(--ink-2);margin-top:6px}
@@ -208,7 +222,8 @@ section.pose .besoin{background:var(--surface-2)}
 /* ----- faits et métiers -------------------------------------------- */
 .faits{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--e4);
   padding-block:var(--e4);border-block:1px solid var(--line);margin-bottom:var(--e5)}
-.faits dt{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.03em}
+.faits dt{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.03em;
+  color:var(--chaud)}
 .faits dd{margin:4px 0 0;font-size:.95rem;color:var(--ink-2)}
 .metiers{display:flex;flex-wrap:wrap;gap:var(--e1)}
 .metiers li{list-style:none;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;
@@ -235,6 +250,36 @@ section.pose .fiche{background:var(--surface-2)}
 .fiche dl{display:grid;gap:var(--e3);margin:0}
 .fiche dt{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .fiche dd{margin:3px 0 0;font-size:.97rem}
+
+/* ----- le mot du fondateur -----------------------------------------
+   Une page de service parle au nom d'une societe, c'est la regle qu'on
+   s'est donnee. Ce bloc est l'exception assumee : quelqu'un signe. Deux
+   phrases a la premiere personne valent dix adjectifs chaleureux. */
+.mot{background:var(--chaud-soft);border-radius:var(--r);padding:var(--e4);
+  display:grid;grid-template-columns:auto 1fr;gap:var(--e3) var(--e4);align-items:start}
+@media (max-width:560px){.mot{grid-template-columns:1fr}}
+.mot .vignette{width:56px;height:56px;border-radius:50%;background:var(--chaud);color:#fff;
+  font-family:var(--display);font-weight:800;font-size:1.25rem;letter-spacing:-.02em;
+  display:flex;align-items:center;justify-content:center;flex:none}
+.mot p{font-size:1.05rem;line-height:1.55;color:var(--ink);max-width:58ch}
+.mot .signe{margin-top:var(--e2);font-size:.95rem;color:var(--ink-2)}
+.mot .signe b{font-family:var(--display);font-weight:600;color:var(--ink);display:block}
+
+/* ----- avis ---------------------------------------------------------
+   La section n'existe que s'il y a quelque chose a montrer : elle est
+   cachee tant que la liste est vide, plus bas dans le script. Un site
+   qui affiche « aucun avis pour le moment » fait pire que rien. */
+.avis{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:var(--e3)}
+.avis figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:var(--e4);display:flex;flex-direction:column;gap:var(--e2);box-shadow:var(--shadow-1)}
+section.pose .avis figure{background:var(--surface-2)}
+.avis .notes{color:var(--chaud);font-size:1rem;letter-spacing:.14em}
+.avis blockquote{margin:0;font-size:1.03rem;line-height:1.55;color:var(--ink)}
+.avis blockquote::before{content:"\201C";font-family:var(--display);font-weight:800;font-size:2.4rem;
+  color:var(--chaud);line-height:0;vertical-align:-.35em;margin-right:4px}
+.avis figcaption{margin-top:auto;padding-top:var(--e2);border-top:1px solid var(--line);
+  font-size:.93rem;color:var(--ink-3)}
+.avis figcaption b{font-weight:600;color:var(--ink-2)}
 
 /* ----- partenaires -------------------------------------------------- */
 .colonnes{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:var(--e5)}
@@ -442,6 +487,15 @@ footer p+p{margin-top:var(--e2)}
             <li>Serrurerie</li><li>Couverture, étanchéité</li><li>Peinture</li><li>Plâtrerie</li>
             <li>Carrelage, sols</li><li>Menuiserie</li><li>Espaces verts</li><li>Ménage, nettoyage</li>
           </ul>
+          <div class="mot">
+            <span class="vignette" aria-hidden="true">VD</span>
+            <div>
+              <p>J'ai monté VD Services parce que j'ai passé des années à voir des gens perdre
+                des semaines sur un devis, et de bons artisans perdre des journées sur des
+                demandes qui n'aboutissent pas. Entre les deux, il manquait quelqu'un.</p>
+              <p class="signe"><b>Valentin Dupuy</b>Fondateur, Mandelieu-la-Napoule</p>
+            </div>
+          </div>
           <div class="encadre">
             <h3>Ce que nous ne faisons pas</h3>
             <p>Nous ne réalisons pas les travaux et nous ne vendons rien au client. Le devis et la
@@ -459,6 +513,22 @@ footer p+p{margin-top:var(--e2)}
           </dl>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Cette section reste vide tant que la liste AVIS du script l'est.
+       Elle ne contient que de vrais avis, recopies tels qu'ils ont ete
+       ecrits : inventer un temoignage est une pratique commerciale
+       trompeuse (article L121-2 du code de la consommation), et c'est
+       precisement ce qui se controle sur un site de travaux. -->
+  <section id="avis" hidden>
+    <div class="wrap">
+      <div class="stitre">
+        <span class="eyebrow">Ce qu'ils en disent</span>
+        <h2 id="avis-titre">Les retours de nos clients</h2>
+      </div>
+      <div class="avis" id="avis-liste"></div>
+      <p class="note" style="margin-top:var(--e4)" id="avis-pied"></p>
     </div>
   </section>
 
@@ -608,6 +678,67 @@ if(menu){
     if(ev.target.closest(".panneau a"))menu.open=false;
   });
 }
+
+/* =====================================================================
+   LES AVIS
+
+   Un avis se colle ici, et il apparait sur le site. Rien d'autre a
+   faire : ni base, ni service exterieur.
+
+     texte  ce que la personne a ecrit, sans le retoucher
+     nom    « Mme D. » ou « Christine D. » — un prenom et une initiale
+            suffisent, et valent mieux qu'un nom complet qu'on n'a pas
+            le droit de publier sans accord
+     lieu   la commune
+     date   « mars 2026 », pour qu'on voie que c'est recent
+     note   de 1 a 5, facultatif
+
+   Deux regles, et elles ne sont pas negociables :
+
+   1. On ne les invente pas. Un temoignage fabrique est une pratique
+      commerciale trompeuse, sanctionnee par le code de la consommation.
+   2. On demande l'accord avant de publier, et on garde le message
+      d'origine — c'est la preuve que l'avis existe.
+
+   Le mot de fin de chantier, envoye par la plateforme, demande ce
+   retour : les avis arrivent dans la boite de contact, il n'y a qu'a
+   les recopier ici.
+   ===================================================================== */
+var AVIS=[
+  /* {texte:"Fuite un dimanche soir, plombier sur place en une heure. Je n'ai eu qu'un seul numero a appeler.",
+      nom:"Mme D.", lieu:"Mandelieu-la-Napoule", date:"mars 2026", note:5}, */
+];
+
+function etoiles(n){
+  n=Math.max(0,Math.min(5,Math.round(Number(n)||0)));
+  if(!n)return "";
+  return '<p class="notes" aria-label="'+n+' sur 5">'+"\u2605".repeat(n)+"\u2606".repeat(5-n)+'</p>';
+}
+function echappe(s){
+  return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+  });
+}
+function peindreAvis(){
+  var section=document.getElementById("avis");
+  if(!section)return;
+  var vrais=AVIS.filter(function(a){return a&&a.texte});
+  if(!vrais.length)return;            /* la section reste cachee */
+  document.getElementById("avis-liste").innerHTML=vrais.map(function(a){
+    return '<figure>'+etoiles(a.note)
+      +'<blockquote>'+echappe(a.texte)+'</blockquote>'
+      +'<figcaption><b>'+echappe(a.nom||"Client")+'</b>'
+      +(a.lieu?" · "+echappe(a.lieu):"")+(a.date?" · "+echappe(a.date):"")
+      +'</figcaption></figure>';
+  }).join("");
+  /* Un avis unique au milieu d'une grille de trois colonnes a l'air
+     d'un oubli : on resserre tant qu'il y en a moins de trois. */
+  if(vrais.length<3)document.getElementById("avis-liste").style.maxWidth=(vrais.length*360)+"px";
+  document.getElementById("avis-pied").textContent=
+    "Avis recueillis auprès de clients de VD Services après la réception de leurs travaux, publiés avec leur accord.";
+  section.hidden=false;
+}
+peindreAvis();
 
 function texteFormulaire(form,titre){
   var L=[titre,""];
