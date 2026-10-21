@@ -41,12 +41,23 @@ nature de la partie concernée et le statut du demandeur.
 ## `docs/site-accueil.html` — la page d'accueil publique
 
 Page d'accueil de VD Services, destinée à être hébergée sur le domaine de la
-société. Elle présente les quatre besoins, la méthode, les publics, l'identité,
-le recrutement des entreprises partenaires et le contact. Le taux de
-commission n'est pas affiché : il se négocie au premier rendez-vous. Les deux formulaires fonctionnent sans serveur, par
-ouverture de la messagerie, et sont prêts à être branchés sur un point de
-réception. Trois valeurs sont à compléter avant mise en ligne : l'adresse du
-siège, le SIREN et l'hébergeur, signalées en rouge sur la page.
+société. Sept sections : la promesse, les quatre besoins, la méthode en quatre
+étapes, les publics, l'identité, le recrutement des entreprises partenaires et
+le contact. Le taux de commission n'est pas affiché : il se négocie au premier
+rendez-vous.
+
+La feuille de style tient sur une seule échelle de tailles et un seul rythme
+vertical ; rien d'important ne descend sous 15 px. Les fonds alternent d'une
+section à l'autre plutôt que de s'empiler derrière des filets, et les quatre
+couleurs des parcours sont réduites à un repère — le bandeau du haut reste,
+c'est la même signature que sur les autocollants de hall. Le menu existe aussi
+sur téléphone, sans script, et les ancres s'arrêtent sous l'en-tête au lieu de
+passer dessous.
+
+Les deux formulaires fonctionnent sans serveur, par ouverture de la messagerie,
+et sont prêts à être branchés sur un point de réception. Trois valeurs sont à
+compléter avant mise en ligne : l'adresse du siège, le SIREN et l'hébergeur,
+signalées en rouge sur la page.
 
 ## `docs/audit.html` — la revue avant lancement
 

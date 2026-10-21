@@ -14,164 +14,272 @@
 <title>VD Services</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500&display=swap">
 <style>
+/* =====================================================================
+   VD SERVICES — page d'accueil
+
+   Trois intentions, et chaque règle ci-dessous sert l'une des trois.
+
+   Lisible : une seule échelle de tailles, un seul rythme vertical, un
+   corps de texte à 17 px, et plus rien d'important en dessous de 15.
+   Une page de service se lit debout, dans un hall, sur un téléphone.
+
+   Professionnel : une couleur d'accent, et les quatre couleurs des
+   parcours réduites à un repère. Le bandeau du haut reste : c'est la
+   même signature que sur les autocollants de hall et dans la
+   plateforme, et une marque qui se ressemble d'un support à l'autre
+   vaut mieux qu'une page sage de plus.
+
+   Fluide : le défilement est doux, les ancres s'arrêtent sous l'en-tête
+   au lieu de passer dessous, ce qu'on touche répond en 150 ms, et le
+   menu existe aussi sur téléphone — il n'existait pas.
+   ===================================================================== */
+
 :root{
-  --ground:#E9EBEF; --surface:#FFFFFF; --surface-2:#F2F4F7; --sunk:#DCE0E7;
-  --ink:#131A24; --ink-2:#414B59; --ink-3:#6C7686;
-  --line:#CDD3DC; --line-strong:#A7B0BE;
-  --accent:#2E4E77; --accent-soft:#DCE5F1; --accent-ink:#2E4E77;
-  --urg:#BC2F26; --urg-soft:#F8DFDB;
-  --dep:#8E6206; --dep-soft:#F6E9C9;
-  --pro:#20654A; --pro-soft:#D5E9DF;
-  --ene:#1D6A82; --ene-soft:#D2E7ED;
-  --shadow:0 1px 2px rgba(19,26,36,.05), 0 14px 38px -22px rgba(19,26,36,.34);
+  /* --- couleurs --- */
+  --ground:#EBEDF1; --surface:#FFFFFF; --surface-2:#F4F6F9;
+  --ink:#111822; --ink-2:#3C4759; --ink-3:#697485;
+  --line:#CFD5DE; --line-strong:#A9B2C0;
+  --accent:#2E4E77; --accent-2:#3A6396; --accent-soft:#DEE7F2; --accent-ink:#28456B;
+  --urg:#BC2F26; --dep:#8A5F06; --pro:#1F6248; --ene:#1B6680;
+  --sur-accent:#FFFFFF;          /* ce qui s'ecrit sur la couleur d'accent */
+  --shadow-1:0 1px 2px rgba(17,24,34,.05);
+  --shadow-2:0 2px 4px rgba(17,24,34,.05), 0 18px 44px -26px rgba(17,24,34,.38);
+  /* --- rythme : une seule suite, partout --- */
+  --e1:8px; --e2:12px; --e3:18px; --e4:28px; --e5:44px; --e6:72px;
+  --r:10px;                      /* le seul rayon */
+  --t:150ms cubic-bezier(.2,.6,.3,1);
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
 }
+
+
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630; --sunk:#0A0F16;
-  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
-  --line:#28313D; --line-strong:#3E4A59;
-  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
-  --urg:#EE8F84; --urg-soft:#37201D;
-  --dep:#DCB25C; --dep-soft:#312818;
-  --pro:#78C8A0; --pro-soft:#142B21;
-  --ene:#74BCD4; --ene-soft:#122A33;
-  --shadow:0 1px 2px rgba(0,0,0,.45), 0 16px 40px -24px rgba(0,0,0,.9);
+  --ground:#0C1118; --surface:#151C25; --surface-2:#1C242F;
+  --ink:#E8EDF4; --ink-2:#B4BDCA; --ink-3:#848F9E;
+  --line:#27303C; --line-strong:#3D4857;
+  --accent:#8CB2DC; --accent-2:#A8C7E8; --accent-soft:#1B2B40; --accent-ink:#9CBEE4;
+  --urg:#EE8F84; --dep:#DCB25C; --pro:#78C8A0; --ene:#74BCD4;
+  --sur-accent:#0C1118;
+  --shadow-1:0 1px 2px rgba(0,0,0,.5);
+  --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 20px 48px -28px rgba(0,0,0,.95);
 }}
 :root[data-theme="dark"]{
-  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630; --sunk:#0A0F16;
-  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
-  --line:#28313D; --line-strong:#3E4A59;
-  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
-  --urg:#EE8F84; --urg-soft:#37201D;
-  --dep:#DCB25C; --dep-soft:#312818;
-  --pro:#78C8A0; --pro-soft:#142B21;
-  --ene:#74BCD4; --ene-soft:#122A33;
-  --shadow:0 1px 2px rgba(0,0,0,.45), 0 16px 40px -24px rgba(0,0,0,.9);
+  --ground:#0C1118; --surface:#151C25; --surface-2:#1C242F;
+  --ink:#E8EDF4; --ink-2:#B4BDCA; --ink-3:#848F9E;
+  --line:#27303C; --line-strong:#3D4857;
+  --accent:#8CB2DC; --accent-2:#A8C7E8; --accent-soft:#1B2B40; --accent-ink:#9CBEE4;
+  --urg:#EE8F84; --dep:#DCB25C; --pro:#78C8A0; --ene:#74BCD4;
+  --sur-accent:#0C1118;
+  --shadow-1:0 1px 2px rgba(0,0,0,.5);
+  --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 20px 48px -28px rgba(0,0,0,.95);
 }
+
 *{box-sizing:border-box}
-body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
-h1,h2,h3,h4{font-family:var(--display);font-weight:600;margin:0;letter-spacing:-.018em;text-wrap:balance}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance;font-weight:600}
+h1{font-size:clamp(2.3rem,6vw,3.8rem);line-height:1.04;letter-spacing:-.035em;font-weight:800}
+h2{font-size:clamp(1.55rem,3.2vw,2.1rem);line-height:1.15;font-weight:700}
+h3{font-size:1.1rem;line-height:1.3}
 p{margin:0}
-a{color:inherit}
+a{color:inherit;transition:color var(--t)}
+strong{font-weight:600}
 button,input,select,textarea{font:inherit;color:inherit}
-*:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-.wrap{max-width:1080px;margin-inline:auto;padding-inline:20px}
-.prose{max-width:62ch}
-.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+*:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+}
 
-/* ----- en-tête ----- */
-.entete{position:sticky;top:env(safe-area-inset-top, 0px);z-index:20;background:var(--ground);border-bottom:1px solid var(--line)}
-.entete .bande{height:4px;display:flex}
-.entete .bande i{flex:1}
-.entete .bande i:nth-child(1){background:var(--urg)}
-.entete .bande i:nth-child(2){background:var(--dep)}
-.entete .bande i:nth-child(3){background:var(--pro)}
-.entete .bande i:nth-child(4){background:var(--ene)}
-.nav{display:flex;align-items:center;gap:18px;padding-block:14px;flex-wrap:wrap}
-.marque{display:flex;flex-direction:column;margin-right:auto;text-decoration:none;color:inherit}
-/* Le nom ramene a l'accueil : rien ne le dit, on l'essaie. */
-.marque:hover b{text-decoration:underline;text-underline-offset:4px}
-.marque b{font-family:var(--display);font-weight:800;font-size:1.22rem;letter-spacing:-.025em}
-.marque span{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-top:2px}
-.nav a.lien{font-size:.92rem;color:var(--ink-2);text-decoration:none}
-.nav a.lien:hover{color:var(--ink)}
-@media (max-width:760px){.nav a.lien{display:none}}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--surface);
-  border:0;border-radius:9px;padding:12px 20px;font-family:var(--display);font-weight:600;font-size:.95rem;
-  cursor:pointer;text-decoration:none;text-align:center}
-.btn:hover{filter:brightness(1.08)}
-.btn.sm{padding:9px 15px;font-size:.88rem}
-.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line-strong)}
-.btn.ghost:hover{background:var(--surface);filter:none}
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:clamp(16px,4vw,32px)}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.lede{font-size:clamp(1.08rem,2.2vw,1.28rem);line-height:1.5;color:var(--ink-2);max-width:54ch}
 
-/* ----- hero ----- */
-.hero{padding-block:clamp(44px,8vw,86px) clamp(32px,5vw,54px)}
-.hero h1{font-size:clamp(2.1rem,6vw,4rem);line-height:1.02;font-weight:800;letter-spacing:-.035em;max-width:15ch}
-.promesse{counter-reset:pr;list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
-.promesse li{counter-increment:pr;position:relative;padding-left:38px;font-size:clamp(1rem,2vw,1.14rem);color:var(--ink-2);line-height:1.45;max-width:50ch}
-.promesse li.uneligne{max-width:none}
-.promesse .lienf{color:var(--accent-ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;
-  cursor:pointer;font-weight:600}
-.promesse .lienf:hover{text-decoration-thickness:3px}
-.promesse li::before{content:counter(pr);position:absolute;left:0;top:.06em;width:24px;height:24px;border-radius:50%;
-  background:var(--accent-soft);color:var(--accent-ink);font-family:var(--mono);font-size:.72rem;
-  display:flex;align-items:center;justify-content:center}
-.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
-.hero .rass{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:28px;font-size:.88rem;color:var(--ink-3)}
-.hero .rass span{display:inline-flex;align-items:center;gap:8px}
-.hero .rass b{width:5px;height:5px;border-radius:50%;background:var(--accent);display:block;flex:none}
+/* ----- en-tête ----------------------------------------------------- */
+.entete{position:sticky;top:0;z-index:40;background:var(--ground);border-bottom:1px solid var(--line)}
+@supports (backdrop-filter:blur(1px)) and (background:color-mix(in srgb,red 50%,transparent)){
+  .entete{background:color-mix(in srgb,var(--ground) 86%,transparent);backdrop-filter:saturate(1.4) blur(10px)}
+}
+/* La bande des quatre parcours : la meme que sur les autocollants de
+   hall et dans la plateforme. Trois pixels suffisent a la reconnaitre. */
+.bande{height:3px;display:flex}
+.bande i{flex:1}
+.bande i:nth-child(1){background:var(--urg)} .bande i:nth-child(2){background:var(--dep)}
+.bande i:nth-child(3){background:var(--pro)} .bande i:nth-child(4){background:var(--ene)}
+.nav{display:flex;align-items:center;gap:var(--e3);padding-block:14px}
+.marque{display:flex;flex-direction:column;margin-right:auto;text-decoration:none;min-width:0}
+.marque b{font-family:var(--display);font-weight:800;font-size:1.2rem;letter-spacing:-.03em;white-space:nowrap}
+.marque span{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-top:3px}
+.marque:hover b{color:var(--accent-ink)}
+.liens{display:flex;gap:var(--e4);align-items:center}
+.liens a{font-size:.97rem;color:var(--ink-2);text-decoration:none;position:relative;padding-block:4px}
+.liens a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--accent);
+  transition:right var(--t)}
+.liens a:hover{color:var(--ink)}
+.liens a:hover::after{right:0}
+/* Le menu du telephone, qui n'existait pas : les liens disparaissaient
+   sous 760 px et il ne restait aucun moyen de naviguer. Sans script. */
+.menu{display:none}
+.menu summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;
+  padding:9px 13px;border:1px solid var(--line-strong);border-radius:var(--r);font-size:.92rem}
+.menu summary::-webkit-details-marker{display:none}
+.menu summary i{width:16px;height:1.5px;background:currentColor;position:relative;display:block;flex:none}
+.menu summary i::before,.menu summary i::after{content:"";position:absolute;left:0;width:16px;height:1.5px;background:currentColor}
+.menu summary i::before{top:-5px} .menu summary i::after{top:5px}
+.menu[open] .panneau{display:flex}
+.panneau{display:none;flex-direction:column;position:absolute;left:0;right:0;top:100%;
+  background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow-2);padding:var(--e2)}
+.panneau a{padding:13px var(--e2);text-decoration:none;color:var(--ink);border-radius:8px;font-size:1.02rem}
+.panneau a:hover{background:var(--surface-2)}
+/* `.panneau a` est plus specifique que `.btn` : sans cette ligne, le
+   bouton du menu heritait de la couleur du texte et devenait illisible. */
+.panneau a.btn{color:var(--sur-accent)}
+.panneau a.btn:hover{background:var(--accent-2)}
+@media (max-width:820px){
+  .liens{display:none}
+  .menu{display:block}
+  .entete .wrap{position:relative}
+  #cta-haut{display:none}            /* il revient en tete du menu */
+  .panneau .btn{margin:var(--e1) 0 var(--e2)}
+}
+@media (max-width:560px){
+  .marque span{display:none}         /* la baseline tenait sur trois lignes */
+  .nav{padding-block:11px}
+}
 
-/* ----- sections ----- */
-section{padding-block:clamp(40px,7vw,70px);border-top:1px solid var(--line)}
-.stitre{display:flex;flex-direction:column;gap:9px;margin-bottom:26px}
-.stitre h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:700}
-.stitre p{color:var(--ink-2);max-width:60ch}
+/* ----- boutons ----------------------------------------------------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--e1);
+  background:var(--accent);color:var(--sur-accent);border:1px solid transparent;border-radius:var(--r);
+  padding:14px 24px;min-height:48px;font-family:var(--display);font-weight:600;font-size:1rem;
+  cursor:pointer;text-decoration:none;text-align:center;
+  transition:background var(--t),transform var(--t),box-shadow var(--t)}
+.btn:hover{background:var(--accent-2);box-shadow:var(--shadow-2)}
+.btn:active{transform:translateY(1px);box-shadow:none}
+.btn.sm{padding:10px 17px;min-height:42px;font-size:.93rem}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+.btn.ghost:hover{background:var(--surface);border-color:var(--ink-3)}
 
-.besoins{display:grid;grid-template-columns:repeat(auto-fit,minmax(224px,1fr));gap:14px}
-.besoin{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--line-strong);border-radius:6px;
-  padding:20px;display:flex;flex-direction:column;gap:8px;text-decoration:none}
-.besoin:hover{box-shadow:var(--shadow)}
-.besoin.u{border-top-color:var(--urg)} .besoin.d{border-top-color:var(--dep)}
-.besoin.p{border-top-color:var(--pro)} .besoin.e{border-top-color:var(--ene)}
-.besoin .q{font-family:var(--mono);font-size:.63rem;letter-spacing:.13em;text-transform:uppercase}
+/* ----- sections ---------------------------------------------------- */
+section{padding-block:var(--e6);scroll-margin-top:76px}
+section.pose{background:var(--surface);border-block:1px solid var(--line)}
+.stitre{max-width:62ch;margin-bottom:var(--e5);display:flex;flex-direction:column;gap:var(--e2)}
+
+/* ----- hero -------------------------------------------------------- */
+.hero{padding-block:var(--e6) var(--e5)}
+.hero .eyebrow{display:block;margin-bottom:var(--e3)}
+.hero .lede{margin-top:var(--e3)}
+.hero .cta{display:flex;flex-wrap:wrap;gap:var(--e2);margin-top:var(--e4)}
+.preuves{display:flex;flex-wrap:wrap;gap:var(--e2) var(--e4);margin-top:var(--e4);
+  font-size:.95rem;color:var(--ink-2);padding-top:var(--e4);border-top:1px solid var(--line)}
+.preuves span{display:inline-flex;align-items:center;gap:var(--e1)}
+.preuves svg{width:17px;height:17px;flex:none;color:var(--accent-ink)}
+
+/* ----- les quatre besoins ------------------------------------------ */
+.besoins{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:var(--e2)}
+.besoin{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:var(--e4);display:flex;flex-direction:column;gap:var(--e1);text-decoration:none;
+  transition:border-color var(--t),box-shadow var(--t),transform var(--t)}
+.besoin:hover{border-color:var(--line-strong);box-shadow:var(--shadow-2);transform:translateY(-2px)}
+section.pose .besoin{background:var(--surface-2)}
+.besoin .q{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:7px}
+.besoin .q::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
 .besoin.u .q{color:var(--urg)} .besoin.d .q{color:var(--dep)}
 .besoin.p .q{color:var(--pro)} .besoin.e .q{color:var(--ene)}
-.besoin h3{font-size:1.08rem}
-.besoin p{font-size:.92rem;color:var(--ink-2)}
-.besoin .go{margin-top:auto;padding-top:12px;font-size:.88rem;font-weight:600;font-family:var(--display);color:var(--accent-ink)}
+.besoin p{font-size:.97rem;color:var(--ink-2);margin-top:2px}
+.besoin .go{margin-top:auto;padding-top:var(--e3);font-family:var(--display);font-weight:600;
+  font-size:.95rem;color:var(--accent-ink);display:inline-flex;align-items:center;gap:6px}
+.besoin .go em{font-style:normal;transition:transform var(--t)}
+.besoin:hover .go em{transform:translateX(4px)}
 
-.pour{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.pour div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px}
-.pour h3{font-size:1rem}
-.pour p{font-size:.91rem;color:var(--ink-2);margin-top:6px}
+/* ----- la méthode, en quatre temps --------------------------------- */
+.etapes{list-style:none;margin:0;padding:0;display:grid;gap:var(--e4);
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));counter-reset:et}
+.etapes li{counter-increment:et;padding-top:var(--e3);border-top:2px solid var(--accent-soft);position:relative}
+.etapes li::before{content:counter(et);font-family:var(--mono);font-size:.78rem;color:var(--accent-ink);
+  display:block;margin-bottom:var(--e1)}
+.etapes h3{font-size:1.05rem}
+.etapes p{font-size:.97rem;color:var(--ink-2);margin-top:6px}
 
-.moi{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(240px,.8fr);gap:26px;align-items:start}
-@media (max-width:760px){.moi{grid-template-columns:1fr}}
-.moi p+p{margin-top:14px}
-.carte{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px}
-.carte dl{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;margin:0;font-size:.92rem}
-.carte dt{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding-top:4px}
-.carte dd{margin:0}
-.nefait{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:16px 18px;margin-top:18px}
-.nefait h3{font-size:.98rem}
-.nefait p{font-size:.9rem;color:var(--ink-2);margin-top:6px}
+/* ----- faits et métiers -------------------------------------------- */
+.faits{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--e4);
+  padding-block:var(--e4);border-block:1px solid var(--line);margin-bottom:var(--e5)}
+.faits dt{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.03em}
+.faits dd{margin:4px 0 0;font-size:.95rem;color:var(--ink-2)}
+.metiers{display:flex;flex-wrap:wrap;gap:var(--e1)}
+.metiers li{list-style:none;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;
+  padding:7px 15px;font-size:.93rem;color:var(--ink-2)}
+section.pose .metiers li{background:var(--ground)}
 
-/* ----- partenaires ----- */
-.part{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:clamp(20px,3vw,30px)}
-.deux{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px}
-.liste{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
-.liste li{padding-left:22px;position:relative;font-size:.93rem;color:var(--ink-2)}
-.liste li::before{content:"";position:absolute;left:0;top:.55em;width:9px;height:2px;background:var(--accent)}
+/* ----- pour qui ---------------------------------------------------- */
+.publics{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:var(--e2)}
+.publics div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--e4)}
+section.pose .publics div{background:var(--surface-2)}
+.publics p{font-size:.97rem;color:var(--ink-2);margin-top:6px}
 
-/* ----- formulaires ----- */
-form{display:flex;flex-direction:column;gap:12px;margin-top:18px}
-.champ{display:flex;flex-direction:column;gap:5px}
-.champ label{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
-.champ input,.champ select,.champ textarea{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px;font-size:.94rem;width:100%}
-.champ textarea{min-height:88px;resize:vertical}
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:520px){.duo{grid-template-columns:1fr}}
-.note{font-size:.82rem;color:var(--ink-3);line-height:1.5}
-.sortie{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:13px;font-family:var(--mono);
-  font-size:.78rem;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;display:none}
+/* ----- qui nous sommes --------------------------------------------- */
+.deuxcol{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,.75fr);gap:var(--e5);align-items:start}
+@media (max-width:860px){.deuxcol{grid-template-columns:1fr;gap:var(--e4)}}
+.texte p+p{margin-top:var(--e3)}
+.texte p{max-width:66ch}
+.encadre{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:var(--r);padding:var(--e3) var(--e4);margin-top:var(--e4)}
+.encadre p{font-size:.97rem;color:var(--ink-2);margin-top:6px;max-width:none}
+.fiche{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--e4);
+  box-shadow:var(--shadow-1)}
+section.pose .fiche{background:var(--surface-2)}
+.fiche dl{display:grid;gap:var(--e3);margin:0}
+.fiche dt{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.fiche dd{margin:3px 0 0;font-size:.97rem}
+
+/* ----- partenaires -------------------------------------------------- */
+.colonnes{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:var(--e5)}
+.liste{list-style:none;margin:var(--e2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--e2)}
+.liste li{padding-left:26px;position:relative;font-size:.97rem;color:var(--ink-2)}
+.liste li svg{position:absolute;left:0;top:.3em;width:16px;height:16px;color:var(--accent-ink)}
+
+/* ----- formulaires --------------------------------------------------- */
+form{display:flex;flex-direction:column;gap:var(--e3);margin-top:var(--e4)}
+form .btn{align-self:flex-start}
+@media (max-width:620px){form .btn{align-self:stretch}}
+.champ{display:flex;flex-direction:column;gap:6px}
+.champ label{font-size:.92rem;font-weight:500;color:var(--ink-2)}
+.champ label i{font-style:normal;color:var(--ink-3);font-weight:400}
+.champ input,.champ select,.champ textarea{background:var(--surface);border:1px solid var(--line-strong);
+  border-radius:var(--r);padding:13px 15px;font-size:1rem;width:100%;min-height:50px;
+  transition:border-color var(--t),box-shadow var(--t)}
+.champ input:hover,.champ textarea:hover,.champ select:hover{border-color:var(--ink-3)}
+.champ input:focus,.champ textarea:focus,.champ select:focus{outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-soft)}
+.champ textarea{min-height:104px;resize:vertical;line-height:1.5}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:var(--e3)}
+@media (max-width:620px){.duo{grid-template-columns:1fr}}
+.note{font-size:.92rem;color:var(--ink-3);line-height:1.55}
+.sortie{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:var(--r);padding:var(--e3);font-size:.93rem;line-height:1.6;white-space:pre-wrap;
+  overflow-wrap:anywhere;display:none}
 .sortie.on{display:block}
+.bloc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(22px,3.5vw,40px);box-shadow:var(--shadow-1)}
+section.pose .bloc{background:var(--surface-2)}
 
-/* ----- contact ----- */
+/* ----- pied -------------------------------------------------------- */
 .acompleter{color:var(--urg);border-bottom:1px dotted var(--urg)}
-
-footer{border-top:1px solid var(--line);padding-block:26px 46px;font-size:.85rem;color:var(--ink-3);line-height:1.65}
-footer .fl{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:12px}
+footer{background:var(--surface);border-top:1px solid var(--line);padding-block:var(--e5) var(--e6);
+  font-size:.92rem;color:var(--ink-3);line-height:1.6}
+footer .fl{display:flex;flex-wrap:wrap;gap:var(--e2) var(--e4);margin-bottom:var(--e4);
+  padding-bottom:var(--e3);border-bottom:1px solid var(--line)}
+footer a{text-decoration:none;color:var(--ink-2)}
+footer a:hover{color:var(--ink)}
 /* L'entree de la plateforme : presente, sans peser autant que les
    rubriques publiques. Elle ne s'adresse pas au meme lecteur. */
-footer .fl .interne{margin-left:auto;opacity:.72}
-footer .fl .interne:hover{opacity:1}
-@media(max-width:560px){footer .fl .interne{margin-left:0}}
-footer a{text-decoration:none;color:var(--ink-2)}
+footer .fl .interne{margin-left:auto;color:var(--ink-3)}
+@media(max-width:620px){footer .fl .interne{margin-left:0}}
+footer p+p{margin-top:var(--e2)}
 </style>
 </head>
 <body>
@@ -180,197 +288,286 @@ footer a{text-decoration:none;color:var(--ink-2)}
   <div class="bande"><i></i><i></i><i></i><i></i></div>
   <div class="wrap nav">
     <a class="marque" href="/" aria-label="VD Services, retour à l’accueil"><b>VD SERVICES</b><span>Consultation · Pilotage · Coordination</span></a>
-    <a class="lien" href="#besoins">Vos besoins</a>
-    <a class="lien" href="#partenaires">Devenir partenaire</a>
-    <a class="lien" href="#contact">Contact</a>
+    <nav class="liens">
+      <a href="#besoins">Vos besoins</a>
+      <a href="#methode">Notre méthode</a>
+      <a href="#partenaires">Entreprises</a>
+      <a href="#contact">Contact</a>
+    </nav>
     <a class="btn sm" id="cta-haut" href="#besoins">Déclarer un besoin</a>
+    <details class="menu">
+      <summary aria-label="Ouvrir le menu"><i></i>Menu</summary>
+      <nav class="panneau">
+        <a class="btn" id="cta-menu" href="#besoins">Déclarer un besoin</a>
+        <a href="#besoins">Vos besoins</a>
+        <a href="#methode">Notre méthode</a>
+        <a href="#pour-qui">Pour qui</a>
+        <a href="#partenaires">Entreprises</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </details>
   </div>
 </header>
 
 <main>
-<div class="wrap">
 
-  <section class="hero" style="border-top:0">
-    <p class="eyebrow">Copropriétés, particuliers et collectivités · de Fréjus à Nice</p>
+  <section class="hero wrap">
+    <span class="eyebrow">Courtier en travaux · de Fréjus à Nice</span>
     <h1>Un souci ? On s'en occupe.</h1>
-    <ol class="promesse">
-      <li>Décrivez le problème à l'aide de notre <a class="lienf" id="lien-form">formulaire</a> en seulement quelques secondes.</li>
-      <li>Nous choisissons dans notre réseau les meilleures entreprises locales et certifiées, adaptées à votre projet.</li>
-      <li>Nous comparons et négocions les devis pour vous.</li>
-      <li>Nous suivons l'avancée et la réception des travaux.</li>
-      <li class="uneligne">Vous êtes satisfait(e). L'artisan est satisfait. Nous sommes satisfaits.</li>
-    </ol>
+    <p class="lede">Vous décrivez le problème en moins d'une minute. Nous choisissons l'entreprise
+      dans notre réseau local, nous comparons les devis, et nous suivons les travaux jusqu'à la
+      réception. Vous ne nous payez rien.</p>
     <div class="cta">
       <a class="btn" id="cta-form" href="#besoins">Déclarer un besoin</a>
       <a class="btn ghost" href="#partenaires">Je suis une entreprise</a>
     </div>
-    <div class="rass">
-      <span><b></b>Entreprises assurées et vérifiées</span>
-      <span><b></b>Devis gratuit et sans engagement</span>
-      <span><b></b>Réponse le jour même</span>
+    <div class="preuves">
+      <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 2.5l6 2.5v5c0 3.4-2.4 6.3-6 7.5-3.6-1.2-6-4.1-6-7.5V5z"/><path d="M7.4 10l1.9 1.9 3.5-3.6"/></svg>Entreprises assurées et vérifiées</span>
+      <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3.5 5.5h13v11h-13z"/><path d="M6.5 9h7M6.5 12.5h4"/><path d="M6.5 3.5v3M13.5 3.5v3"/></svg>Devis gratuit, sans engagement</span>
+      <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 6v4.3l3 1.8"/></svg>Réponse le jour même</span>
     </div>
   </section>
 
-  <section id="besoins">
-    <div class="stitre">
-      <p class="eyebrow">Vos besoins</p>
-      <h2>Quatre portes d'entrée, une seule adresse</h2>
-      <p>Choisissez la situation qui ressemble le plus à la vôtre. Le formulaire s'adapte, et il ne demande jamais plus que nécessaire.</p>
-    </div>
-    <div class="besoins">
-      <a class="besoin u" data-form="urgence">
-        <span class="q">Tout de suite</span>
-        <h3>Urgence</h3>
-        <p>Fuite qui coule, plus d'électricité, porte bloquée, dégât en cours. Vous êtes mis en relation directe avec l'entreprise d'astreinte la plus proche.</p>
-        <span class="go">Appeler maintenant →</span>
-      </a>
-      <a class="besoin d" data-form="depannage">
-        <span class="q">Sous 72 heures</span>
-        <h3>Dépannage</h3>
-        <p>Ça fonctionne mal, ça peut attendre demain. On vous rappelle le jour même pour caler le passage.</p>
-        <span class="go">Décrire la panne →</span>
-      </a>
-      <a class="besoin p" data-form="projet">
-        <span class="q">Devis comparés</span>
-        <h3>Projet de travaux</h3>
-        <p>Rénovation, salle de bains, cuisine, ravalement, parties communes. Plusieurs entreprises chiffrent sur le même descriptif.</p>
-        <span class="go">Décrire le projet →</span>
-      </a>
-      <a class="besoin e" data-form="energie">
-        <span class="q">Financement étudié</span>
-        <h3>Travaux énergétiques financés</h3>
-        <p>Pompe à chaleur, isolation, fenêtres, solaire. On calcule votre financement avant de chiffrer, jamais après.</p>
-        <span class="go">Étudier mon financement →</span>
-      </a>
-    </div>
-    <p class="note" style="margin-top:16px">Vous êtes une commune, une intercommunalité, un bailleur social ou un établissement public ? Le formulaire prévoit une entrée dédiée, avec mise en concurrence à trois devis ou plus.</p>
-  </section>
-
-  <section>
-    <div class="stitre">
-      <p class="eyebrow">Pour qui</p>
-      <h2>Quatre publics, une même méthode</h2>
-    </div>
-    <div class="pour">
-      <div><h3>Particuliers</h3><p>Propriétaires et locataires, en appartement comme en maison. Du robinet qui fuit à la rénovation complète.</p></div>
-      <div><h3>Syndics et gestionnaires</h3><p>Nous prenons les appels techniques de vos copropriétés, nous trouvons les entreprises et nous vous rendons un tableau chaque mois.</p></div>
-      <div><h3>Conseils syndicaux</h3><p>Ravalement, cage d'escalier, toiture, chaufferie. Des devis comparables à présenter en assemblée générale.</p></div>
-      <div><h3>Collectivités et bailleurs</h3><p>Mise en concurrence organisée, devis au même format, pièces administratives vérifiées et jointes.</p></div>
+  <section id="besoins" class="pose">
+    <div class="wrap">
+      <div class="stitre">
+        <span class="eyebrow">Vos besoins</span>
+        <h2>Par quoi commencer</h2>
+        <p class="lede">Choisissez la situation qui ressemble à la vôtre. Le formulaire s'adapte et
+          ne demande jamais plus que nécessaire.</p>
+      </div>
+      <div class="besoins">
+        <a class="besoin u" data-form="urgence">
+          <span class="q">Tout de suite</span>
+          <h3>Urgence</h3>
+          <p>Fuite qui coule, plus d'électricité, porte bloquée, dégât en cours. Vous êtes mis en relation directe avec l'entreprise d'astreinte la plus proche.</p>
+          <span class="go">Appeler maintenant <em>→</em></span>
+        </a>
+        <a class="besoin d" data-form="depannage">
+          <span class="q">Sous 72 heures</span>
+          <h3>Dépannage</h3>
+          <p>Quelque chose fonctionne mal, et cela peut attendre demain. Nous vous rappelons le jour même pour caler le passage.</p>
+          <span class="go">Décrire la panne <em>→</em></span>
+        </a>
+        <a class="besoin p" data-form="projet">
+          <span class="q">Devis comparés</span>
+          <h3>Projet de travaux</h3>
+          <p>Rénovation, salle de bains, cuisine, ravalement, parties communes. Plusieurs entreprises chiffrent sur le même descriptif.</p>
+          <span class="go">Décrire le projet <em>→</em></span>
+        </a>
+        <a class="besoin e" data-form="energie">
+          <span class="q">Financement étudié</span>
+          <h3>Travaux énergétiques</h3>
+          <p>Pompe à chaleur, isolation, fenêtres, solaire. Nous étudions votre financement avant de chiffrer, jamais après.</p>
+          <span class="go">Étudier mon financement <em>→</em></span>
+        </a>
+      </div>
+      <p class="note" style="margin-top:var(--e4)">Vous êtes une commune, une intercommunalité, un
+        bailleur social ou un établissement public ? Le formulaire prévoit une entrée dédiée, avec
+        mise en concurrence à trois devis ou plus.</p>
     </div>
   </section>
 
-  <section>
-    <div class="stitre">
-      <p class="eyebrow">Qui nous sommes</p>
-      <h2>VD Services</h2>
+  <section id="methode">
+    <div class="wrap">
+      <div class="stitre">
+        <span class="eyebrow">Notre méthode</span>
+        <h2>Quatre étapes, et vous n'en faites qu'une</h2>
+      </div>
+      <ol class="etapes">
+        <li>
+          <h3>Vous décrivez</h3>
+          <p>Le <a id="lien-form" href="#besoins">formulaire</a> prend moins d'une minute. Une photo
+            remplace dix questions, et suffit souvent à chiffrer sans déplacement.</p>
+        </li>
+        <li>
+          <h3>Nous choisissons</h3>
+          <p>L'entreprise qui convient au métier, à la commune et au délai, parmi celles dont le
+            dossier d'assurances est à jour chez nous.</p>
+        </li>
+        <li>
+          <h3>Nous comparons</h3>
+          <p>Plusieurs entreprises chiffrent sur un descriptif unique. Les devis sont comparables
+            ligne à ligne, et nous négocions avant de vous les transmettre.</p>
+        </li>
+        <li>
+          <h3>Nous suivons</h3>
+          <p>Jusqu'à la réception des travaux, avec les photos de fin de chantier. Un seul
+            interlocuteur du début à la fin.</p>
+        </li>
+      </ol>
     </div>
-    <div class="moi">
-      <div>
-        <p>VD Services a été fondée à Mandelieu-la-Napoule par Valentin Dupuy, pour régler un problème que tout le monde connaît : trouver la bonne entreprise, obtenir un devis, et s'assurer que le travail est fait correctement.</p>
-        <p>Notre métier, c'est le réseau et la méthode. Nous travaillons avec des plombiers, électriciens, chauffagistes, climaticiens, serruriers, couvreurs, peintres, plaquistes, carreleurs, menuisiers, paysagistes et entreprises de nettoyage, de Fréjus à Nice. Chacun a un dossier à jour chez nous : assurance décennale, responsabilité civile, attestation de vigilance.</p>
-        <p>Quand une demande arrive, nous choisissons celui qui convient au métier, à la commune et au délai. Nous faisons chiffrer sur un descriptif unique pour que les devis soient comparables. Et nous restons joignables jusqu'à la fin du chantier.</p>
-        <div class="nefait">
-          <h3>Ce que nous ne faisons pas</h3>
-          <p>Nous ne réalisons pas les travaux et nous ne vendons rien au client. Le devis et la facture sont établis par l'entreprise, directement à votre nom. Vous restez maître de votre choix, et vous ne nous payez rien.</p>
+  </section>
+
+  <section id="pour-qui" class="pose">
+    <div class="wrap">
+      <dl class="faits">
+        <div><dt>12</dt><dd>corps de métier couverts</dd></div>
+        <div><dt>2</dt><dd>entreprises d'astreinte par métier</dd></div>
+        <div><dt>Fréjus → Nice</dt><dd>arrière-pays inclus</dd></div>
+        <div><dt>0 €</dt><dd>facturé au client</dd></div>
+      </dl>
+      <div class="stitre">
+        <span class="eyebrow">Pour qui</span>
+        <h2>Quatre publics, une même méthode</h2>
+      </div>
+      <div class="publics">
+        <div><h3>Particuliers</h3><p>Propriétaires et locataires, en appartement comme en maison. Du robinet qui fuit à la rénovation complète.</p></div>
+        <div><h3>Syndics et gestionnaires</h3><p>Nous prenons les appels techniques de vos copropriétés, nous trouvons les entreprises et nous vous rendons un tableau chaque mois.</p></div>
+        <div><h3>Conseils syndicaux</h3><p>Ravalement, cage d'escalier, toiture, chaufferie. Des devis comparables à présenter en assemblée générale.</p></div>
+        <div><h3>Collectivités et bailleurs</h3><p>Mise en concurrence organisée, devis au même format, pièces administratives vérifiées et jointes.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="maison">
+    <div class="wrap">
+      <div class="stitre">
+        <span class="eyebrow">Qui nous sommes</span>
+        <h2>VD Services</h2>
+      </div>
+      <div class="deuxcol">
+        <div class="texte">
+          <p>VD Services a été fondée à Mandelieu-la-Napoule par Valentin Dupuy, pour régler un
+            problème que tout le monde connaît : trouver la bonne entreprise, obtenir un devis, et
+            s'assurer que le travail est fait correctement.</p>
+          <p>Notre métier, c'est le réseau et la méthode. Chaque entreprise partenaire a un dossier
+            à jour chez nous : assurance décennale, responsabilité civile, attestation de vigilance
+            URSSAF. Quand une demande arrive, nous choisissons celle qui convient au métier, à la
+            commune et au délai.</p>
+          <p>Nous faisons chiffrer sur un descriptif unique pour que les devis soient comparables.
+            Et nous restons joignables jusqu'à la fin du chantier.</p>
+          <ul class="metiers" style="margin-top:var(--e4)">
+            <li>Plomberie</li><li>Électricité</li><li>Chauffage</li><li>Climatisation, VMC</li>
+            <li>Serrurerie</li><li>Couverture, étanchéité</li><li>Peinture</li><li>Plâtrerie</li>
+            <li>Carrelage, sols</li><li>Menuiserie</li><li>Espaces verts</li><li>Ménage, nettoyage</li>
+          </ul>
+          <div class="encadre">
+            <h3>Ce que nous ne faisons pas</h3>
+            <p>Nous ne réalisons pas les travaux et nous ne vendons rien au client. Le devis et la
+              facture sont établis par l'entreprise, directement à votre nom. Vous restez maître de
+              votre choix, et vous ne nous payez rien.</p>
+          </div>
+        </div>
+        <div class="fiche">
+          <dl>
+            <div><dt>Siège</dt><dd>Mandelieu-la-Napoule</dd></div>
+            <div><dt>Secteur</dt><dd>De Fréjus à Nice, arrière-pays inclus</dd></div>
+            <div><dt>Horaires</dt><dd>8 h – 19 h, six jours sur sept</dd></div>
+            <div><dt>Astreinte</dt><dd>Deux entreprises par métier, soir et week-end</dd></div>
+            <div><dt>Devis</dt><dd>Gratuit, sans engagement</dd></div>
+          </dl>
         </div>
       </div>
-      <div class="carte">
-        <dl>
-          <dt>Siège</dt><dd>Mandelieu-la-Napoule</dd>
-          <dt>Secteur</dt><dd>De Fréjus à Nice, arrière-pays inclus</dd>
-          <dt>Métiers</dt><dd>Treize corps de métier couverts</dd>
-          <dt>Astreinte</dt><dd>Deux entreprises par métier</dd>
-          <dt>Devis</dt><dd>Gratuit, sans engagement</dd>
-        </dl>
-      </div>
     </div>
   </section>
 
-  <section id="partenaires">
-    <div class="stitre">
-      <p class="eyebrow">Entreprises</p>
-      <h2>Devenir partenaire</h2>
-      <p>Vous êtes artisan ou entreprise du bâtiment sur le secteur. Vous cherchez des chantiers qualifiés, pas des enchères au moins-disant.</p>
-    </div>
-    <div class="part">
-      <div class="deux">
+  <section id="partenaires" class="pose">
+    <div class="wrap">
+      <div class="stitre">
+        <span class="eyebrow">Entreprises</span>
+        <h2>Devenir partenaire</h2>
+        <p class="lede">Vous êtes artisan ou entreprise du bâtiment sur le secteur, et vous cherchez
+          des chantiers qualifiés — pas des enchères au moins-disant.</p>
+      </div>
+      <div class="colonnes">
         <div>
-          <h3 style="font-size:1.05rem">Ce que vous recevez</h3>
+          <h3>Ce que vous recevez</h3>
           <ul class="liste">
-            <li>Des demandes qualifiées de votre métier, sur votre commune, avec l'adresse, la nature du besoin et les photos.</li>
-            <li>Un interlocuteur unique qui a déjà parlé au client et vérifié que la demande est sérieuse.</li>
-            <li>Un descriptif clair pour chiffrer, au lieu d'un appel vague et d'un déplacement perdu.</li>
-            <li>Aucun droit d'entrée, aucun abonnement, aucune exclusivité imposée.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Des demandes qualifiées de votre métier, sur votre commune, avec l'adresse, la nature du besoin et les photos.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Un interlocuteur unique qui a déjà parlé au client et vérifié que la demande est sérieuse.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Un descriptif clair pour chiffrer, au lieu d'un appel vague et d'un déplacement perdu.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Aucun droit d'entrée, aucun abonnement, aucune exclusivité imposée.</li>
           </ul>
         </div>
         <div>
-          <h3 style="font-size:1.05rem">Ce que nous vous demandons</h3>
+          <h3>Ce que nous vous demandons</h3>
           <ul class="liste">
-            <li>Assurances à jour, décennale et responsabilité civile, attestation de vigilance URSSAF.</li>
-            <li>Une réponse sous quarante-huit heures, même pour dire non.</li>
-            <li>Les rendez-vous tenus et le client prévenu en cas de retard.</li>
-            <li>Un chantier laissé propre, et une photo de fin de travaux.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Assurances à jour : décennale, responsabilité civile, attestation de vigilance URSSAF.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Une réponse sous quarante-huit heures, même pour dire non.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Les rendez-vous tenus, et le client prévenu en cas de retard.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Un chantier laissé propre, et une photo de fin de travaux.</li>
           </ul>
         </div>
       </div>
 
-      <h3 style="font-size:1.05rem;margin-top:26px">Comment nous nous rémunérons</h3>
-      <p class="note" style="margin-top:6px">Une commission d'apport d'affaires, payée par vous, uniquement sur les affaires réellement réalisées et encaissées. Rien à payer pour entrer dans le réseau, rien d'avance, et rien du tout si l'affaire ne se fait pas.</p>
-      <p class="note" style="margin-top:10px">Le taux se fixe ensemble au moment de la convention, selon votre métier, vos marges et le volume que nous vous apportons. Nous en parlons au premier rendez-vous, avant que vous ne signiez quoi que ce soit.</p>
+      <div class="encadre" style="margin-top:var(--e5)">
+        <h3>Comment nous nous rémunérons</h3>
+        <p>Une commission d'apport d'affaires, payée par vous, uniquement sur les affaires
+          réellement réalisées et encaissées. Rien à payer pour entrer dans le réseau, rien
+          d'avance, et rien du tout si l'affaire ne se fait pas.</p>
+        <p>Le taux se fixe ensemble au moment de la convention, selon votre métier, vos marges et le
+          volume que nous vous apportons. Nous en parlons au premier rendez-vous, avant que vous ne
+          signiez quoi que ce soit.</p>
+      </div>
 
-      <h3 style="font-size:1.05rem;margin-top:28px">Rejoindre le réseau</h3>
-      <form id="f-part">
-        <div class="duo">
-          <div class="champ"><label for="p-soc">Raison sociale</label><input id="p-soc" name="societe" required></div>
-          <div class="champ"><label for="p-nom">Votre nom</label><input id="p-nom" name="nom" required></div>
-        </div>
-        <div class="duo">
-          <div class="champ"><label for="p-tel">Téléphone</label><input id="p-tel" name="tel" type="tel" required></div>
-          <div class="champ"><label for="p-mail">E-mail</label><input id="p-mail" name="email" type="email" required></div>
-        </div>
-        <div class="duo">
-          <div class="champ"><label for="p-met">Corps de métier</label><input id="p-met" name="metier" placeholder="Plomberie, chauffage" required></div>
-          <div class="champ"><label for="p-vil">Communes couvertes</label><input id="p-vil" name="villes" placeholder="Cannes, Mandelieu, Le Cannet" required></div>
-        </div>
-        <div class="duo">
-          <div class="champ"><label for="p-siren">SIREN</label><input id="p-siren" name="siren"></div>
-          <div class="champ"><label for="p-astr">Astreinte soir et week-end</label>
-            <select id="p-astr" name="astreinte"><option>Non</option><option>Oui, en semaine</option><option>Oui, 7j/7</option></select></div>
-        </div>
-        <div class="champ"><label for="p-msg">Ce qu'il faut savoir sur vous</label><textarea id="p-msg" name="message" placeholder="Spécialités, références, délai d'intervention habituel."></textarea></div>
-        <button class="btn" type="submit">Envoyer ma candidature</button>
-        <div class="sortie" id="s-part"></div>
-      </form>
+      <div class="bloc" style="margin-top:var(--e5)">
+        <h3>Rejoindre le réseau</h3>
+        <p class="note" style="margin-top:6px">Deux minutes. Nous rappelons sous quarante-huit heures.</p>
+        <form id="f-part">
+          <div class="duo">
+            <div class="champ"><label for="p-soc">Raison sociale</label><input id="p-soc" name="societe" autocomplete="organization" required></div>
+            <div class="champ"><label for="p-nom">Votre nom</label><input id="p-nom" name="nom" autocomplete="name" required></div>
+          </div>
+          <div class="duo">
+            <div class="champ"><label for="p-tel">Téléphone</label><input id="p-tel" name="tel" type="tel" autocomplete="tel" required></div>
+            <div class="champ"><label for="p-mail">E-mail</label><input id="p-mail" name="email" type="email" autocomplete="email" required></div>
+          </div>
+          <div class="duo">
+            <div class="champ"><label for="p-met">Corps de métier</label><input id="p-met" name="metier" placeholder="Plomberie, chauffage" required></div>
+            <div class="champ"><label for="p-vil">Communes couvertes</label><input id="p-vil" name="villes" placeholder="Cannes, Mandelieu, Le Cannet" required></div>
+          </div>
+          <div class="duo">
+            <div class="champ"><label for="p-siren">SIREN <i>(facultatif)</i></label><input id="p-siren" name="siren" inputmode="numeric"></div>
+            <div class="champ"><label for="p-astr">Astreinte soir et week-end</label>
+              <select id="p-astr" name="astreinte"><option>Non</option><option>Oui, en semaine</option><option>Oui, 7j/7</option></select></div>
+          </div>
+          <div class="champ"><label for="p-msg">Ce qu'il faut savoir sur vous <i>(facultatif)</i></label><textarea id="p-msg" name="message" placeholder="Spécialités, références, délai d'intervention habituel."></textarea></div>
+          <button class="btn" type="submit">Envoyer ma candidature</button>
+          <div class="sortie" id="s-part"></div>
+        </form>
+      </div>
     </div>
   </section>
 
   <section id="contact">
-    <div class="stitre">
-      <p class="eyebrow">Contact</p>
-      <h2>Parler à quelqu'un</h2>
-      <p>Laissez-nous vos coordonnées, on vous rappelle. De Fréjus à Nice, 8 h – 19 h, six jours sur sept.</p>
-      <p>Pour une urgence, passez plutôt par le formulaire : il vous met en relation directe avec l'entreprise d'astreinte, c'est plus rapide.</p>
-    </div>
-
-    <form id="f-contact" style="max-width:640px">
-      <div class="duo">
-        <div class="champ"><label for="c-nom">Votre nom</label><input id="c-nom" name="nom" required></div>
-        <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="tel" type="tel" required></div>
+    <div class="wrap">
+      <div class="deuxcol">
+        <div class="texte">
+          <div class="stitre" style="margin-bottom:var(--e3)">
+            <span class="eyebrow">Contact</span>
+            <h2>Parler à quelqu'un</h2>
+          </div>
+          <p class="lede">Laissez vos coordonnées, nous vous rappelons. De Fréjus à Nice,
+            8 h – 19 h, six jours sur sept.</p>
+          <div class="encadre">
+            <h3>Pour une urgence</h3>
+            <p>Passez plutôt par le <a id="lien-form-urg" href="#besoins">formulaire</a> : il vous
+              met en relation directe avec l'entreprise d'astreinte, c'est plus rapide qu'un
+              rappel.</p>
+          </div>
+        </div>
+        <form id="f-contact" style="margin-top:0">
+          <div class="champ"><label for="c-nom">Votre nom</label><input id="c-nom" name="nom" autocomplete="name" required></div>
+          <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="tel" type="tel" autocomplete="tel" required></div>
+          <div class="champ"><label for="c-mail">E-mail <i>(facultatif)</i></label><input id="c-mail" name="email" type="email" autocomplete="email"></div>
+          <div class="champ"><label for="c-msg">Votre message</label><textarea id="c-msg" name="message" required></textarea></div>
+          <button class="btn" type="submit">Envoyer</button>
+          <p class="note">Vos coordonnées ne servent qu'à traiter votre demande et ne sont
+            transmises qu'à l'entreprise retenue. Conservation trois ans.</p>
+          <div class="sortie" id="s-contact"></div>
+        </form>
       </div>
-      <div class="champ"><label for="c-mail">E-mail</label><input id="c-mail" name="email" type="email"></div>
-      <div class="champ"><label for="c-msg">Votre message</label><textarea id="c-msg" name="message" required></textarea></div>
-      <button class="btn" type="submit">Envoyer</button>
-      <p class="note">Vos coordonnées ne servent qu'à traiter votre demande et ne sont transmises qu'à l'entreprise retenue. Conservation trois ans.</p>
-      <div class="sortie" id="s-contact"></div>
-    </form>
+    </div>
   </section>
-</div>
+
 </main>
 
 <footer>
   <div class="wrap">
     <div class="fl">
       <a href="#besoins">Vos besoins</a>
+      <a href="#methode">Notre méthode</a>
       <a href="#partenaires">Devenir partenaire</a>
       <a href="#contact">Contact</a>
       <!-- La plateforme : discrète, mais trouvable sans qu'on ait à
@@ -378,7 +575,7 @@ footer a{text-decoration:none;color:var(--ink-2)}
       <a href="/app" class="interne">Espace professionnel</a>
     </div>
     <p><strong>VD SERVICES</strong> — SAS au capital de 1 000 € — RCS Nice — SIREN <span class="acompleter">à compléter</span> — siège <span class="acompleter">adresse à compléter</span>, Mandelieu-la-Napoule. Directeur de la publication : le président de VD SERVICES. Hébergeur : <span class="acompleter">à compléter</span>.</p>
-    <p style="margin-top:10px">VD Services intervient comme apporteur d'affaires et coordinateur. Les travaux sont réalisés, facturés et garantis par les entreprises partenaires, qui restent seules responsables de leur exécution. Les devis et factures sont établis par elles, directement au nom du client.</p>
+    <p>VD Services intervient comme apporteur d'affaires et coordinateur. Les travaux sont réalisés, facturés et garantis par les entreprises partenaires, qui restent seules responsables de leur exécution. Les devis et factures sont établis par elles, directement au nom du client.</p>
   </div>
 </footer>
 
@@ -393,19 +590,32 @@ var MAIL_CONTACT="vdpy05@gmail.com";
 function lienForm(parcours){
   return FORMULAIRE+(FORMULAIRE.indexOf("?")>=0?"&":"?")+"depuis=site"+(parcours?"&besoin="+encodeURIComponent(parcours):"");
 }
-document.getElementById("cta-form").href=lienForm("");
-document.getElementById("lien-form").href=lienForm("");
-document.getElementById("cta-haut").href=lienForm("");
+["cta-form","cta-haut","cta-menu","lien-form"].forEach(function(id){
+  var a=document.getElementById(id);
+  if(a)a.href=lienForm("");
+});
+var urg=document.getElementById("lien-form-urg");
+if(urg)urg.href=lienForm("urgence");
 [].slice.call(document.querySelectorAll("[data-form]")).forEach(function(a){
   a.href=lienForm(a.dataset.form);
 });
+
+/* Le menu du telephone se referme quand on a choisi : sans cela, la
+   cible du lien s'ouvre derriere un panneau reste ouvert. */
+var menu=document.querySelector(".menu");
+if(menu){
+  menu.addEventListener("click",function(ev){
+    if(ev.target.closest(".panneau a"))menu.open=false;
+  });
+}
 
 function texteFormulaire(form,titre){
   var L=[titre,""];
   [].slice.call(form.elements).forEach(function(el){
     if(!el.name)return;
     var lab=form.querySelector('label[for="'+el.id+'"]');
-    L.push((lab?lab.textContent:el.name)+" : "+el.value);
+    var nom=lab?lab.textContent.replace(/\s*\(facultatif\)\s*$/,"").trim():el.name;
+    L.push(nom+" : "+el.value);
   });
   return L.join("\n");
 }
@@ -415,11 +625,11 @@ function brancher(idForm,idSortie,objet){
     ev.preventDefault();
     var corps=texteFormulaire(form,objet);
     var url="mailto:"+MAIL_CONTACT+"?subject="+encodeURIComponent(objet)+"&body="+encodeURIComponent(corps);
-    var ouvert=false;
-    try{ouvert=!!window.open(url,"_self")}catch(e){ouvert=false}
+    try{window.open(url,"_self")}catch(e){}
     sortie.className="sortie on";
     sortie.textContent="Votre messagerie devrait s'ouvrir avec ce message. Si rien ne se passe, copiez le texte ci-dessous et envoyez-le à "
       +MAIL_CONTACT+".\n\n"+corps;
+    sortie.scrollIntoView({block:"nearest",behavior:"smooth"});
   });
 }
 brancher("f-part","s-part","Candidature partenaire VD Services");
