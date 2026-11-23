@@ -260,6 +260,9 @@ python3 outils/construire-site.py
 | `site/formulaire/index.html` | `/formulaire` | le formulaire du QR code, seul et plein écran |
 | `site/vercel.json` | — | URLs propres, en-têtes de sécurité, redirections `/copro` et `/demande` |
 | `site/robots.txt` | `/robots.txt` | indexation ouverte |
+| `site/manifest.webmanifest` | `/manifest.webmanifest` | ce qui fait du formulaire une application installable |
+| `site/sw.js` | `/sw.js` | le cache qui permet d'ouvrir le formulaire sans réseau |
+| `site/icones/` | `/icones/…` | les icônes de l'écran d'accueil, produites par `outils/icones-pwa.mjs` |
 
 Le formulaire est le prototype de `docs/parcours-qr.html`, sans le chronomètre
 ni la fiche de démonstration, avec l'envoi réel au bout. Il lit trois
@@ -273,6 +276,41 @@ Sur vercel.com, *Add New* › *Project* › *Import* le dépôt, puis **Root
 Directory : `site`**, framework *Other*, aucune commande de build. Ou, sans
 dépôt, glisser le dossier `site/` dans l'écran de déploiement. Le domaine se
 branche ensuite dans *Settings* › *Domains*.
+
+### Le formulaire comme application
+
+Sur un téléphone, le formulaire s'installe sur l'écran d'accueil et
+s'ouvre sans barre d'adresse, **directement sur le choix** — urgence,
+dépannage, projet, travaux financés, entité publique. Pas de page
+d'accueil à traverser : quelqu'un qui scanne un QR code dans un hall a
+déjà décidé de signaler quelque chose.
+
+Trois choses le distinguent d'une page ordinaire :
+
+- **les raccourcis** : un appui long sur l'icône ouvre directement l'un
+  des quatre parcours, sans passer par l'écran du choix ;
+- **le hors-réseau** : un service worker garde la dernière version sous
+  la main. Dans une cave ou un hall en sous-sol, le formulaire s'ouvre
+  quand même. Le réseau reste prioritaire — une page servie depuis le
+  cache pourrait annoncer un numéro d'astreinte périmé ;
+- **l'invitation à installer**, montrée une seule fois : refusée, elle
+  ne revient pas. Android ouvre la boîte de dialogue du système ; iOS
+  n'a pas d'API pour cela, la bannière dit donc simplement où se trouve
+  le bouton.
+
+Le dépôt d'une demande part en POST et n'est jamais mis en cache : sans
+réseau il échoue franchement, et le formulaire bascule sur l'envoi par
+messagerie en le disant.
+
+Les icônes se régénèrent le jour où le logo change :
+
+```
+node outils/icones-pwa.mjs
+```
+
+C'est le seul endroit du dépôt qui demande un navigateur — le dessin est
+rendu avec la vraie fonte, puis photographié. Les images produites sont
+versionnées, le script ne sert donc presque jamais.
 
 ### Le dépôt d'une demande
 

@@ -89,6 +89,15 @@ page = u'''<!doctype html>
 <meta property="og:title" content="Signaler un besoin — VD Services">
 <meta property="og:description" content="Décrivez votre besoin en moins d'une minute.">
 <meta property="og:type" content="website">
+<!-- Installable sur l'ecran d'accueil : le manifeste dit comment
+     l'application s'appelle, de quoi elle a l'air, et sur quoi elle
+     s'ouvre — l'ecran du choix, jamais une page d'accueil. -->
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="VD Services">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -110,6 +119,37 @@ button,input,select,textarea{font:inherit;color:inherit}
 .bande i:nth-child(3){background:var(--pro)}
 .bande i:nth-child(4){background:var(--ene)}
 .screen{padding:20px 0 0;min-height:60vh}
+
+/* ----- la coquille de l'application -----
+   Installee sur l'ecran d'accueil, la page n'a plus de barre
+   d'adresse : elle occupe l'ecran, et doit se comporter comme une
+   application — pas de rebond elastique en haut de liste, pas de
+   surlignage bleu au toucher, pas de selection de texte sur un
+   bouton qu'on maintient une demi-seconde de trop. */
+html{height:100%}
+body{min-height:100dvh;overscroll-behavior-y:none}
+button,.opt,.tile,.chip,.cta{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.opt,.cta,.tile,.chip{-webkit-user-select:none;user-select:none}
+@media (display-mode:standalone){
+  /* la barre d'adresse est partie : on reprend sa place, et le lien de
+     retour vers le site n'a plus de sens dans une application */
+  .app{padding-bottom:max(env(safe-area-inset-bottom,0px),24px)}
+  .pied .hors-app{display:none}
+}
+
+/* ----- la banniere d'installation -----
+   Elle n'apparait que si le telephone sait installer, et une seule
+   fois : refusee, elle ne revient pas. */
+.installer{position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
+  gap:12px;align-items:center;background:var(--surface);border-top:1px solid var(--line);
+  box-shadow:0 -8px 24px -18px rgba(0,0,0,.5);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.installer.on{display:flex}
+.installer p{flex:1;font-size:.86rem;line-height:1.35;color:var(--ink-2)}
+.installer p b{display:block;font-family:var(--display);font-weight:600;color:var(--ink);font-size:.94rem}
+.installer button{border:0;border-radius:9px;padding:11px 15px;font-family:var(--display);
+  font-weight:600;font-size:.9rem;background:var(--accent);color:var(--surface);cursor:pointer}
+.installer button.non{background:none;color:var(--ink-3);padding:11px 4px;font-weight:400}
 .pied{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);font-size:.74rem;color:var(--ink-3);line-height:1.5}
 .pied a{color:var(--ink-3)}
 .recap{font-family:var(--mono);font-size:.74rem;line-height:1.6;background:var(--surface);border:1px solid var(--line);
@@ -130,7 +170,7 @@ __ECRAN__
     <strong>VD SERVICES</strong> — consultation, pilotage, coordination et assistance.
     Mandelieu-la-Napoule, secteur Fréjus – Nice.
     Vos coordonnées ne servent qu'au traitement de cette demande et ne sont transmises qu'à l'entreprise retenue.
-    Conservation trois ans. <a href="/">Retour au site</a>
+    Conservation trois ans. <a class="hors-app" href="/">Retour au site</a>
   </p>
 </div>
 
@@ -474,6 +514,69 @@ document.getElementById("screen").addEventListener("input",function(e){
   }
 });
 init();
+
+/* ---------- l'application ----------
+   Le service worker garde la derniere version sous la main : dans un
+   hall sans reseau, le formulaire s'ouvre quand meme. */
+if("serviceWorker" in navigator){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("/sw.js").catch(function(){});
+  });
+}
+
+/* L'invitation a installer. Android previent par un evenement, iOS ne
+   previent de rien : la seule facon honnete est de dire ou se trouve
+   le bouton, et de ne le dire qu'une fois. */
+(function(){
+  var REFUS="vds-install-refuse";
+  var deja=false;
+  try{deja=localStorage.getItem(REFUS)==="1"}catch(e){}
+  var installee=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  if(deja||installee)return;
+
+  var barre=document.createElement("div");
+  barre.className="installer";
+  document.body.appendChild(barre);
+
+  function fermer(){
+    barre.classList.remove("on");
+    try{localStorage.setItem(REFUS,"1")}catch(e){}
+  }
+  function montrer(html,action){
+    barre.innerHTML=html;
+    var oui=barre.querySelector("[data-oui]"),non=barre.querySelector("[data-non]");
+    if(oui&&action)oui.addEventListener("click",action);
+    if(non)non.addEventListener("click",fermer);
+    barre.classList.add("on");
+  }
+
+  var invite=null;
+  window.addEventListener("beforeinstallprompt",function(ev){
+    ev.preventDefault();invite=ev;
+    montrer("<p><b>Installer VD Services</b>Pour le retrouver sur votre écran d'accueil, sans passer par le navigateur.</p>"
+      +'<button class="non" data-non>Plus tard</button><button data-oui>Installer</button>',
+      function(){
+        barre.classList.remove("on");
+        invite.prompt();
+        invite.userChoice.then(function(){try{localStorage.setItem(REFUS,"1")}catch(e){}});
+      });
+  });
+  window.addEventListener("appinstalled",function(){
+    try{localStorage.setItem(REFUS,"1")}catch(e){}
+    barre.classList.remove("on");
+  });
+
+  /* iOS : pas d'evenement, pas d'API. Une phrase, et on n'insiste pas. */
+  var iOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  var safari=iOS&&!/crios|fxios|edgios/i.test(navigator.userAgent);
+  if(safari){
+    setTimeout(function(){
+      if(barre.classList.contains("on"))return;
+      montrer("<p><b>Gardez-le sous la main</b>Bouton Partager, puis « Sur l'écran d'accueil ».</p>"
+        +'<button class="non" data-non>Fermer</button>',null);
+    },2500);
+  }
+})();
 </script>
 </body>
 </html>

@@ -1,0 +1,51 @@
+{
+  "id": "/formulaire",
+  "name": "VD Services — signaler un besoin",
+  "short_name": "VD Services",
+  "description": "Urgence, dépannage, projet de travaux ou rénovation financée : décrivez votre besoin en moins d'une minute, de Fréjus à Nice.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/formulaire",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "theme_color": "#2E4E77",
+  "background_color": "#E9EBEF",
+  "categories": ["utilities", "business"],
+  "icons": [
+    { "src": "/icones/icone-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "/icones/icone-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "/icones/icone-maskable-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Urgence",
+      "short_name": "Urgence",
+      "description": "Fuite, panne électrique, porte bloquée, dégât en cours",
+      "url": "/formulaire?besoin=urgence&depuis=raccourci",
+      "icons": [{ "src": "/icones/icone-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dépannage",
+      "short_name": "Dépannage",
+      "description": "Ça fonctionne mal, ça peut attendre demain",
+      "url": "/formulaire?besoin=depannage&depuis=raccourci",
+      "icons": [{ "src": "/icones/icone-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Projet de travaux",
+      "short_name": "Travaux",
+      "description": "Rénovation, parties communes, devis à comparer",
+      "url": "/formulaire?besoin=projet&depuis=raccourci",
+      "icons": [{ "src": "/icones/icone-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Travaux énergétiques",
+      "short_name": "Énergie",
+      "description": "Pompe à chaleur, isolation, fenêtres, solaire",
+      "url": "/formulaire?besoin=energie&depuis=raccourci",
+      "icons": [{ "src": "/icones/icone-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
