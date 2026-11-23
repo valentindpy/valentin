@@ -38,6 +38,66 @@ vérifiés à la visite.
 Quatre données suffisent au routage : l'intention, le ou les corps de métier, la
 nature de la partie concernée et le statut du demandeur.
 
+## L'identité
+
+### La marque
+
+Un arc et sa clé de voûte. C'est la pierre qu'on pose en dernier, qui ne
+porte rien elle-même, et sans laquelle tout le reste tombe : la place
+exacte de VD Services entre un client et des artisans. C'est aussi, sur
+la Côte, la forme de toutes les portes de vieux village.
+
+Elle est construite, pas dessinée à l'œil : deux cercles concentriques de
+rayons 32 et 18, et deux angles — 18 degrés de part et d'autre de la
+verticale pour la clé, 5 degrés de respiration de chaque côté. La clé
+déborde l'arc, le dessus coupé droit comme une pierre taillée, pour
+rester lisible à seize pixels. Tout est dans `site/logo.svg`, commenté.
+
+L'arc prend `currentColor` : la marque suit la couleur du texte qui
+l'entoure, en encre sur papier comme en papier sur encre. Seule la clé
+garde sa terre cuite — et elle disparaît en impression une encre, où
+c'est la silhouette qui porte la reconnaissance.
+
+### Les couleurs
+
+| Jeton | Valeur | Ce qu'il porte |
+|---|---|---|
+| `--encre` | `#17222E` | le texte, les boutons, la marque. Un noir bleuté, celui d'un plan |
+| `--papier` | `#F5F2EC` | le fond. Du papier, pas un écran éteint |
+| `--terre` | `#B4552E` | la clé de voûte, un filet, un chiffre. **Une chose à la fois** |
+| `--urg` `--dep` `--pro` `--ene` | — | les quatre parcours, réduits à un repère de deux pixels |
+
+La terre cuite ne touche jamais un bouton principal : elle réchauffe, elle
+ne crie pas. Les quatre couleurs des parcours codent, elles ne décorent
+pas.
+
+### Les fontes
+
+**Source Serif 4** pour ce qui se lit de loin, **Inter** pour ce qui se lit
+de près. L'écart entre les deux fait la hiérarchie ; aucune ombre, aucun
+dégradé n'y participe. Le monospace est celui du système : il ne sert
+qu'au récapitulatif du formulaire, et trente kilo-octets de plus pour un
+bloc de texte aligné ne se justifient pas.
+
+Elles sont **servies par le domaine**, dans `site/polices/`. Deux raisons,
+et la seconde compte autant que la première : un aller-retour DNS et TLS
+de moins avant que le texte ne s'affiche, et aucune adresse IP de visiteur
+transmise à un tiers. Les deux sont sous licence SIL Open Font, qui
+autorise la redistribution.
+
+### Les icônes
+
+Toutes sortent du même dessin, par un navigateur — lui seul rend un SVG
+fidèlement :
+
+```
+node outils/icones-pwa.mjs     # 16, 32, 180, 192, 512 et la version masquée
+python3 outils/favicon-ico.py  # emballe 16 et 32 dans site/favicon.ico
+```
+
+Les images produites sont versionnées : ces deux commandes ne servent
+qu'un jour où la marque change.
+
 ## `docs/site-accueil.html` — la page d'accueil publique
 
 Page d'accueil de VD Services, destinée à être hébergée sur le domaine de la
@@ -46,13 +106,22 @@ société. Sept sections : la promesse, les quatre besoins, la méthode en quatr
 le contact. Le taux de commission n'est pas affiché : il se négocie au premier
 rendez-vous.
 
-La feuille de style tient sur une seule échelle de tailles et un seul rythme
-vertical ; rien d'important ne descend sous 15 px. Les fonds alternent d'une
-section à l'autre plutôt que de s'empiler derrière des filets, et les quatre
-couleurs des parcours sont réduites à un repère — le bandeau du haut reste,
-c'est la même signature que sur les autocollants de hall. Le menu existe aussi
-sur téléphone, sans script, et les ancres s'arrêtent sous l'en-tête au lieu de
-passer dessous.
+La page est composée sur une grille de douze colonnes, et les blocs n'y
+occupent pas tous la même place : le texte à sept colonnes, la carte du secteur
+à cinq, une bande pleine largeur en encre au milieu. C'est ce décalage qui
+distingue une page composée d'une page empilée.
+
+La carte n'est pas une illustration achetée : elle est tracée depuis les
+coordonnées du littoral, les mêmes que la plateforme emploie pour placer les
+copropriétés sur la carte du syndic. Fréjus, Mandelieu, Cannes, Antibes, Nice
+sont au bon endroit.
+
+Trois détails qu'on ne remarque que quand ils manquent : les espaces fines
+insécables de la typographie française, posées à la construction par
+`typographier()` — sans elles, « un établissement public ? » renvoie le point
+d'interrogation à la ligne suivante ; les blocs qui montent de sept pixels en
+entrant dans l'écran, une seule fois et jamais en sens inverse ; et un menu de
+téléphone en HTML seul, qui se referme quand on a choisi.
 
 Les deux formulaires fonctionnent sans serveur, par ouverture de la messagerie,
 et sont prêts à être branchés sur un point de réception. Trois valeurs sont à

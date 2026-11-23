@@ -6,7 +6,7 @@
 <title>Signaler un besoin — VD Services</title>
 <meta name="description" content="Décrivez votre besoin en moins d'une minute. VD Services trouve l'entreprise, compare les devis et suit les travaux. Secteur Fréjus – Nice.">
 <meta name="robots" content="index,follow">
-<meta name="theme-color" content="#2E4E77">
+<meta name="theme-color" content="#17222E">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <meta property="og:title" content="Signaler un besoin — VD Services">
@@ -21,32 +21,35 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="VD Services">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="preload" href="/polices/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/polices/source-serif-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/polices/polices.css">
 <style>
 :root{
-  --ground:#F7F4EE; --surface:#FFFFFF; --surface-2:#F2EDE4; --sunk:#E7E0D4;
-  --ink:#1E1A16; --ink-2:#4C453C; --ink-3:#7B7268;
-  --line:#E2DACD; --line-strong:#C5B9A7;
-  --accent:#2E4E77; --accent-soft:#E3E9F2; --accent-ink:#28456B;
-  --chaud:#B0532C; --chaud-soft:#F6E5D9;
-  --urg:#B8392B; --urg-soft:#F8E1DC;
-  --dep:#8A5F06; --dep-soft:#F6EACB;
-  --pro:#1F6248; --pro-soft:#D9EBE1;
-  --ene:#1B6680; --ene-soft:#D6E8EE;
-  --shadow:0 1px 2px rgba(60,44,28,.06), 0 8px 24px -12px rgba(60,44,28,.18);
-  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
-  --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",monospace;
+  --ground:#F5F2EC; --surface:#FFFFFF; --surface-2:#EDE8DF; --sunk:#E3DCCF;
+  --ink:#17222E; --ink-2:#44505F; --ink-3:#6F7A88;
+  --line:#DED7CA; --line-strong:#BDB2A1;
+  --accent:#17222E; --accent-soft:#F3E3D8; --accent-ink:#B4552E;
+  --chaud:#B4552E; --chaud-soft:#F3E3D8;
+  --urg:#A8362A; --urg-soft:#F6E0DC;
+  --dep:#8A6210; --dep-soft:#F5EACA;
+  --pro:#2C6A4F; --pro-soft:#DBEBE2;
+  --ene:#1D6477; --ene-soft:#D7E8ED;
+  --shadow:0 1px 2px rgba(23,34,46,.05), 0 8px 24px -14px rgba(23,34,46,.3);
+  /* Les deux fontes du site, servies par le domaine. Le monospace reste
+     celui du systeme : il ne sert qu'au recapitulatif, et trente kilos
+     de plus pour un bloc de texte aligne ne se justifient pas. */
+  --display:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --body:"Inter",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --ground:#15110D; --surface:#1E1914; --surface-2:#262019; --sunk:#0C0906;
-    --ink:#F2EDE5; --ink-2:#C3B9AC; --ink-3:#93897C;
-    --line:#322A22; --line-strong:#4A4036;
-    --accent:#8CB2DC; --accent-soft:#1E2B3A; --accent-ink:#9CBEE4;
-    --chaud:#E08B5E; --chaud-soft:#38241A;
+    --ground:#12171D; --surface:#1B222B; --surface-2:#191F27; --sunk:#0B0F14;
+    --ink:#ECE7DE; --ink-2:#B6BDC6; --ink-3:#848E99;
+    --line:#252D37; --line-strong:#3B4552;
+    --accent:#ECE7DE; --accent-soft:#2E1F18; --accent-ink:#D9825A;
+    --chaud:#D9825A; --chaud-soft:#2E1F18;
     --urg:#EE8F84; --urg-soft:#3A1F1C;
     --dep:#DCB25C; --dep-soft:#332918;
     --pro:#78C8A0; --pro-soft:#152D23;
@@ -55,11 +58,11 @@
   }
 }
 :root[data-theme="dark"]{
-  --ground:#15110D; --surface:#1E1914; --surface-2:#262019; --sunk:#0C0906;
-  --ink:#F2EDE5; --ink-2:#C3B9AC; --ink-3:#93897C;
-  --line:#322A22; --line-strong:#4A4036;
-  --accent:#8CB2DC; --accent-soft:#1E2B3A; --accent-ink:#9CBEE4;
-  --chaud:#E08B5E; --chaud-soft:#38241A;
+  --ground:#12171D; --surface:#1B222B; --surface-2:#191F27; --sunk:#0B0F14;
+  --ink:#ECE7DE; --ink-2:#B6BDC6; --ink-3:#848E99;
+  --line:#252D37; --line-strong:#3B4552;
+  --accent:#ECE7DE; --accent-soft:#2E1F18; --accent-ink:#D9825A;
+  --chaud:#D9825A; --chaud-soft:#2E1F18;
   --urg:#EE8F84; --urg-soft:#3A1F1C;
   --dep:#DCB25C; --dep-soft:#332918;
   --pro:#78C8A0; --pro-soft:#152D23;
@@ -133,12 +136,16 @@ button,.opt,.tile,.chip,.cta{-webkit-tap-highlight-color:transparent;touch-actio
 .opt.d{border-left-color:var(--dep)} .opt.d b{color:var(--dep)}
 .opt.p{border-left-color:var(--pro)} .opt.p b{color:var(--pro)}
 .opt.e{border-left-color:var(--ene)} .opt.e b{color:var(--ene)}
-.opt.a{border-left-color:var(--accent)} .opt.a b{color:var(--accent-ink)}
-.marque{display:flex;flex-direction:column;gap:3px;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:16px;text-decoration:none;color:inherit}
+.opt.a{border-left-color:var(--ink-3)} .opt.a b{color:var(--ink)}
+.marque{display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line);
+  padding-bottom:13px;margin-bottom:16px;text-decoration:none;color:inherit}
 /* Le titre ramene a l'accueil : c'est la seule sortie depuis le premier ecran. */
-.marque:hover strong{text-decoration:underline;text-underline-offset:3px}
-.marque strong{font-family:var(--display);font-weight:700;font-size:1.1rem;letter-spacing:-.01em;color:var(--ink)}
-.marque span{font-family:var(--mono);font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.marque svg{width:27px;height:27px;flex:none;color:var(--ink);transition:color .18s}
+.marque:hover svg{color:var(--chaud)}
+.marque strong{font-family:var(--display);font-weight:600;font-size:1.1rem;letter-spacing:-.012em;color:var(--ink);display:block}
+.marque span span{display:block}
+.marque span span+span,.marque>span>span:last-child{font-size:.6rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink-3);margin-top:1px}
 .etoile{background:none;border:0;padding:0;margin-top:14px;text-align:left;font:inherit;font-size:.79rem;
   color:var(--ene);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .defi{margin-top:10px;border:1px solid var(--ene);background:var(--ene-soft);border-radius:9px;padding:13px 14px}
@@ -392,13 +399,24 @@ function tiles(list){
   }).join("")+'</div>';
 }
 
+/* L'arc et sa cle de voute : le meme dessin que site/logo.svg, pose ici
+   pour que le formulaire porte la marque et pas seulement son nom. */
+var MARQUE='<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
+  +'<g fill="currentColor">'
+  +'<path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54 L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>'
+  +'<path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54 L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>'
+  +'</g>'
+  +'<path d="M38.26 17.86 L61.74 17.86 L54.79 39.26 A15.5 15.5 0 0 0 45.21 39.26 Z" fill="var(--chaud)"/>'
+  +'</svg>';
+
 var lastStep=null;
 function render(){
   var h="",sc=document.getElementById("screen");
   var keep=(lastStep===step)?sc.scrollTop:0;
   if(step==="intent"){
     h+=dots();
-    h+='<a class="marque" href="/"><strong>VD SERVICES</strong><span>Consultation · Pilotage · Coordination et assistance</span></a>';
+    h+='<a class="marque" href="/">'+MARQUE
+      +'<span><strong>VD Services</strong><span>Consultation · Pilotage · Coordination</span></span></a>';
     h+='<p class="q">Que se passe-t-il ?</p><p class="qs">Une seule réponse. Si c\'est grave, vous n\'aurez rien à remplir.</p>';
     h+='<div class="col">'
       +'<button class="opt u" data-intent="urgence"><b>C\'est une urgence</b><span>Fuite qui coule, plus d\'électricité, porte bloquée, dégât en cours</span></button>'

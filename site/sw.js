@@ -23,7 +23,7 @@
    l'envoi par messagerie, et le demandeur le voit.
    ===================================================================== */
 
-const CACHE = "vds-coquille-1";
+const CACHE = "vds-coquille-2";   /* changé avec l'identité */
 
 /* La coquille : ce qu'il faut avoir sous la main pour afficher le
    formulaire sans réseau. Les fontes viennent s'y ajouter à l'usage. */
@@ -32,6 +32,12 @@ const COQUILLE = [
   "/manifest.webmanifest",
   "/favicon.svg",
   "/icones/icone-192.png",
+  /* les fontes sont servies par le domaine depuis qu'elles ont changé :
+     sans elles dans la coquille, le formulaire s'ouvrirait hors réseau
+     dans la fonte de secours, et n'aurait plus l'air de la maison */
+  "/polices/polices.css",
+  "/polices/inter-latin.woff2",
+  "/polices/source-serif-latin.woff2",
 ];
 
 self.addEventListener("install", (ev) => {

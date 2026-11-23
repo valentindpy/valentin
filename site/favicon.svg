@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="VD Services">
-  <!-- Le monogramme sur le bleu de travail, et sous lui la bande des quatre
-       familles de besoins : la meme signature que sur le site. -->
-  <defs><clipPath id="c"><rect width="64" height="64" rx="12"/></clipPath></defs>
-  <g clip-path="url(#c)">
-    <rect width="64" height="64" fill="#2E4E77"/>
-    <text x="32" y="41" text-anchor="middle"
-          font-family="Archivo,'Helvetica Neue',Helvetica,Arial,sans-serif"
-          font-size="31" font-weight="800" letter-spacing="-1" fill="#FFFFFF">VD</text>
-    <rect x="0"  y="53" width="16" height="11" fill="#BC2F26"/>
-    <rect x="16" y="53" width="16" height="11" fill="#8E6206"/>
-    <rect x="32" y="53" width="16" height="11" fill="#20654A"/>
-    <rect x="48" y="53" width="16" height="11" fill="#1D6A82"/>
+  <!-- La marque renversée : l'arc en papier sur l'encre, et la clé de
+       voûte en terre cuite. À seize pixels dans un onglet, c'est la
+       silhouette de l'arc qu'on reconnaît, pas un monogramme illisible.
+       Le dessin vient de site/logo.svg, à l'échelle 64/100. -->
+  <defs><clipPath id="d"><rect width="64" height="64" rx="13"/></clipPath></defs>
+  <g clip-path="url(#d)">
+    <rect width="64" height="64" fill="#17222E"/>
+    <g transform="scale(.64)" fill="#F5F2EC">
+      <path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54 L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>
+      <path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54 L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>
+      <path d="M38.26 17.86 L61.74 17.86 L54.79 39.26 A15.5 15.5 0 0 0 45.21 39.26 Z" fill="#C9683C"/>
+    </g>
   </g>
 </svg>

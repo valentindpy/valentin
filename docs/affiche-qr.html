@@ -1,34 +1,35 @@
 <title>Affiche QR VD Services</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <style>
 :root{
-  --ground:#E9EBEF; --surface:#FFFFFF; --surface-2:#F2F4F7;
-  --ink:#131A24; --ink-2:#414B59; --ink-3:#6C7686;
-  --line:#CDD3DC; --line-strong:#A7B0BE;
-  --accent:#2E4E77; --accent-soft:#DCE5F1; --accent-ink:#2E4E77;
-  --shadow:0 1px 2px rgba(19,26,36,.06), 0 12px 34px -18px rgba(19,26,36,.3);
-  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
-  --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --ground:#F5F2EC; --surface:#FFFFFF; --surface-2:#EDE8DF;
+  --ink:#17222E; --ink-2:#44505F; --ink-3:#6F7A88;
+  --line:#DED7CA; --line-strong:#BDB2A1;
+  --accent:#17222E; --accent-soft:#F3E3D8; --accent-ink:#B4552E;
+  --shadow:0 1px 2px rgba(23,34,46,.05), 0 12px 34px -20px rgba(23,34,46,.28);
+  --display:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --body:"Inter",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   /* encres d'impression, jamais dépendantes du thème */
-  --p-bg:#FFFFFF; --p-ink:#131A24; --p-ink2:#5A6472; --p-line:#D7DCE3; --p-accent:#2E4E77;
-  --p-urg:#BC2F26; --p-dep:#8E6206; --p-pro:#20654A; --p-ene:#1D6A82;
+  --p-bg:#FFFFFF; --p-ink:#17222E; --p-ink2:#5A6472; --p-line:#DED7CA; --p-accent:#17222E;
+  --p-terre:#B4552E;
+  --p-urg:#A8362A; --p-dep:#8A6210; --p-pro:#2C6A4F; --p-ene:#1D6477;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630;
-  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
-  --line:#28313D; --line-strong:#3E4A59;
-  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
+  --ground:#12171D; --surface:#1B222B; --surface-2:#191F27;
+  --ink:#ECE7DE; --ink-2:#B6BDC6; --ink-3:#848E99;
+  --line:#252D37; --line-strong:#3B4552;
+  --accent:#ECE7DE; --accent-soft:#2E1F18; --accent-ink:#D9825A;
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 14px 36px -20px rgba(0,0,0,.85);
 }}
 :root[data-theme="dark"]{
-  --ground:#0D131B; --surface:#161D26; --surface-2:#1D2630;
-  --ink:#E7ECF3; --ink-2:#B2BBC8; --ink-3:#828D9C;
-  --line:#28313D; --line-strong:#3E4A59;
-  --accent:#84ABD8; --accent-soft:#1C2C41; --accent-ink:#9CBEE4;
+  --ground:#12171D; --surface:#1B222B; --surface-2:#191F27;
+  --ink:#ECE7DE; --ink-2:#B6BDC6; --ink-3:#848E99;
+  --line:#252D37; --line-strong:#3B4552;
+  --accent:#ECE7DE; --accent-soft:#2E1F18; --accent-ink:#D9825A;
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 14px 36px -20px rgba(0,0,0,.85);
 }
 *{box-sizing:border-box}
@@ -81,7 +82,9 @@ h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.06;font-weight:700;margin-to
 .board .menu span:nth-child(3) b{background:var(--p-pro)}
 .board .menu span:nth-child(4) b{background:var(--p-ene)}
 .board .foot{border-top:.3mm solid var(--p-line);width:100%;display:flex;justify-content:space-between;align-items:center;gap:2mm;color:var(--p-ink2)}
-.board .brand{font-family:var(--display);font-weight:700;letter-spacing:-.01em;color:var(--p-accent)}
+.board .brand{font-family:var(--display);font-weight:600;letter-spacing:-.012em;color:var(--p-accent);
+  display:inline-flex;align-items:center;gap:1.6mm}
+.brand svg{width:1.15em;height:1.15em;flex:none;color:var(--p-accent)}
 .board .tag{font-family:var(--mono);color:var(--p-ink2);letter-spacing:.04em}
 
 /* autocollant 100 x 100 */
@@ -216,6 +219,16 @@ function planche(cls, html){
   d.innerHTML='<div class="rule"><i></i><i></i><i></i><i></i></div><div class="body">'+html+'</div>';
   return d;
 }
+/* L'arc et sa cle de voute, le meme dessin que site/logo.svg. Sur le
+   papier il s'imprime en une seule encre : la cle prend la couleur du
+   reste, et c'est la forme qu'on reconnait, pas la bichromie. */
+var MARQUE='<svg viewBox="0 0 100 100" aria-hidden="true">'
+  +'<g fill="currentColor">'
+  +'<path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54 L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>'
+  +'<path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54 L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>'
+  +'<path d="M38.26 17.86 L61.74 17.86 L54.79 39.26 A15.5 15.5 0 0 0 45.21 39.26 Z"/>'
+  +'</g></svg>';
+
 function rendre(){
   var res=E(document.getElementById("res").value.trim()||"Votre résidence");
   var tel=E(document.getElementById("tel").value.trim());
@@ -229,7 +242,7 @@ function rendre(){
         +'<h2>Scannez.<br>On s\'occupe<br>du reste.</h2>'
         +'<p class="sub">30 secondes, sans créer de compte.</p>'
         +'<div class="qbox">'+q+'</div>'+MENU
-        +'<div class="foot"><span class="brand">VD SERVICES</span><span class="tag">'+res+'</span></div>';
+        +'<div class="foot"><span class="brand">'+MARQUE+'VD Services</span><span class="tag">'+res+'</span></div>';
     }},
     {cap:"Affiche panneau · A5",cls:"a5",taille:520,html:function(q){
       return '<p class="kicker">'+res+'</p>'
@@ -237,14 +250,14 @@ function rendre(){
         +'<p class="sub">Scannez le code. Vous décrivez le problème en trente secondes, nous nous occupons de trouver la bonne entreprise et de suivre l\'intervention.</p>'
         +'<div class="qbox">'+q+'</div>'+MENU
         +'<p class="why">Fuite, panne, serrure bloquée, projet de travaux ou économies d\'énergie. Parties privatives comme parties communes. Entreprises assurées et vérifiées, devis gratuit.</p>'
-        +'<div class="foot"><span><span class="brand">VD SERVICES</span><br><span class="tag">'+SIGN+'</span></span><span class="tag">'+(tel||"")+'</span></div>';
+        +'<div class="foot"><span><span class="brand">'+MARQUE+'VD Services</span><br><span class="tag">'+SIGN+'</span></span><span class="tag">'+(tel||"")+'</span></div>';
     }},
     {cap:"Bandeau porte · 60 × 200 mm",cls:"strip",taille:300,html:function(q){
       return '<p class="kicker">'+res+'</p>'
         +'<h2>Un souci ?<br>Scannez.</h2>'
         +'<p class="sub">30 secondes</p>'
         +'<div class="qbox">'+q+'</div>'+MENU
-        +'<div class="foot"><span class="brand">VD SERVICES</span><span class="tag">'+SIGN.replace(/ · /g,"<br>")+'</span>'
+        +'<div class="foot"><span class="brand">'+MARQUE+'VD Services</span><span class="tag">'+SIGN.replace(/ · /g,"<br>")+'</span>'
         +(tel?'<span class="tag">'+tel+'</span>':"")+'</div>';
     }},
     {cap:"Carte de poche · 85 × 55 mm",cls:"card",taille:240,html:function(q){
@@ -252,7 +265,7 @@ function rendre(){
         +'<h2>Un souci ?<br>Scannez.</h2>'
         +'<p class="sub">Urgence, dépannage, travaux.<br>Réponse le jour même.</p>'
         +MENU
-        +'<p class="brand">VD SERVICES</p>'
+        +'<p class="brand">'+MARQUE+'VD Services</p>'
         +'<p class="sub">'+(tel||SIGN)+'</p></div>'
         +'<div class="qbox">'+q+'</div>';
     }}

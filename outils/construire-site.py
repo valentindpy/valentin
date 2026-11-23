@@ -12,6 +12,36 @@ modifiez pas \u00e0 la main, changez docs/ puis relancez ce script.
 """
 import io, os, re
 
+# ---------------------------------------------------------------------
+#  Les espaces de la typographie française
+#  « un établissement public ? » : avec une espace ordinaire, le
+#  navigateur a le droit de renvoyer le point d'interrogation à la ligne
+#  suivante. Il le fait, et cela se voit.
+#
+#  La règle : espace fine insécable avant ? ! ; et dans les guillemets,
+#  espace insécable avant les deux-points. On ne la pose qu'à la
+#  construction — la source reste tapable au clavier ordinaire.
+# ---------------------------------------------------------------------
+FINE = u"\u202F"      # espace fine insécable
+INSEC = u"\u00A0"     # espace insécable
+
+def ponctuer(texte):
+    texte = re.sub(r"[ ]+([?!;»])", FINE + r"\1", texte)
+    texte = re.sub(r"(«)[ ]+", r"\1" + FINE, texte)
+    texte = re.sub(r"[ ]+:", INSEC + ":", texte)
+    return texte
+
+def typographier(html):
+    """N'agit que sur le texte visible : ni le script, ni le style, ni
+    le contenu des attributs, où une espace fine casserait un sélecteur
+    ou une adresse."""
+    morceaux = re.split(r"(<script\b.*?</script>|<style\b.*?</style>)", html, flags=re.S)
+    for i, m in enumerate(morceaux):
+        if m.startswith("<script") or m.startswith("<style"):
+            continue
+        morceaux[i] = re.sub(r">([^<]+)<", lambda k: ">" + ponctuer(k.group(1)) + "<", m)
+    return "".join(morceaux)
+
 src = io.open("docs/parcours-qr.html", encoding="utf-8").read().split("\n")
 
 
@@ -83,7 +113,7 @@ page = u'''<!doctype html>
 <title>Signaler un besoin — VD Services</title>
 <meta name="description" content="Décrivez votre besoin en moins d'une minute. VD Services trouve l'entreprise, compare les devis et suit les travaux. Secteur Fréjus – Nice.">
 <meta name="robots" content="index,follow">
-<meta name="theme-color" content="#2E4E77">
+<meta name="theme-color" content="#17222E">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <meta property="og:title" content="Signaler un besoin — VD Services">
@@ -98,9 +128,9 @@ page = u'''<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="VD Services">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="preload" href="/polices/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/polices/source-serif-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/polices/polices.css">
 <style>
 __THEME__
 *{box-sizing:border-box}
@@ -603,7 +633,7 @@ i = acc.index("</style>") + len("</style>")
 tete, corps = acc[:i], acc[i:]
 head = (u'<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
         u'<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
-        u'<meta name="theme-color" content="#2E4E77">\n'
+        u'<meta name="theme-color" content="#17222E">\n'
         u'<link rel="icon" href="/favicon.svg" type="image/svg+xml">\n<link rel="icon" href="/favicon.ico" sizes="32x32">\n'
         u'<meta name="description" content="VD Services, Mandelieu-la-Napoule. Vous d\u00e9crivez le probl\u00e8me, '
         u'nous choisissons l\u2019entreprise, nous n\u00e9gocions les devis et nous suivons les travaux. '
@@ -613,7 +643,7 @@ head = (u'<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
         u'<meta property="og:description" content="Courtier en travaux sur la C\u00f4te d\u2019Azur, de Fr\u00e9jus \u00e0 Nice.">\n'
         u'<meta property="og:type" content="website">\n'
         + tete + u'\n</head>\n<body>')
-acc = head + corps + u"\n</body>\n</html>\n"
+acc = typographier(head + corps) + u"\n</body>\n</html>\n"
 io.open("site/index.html", "w", encoding="utf-8").write(acc)
 print("site/index.html             ", len(acc), "car.")
 print("site/formulaire/index.html  ", len(page), "car.")

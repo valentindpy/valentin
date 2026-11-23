@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2E4E77">
+<meta name="theme-color" content="#17222E">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <meta name="description" content="VD Services, Mandelieu-la-Napoule. Vous décrivez le problème, nous choisissons l’entreprise, nous négocions les devis et nous suivons les travaux. Secteur Fréjus – Nice.">
@@ -12,330 +12,344 @@
 <meta property="og:description" content="Courtier en travaux sur la Côte d’Azur, de Fréjus à Nice.">
 <meta property="og:type" content="website">
 <title>VD Services</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<link rel="preload" href="/polices/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/polices/source-serif-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/polices/polices.css">
 <style>
 /* =====================================================================
    VD SERVICES — page d'accueil
 
-   Trois intentions, et chaque règle ci-dessous sert l'une des trois.
+   L'IDENTITÉ
+   La marque est un arc et sa clé de voûte : la pierre qu'on pose en
+   dernier, qui ne porte rien elle-même, et sans laquelle tout le reste
+   tombe. C'est la place de VD Services entre un client et des artisans,
+   et c'est aussi la forme de toutes les portes de vieux village d'ici.
+   Elle est construite, pas dessinée : deux cercles et deux angles.
 
-   Lisible : une seule échelle de tailles, un seul rythme vertical, un
-   corps de texte à 17 px, et plus rien d'important en dessous de 15.
-   Une page de service se lit debout, dans un hall, sur un téléphone.
+   Deux couleurs, et une seule chaude. L'encre — un noir bleuté, celui
+   d'un plan — porte le texte, les boutons et la marque. La terre cuite
+   ne sert qu'à une chose à la fois : la clé de voûte, un filet, un
+   chiffre. Les quatre couleurs des parcours restent, mais réduites à un
+   repère de deux pixels : elles codent, elles ne décorent pas.
 
-   Professionnel : une couleur d'accent, et les quatre couleurs des
-   parcours réduites à un repère. Le bandeau du haut reste : c'est la
-   même signature que sur les autocollants de hall et dans la
-   plateforme, et une marque qui se ressemble d'un support à l'autre
-   vaut mieux qu'une page sage de plus.
+   Deux fontes, servies par le domaine. Source Serif pour ce qui se
+   lit de loin, Inter pour ce qui se lit de près. L'écart entre les deux
+   fait la hiérarchie ; aucune ombre, aucun dégradé n'y participe.
 
-   Fluide : le défilement est doux, les ancres s'arrêtent sous l'en-tête
-   au lieu de passer dessous, ce qu'on touche répond en 150 ms, et le
-   menu existe aussi sur téléphone — il n'existait pas.
+   LE RYTHME
+   Une grille de douze colonnes, et des blocs qui n'y occupent pas tous
+   la même place : le texte à sept colonnes, une carte à cinq, une bande
+   pleine largeur. C'est ce décalage qui distingue une page composée
+   d'une page empilée.
    ===================================================================== */
 
 :root{
-  /* --- couleurs ---
-     Les gris de la premiere version etaient bleutes : #EBEDF1, c'est la
-     couleur d'un ecran eteint. Le fond devient du papier, le noir du
-     texte se rechauffe, et une terre cuite accompagne le bleu marine.
-     Le marine reste : c'est la couleur des autocollants de hall et de
-     la plateforme, et c'est elle qui porte la confiance. La terre cuite
-     ne sert jamais a un bouton principal, seulement a rechauffer — un
-     trait, une etoile, un liseret. */
-  --ground:#F7F4EE; --surface:#FFFFFF; --surface-2:#F2EDE4;
-  --ink:#1E1A16; --ink-2:#4C453C; --ink-3:#7B7268;
-  --line:#E2DACD; --line-strong:#C5B9A7;
-  --accent:#2E4E77; --accent-2:#3A6396; --accent-soft:#E3E9F2; --accent-ink:#28456B;
-  --chaud:#B0532C; --chaud-soft:#F6E5D9;
-  --urg:#B8392B; --dep:#8A5F06; --pro:#1F6248; --ene:#1B6680;
-  --sur-accent:#FFFFFF;          /* ce qui s'ecrit sur la couleur d'accent */
-  --shadow-1:0 1px 2px rgba(60,44,28,.06);
-  --shadow-2:0 2px 4px rgba(60,44,28,.05), 0 18px 44px -26px rgba(60,44,28,.34);
-  /* --- rythme : une seule suite, partout --- */
-  --e1:8px; --e2:12px; --e3:18px; --e4:28px; --e5:44px; --e6:72px;
-  --r:14px;                      /* le seul rayon, arrondi plutot que coupant */
-  --t:150ms cubic-bezier(.2,.6,.3,1);
-  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
-  --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  /* --- l'encre et le papier --- */
+  --papier:#F5F2EC; --papier-2:#EDE8DF; --blanc:#FFFFFF;
+  --encre:#17222E; --encre-2:#44505F; --encre-3:#6F7A88;
+  --ligne:#DED7CA; --ligne-forte:#BDB2A1;
+  /* --- la clé de voûte, et rien d'autre --- */
+  --terre:#B4552E; --terre-2:#9A4524; --terre-claire:#F3E3D8;
+  /* --- les quatre parcours : un repère, pas un décor --- */
+  --urg:#A8362A; --dep:#8A6210; --pro:#2C6A4F; --ene:#1D6477;
+  --sur-encre:#F5F2EC;
+  --ombre-1:0 1px 2px rgba(23,34,46,.04);
+  --ombre-2:0 1px 2px rgba(23,34,46,.04), 0 16px 40px -28px rgba(23,34,46,.45);
+  /* --- la suite, partout la même --- */
+  --e1:8px; --e2:14px; --e3:22px; --e4:34px; --e5:52px; --e6:80px;
+  --r:4px;                       /* presque droit : la pierre n'est pas ronde */
+  --t:180ms cubic-bezier(.22,.61,.36,1);
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Inter",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --marque-cle:var(--terre);
 }
-
-
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --ground:#15110D; --surface:#1E1914; --surface-2:#262019;
-  --ink:#F2EDE5; --ink-2:#C3B9AC; --ink-3:#93897C;
-  --line:#322A22; --line-strong:#4A4036;
-  --accent:#8CB2DC; --accent-2:#A8C7E8; --accent-soft:#1E2B3A; --accent-ink:#9CBEE4;
-  --chaud:#E08B5E; --chaud-soft:#38241A;
-  --urg:#EE8F84; --dep:#DCB25C; --pro:#78C8A0; --ene:#74BCD4;
-  --sur-accent:#15110D;
-  --shadow-1:0 1px 2px rgba(0,0,0,.5);
-  --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 20px 48px -28px rgba(0,0,0,.95);
+  --papier:#12171D; --papier-2:#191F27; --blanc:#1B222B;
+  --encre:#ECE7DE; --encre-2:#B6BDC6; --encre-3:#848E99;
+  --ligne:#252D37; --ligne-forte:#3B4552;
+  --terre:#D9825A; --terre-2:#E79A74; --terre-claire:#2E1F18;
+  --urg:#E08B80; --dep:#D4AC5E; --pro:#74C09B; --ene:#6FB4CB;
+  --sur-encre:#12171D;
+  --ombre-1:0 1px 2px rgba(0,0,0,.5);
+  --ombre-2:0 1px 2px rgba(0,0,0,.45), 0 18px 44px -30px rgba(0,0,0,.95);
 }}
 :root[data-theme="dark"]{
-  --ground:#15110D; --surface:#1E1914; --surface-2:#262019;
-  --ink:#F2EDE5; --ink-2:#C3B9AC; --ink-3:#93897C;
-  --line:#322A22; --line-strong:#4A4036;
-  --accent:#8CB2DC; --accent-2:#A8C7E8; --accent-soft:#1E2B3A; --accent-ink:#9CBEE4;
-  --chaud:#E08B5E; --chaud-soft:#38241A;
-  --urg:#EE8F84; --dep:#DCB25C; --pro:#78C8A0; --ene:#74BCD4;
-  --sur-accent:#15110D;
-  --shadow-1:0 1px 2px rgba(0,0,0,.5);
-  --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 20px 48px -28px rgba(0,0,0,.95);
+  --papier:#12171D; --papier-2:#191F27; --blanc:#1B222B;
+  --encre:#ECE7DE; --encre-2:#B6BDC6; --encre-3:#848E99;
+  --ligne:#252D37; --ligne-forte:#3B4552;
+  --terre:#D9825A; --terre-2:#E79A74; --terre-claire:#2E1F18;
+  --urg:#E08B80; --dep:#D4AC5E; --pro:#74C09B; --ene:#6FB4CB;
+  --sur-encre:#12171D;
+  --ombre-1:0 1px 2px rgba(0,0,0,.5);
+  --ombre-2:0 1px 2px rgba(0,0,0,.45), 0 18px 44px -30px rgba(0,0,0,.95);
 }
 
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);
-  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance;font-weight:600}
-h1{font-size:clamp(2.3rem,6vw,3.8rem);line-height:1.04;letter-spacing:-.035em;font-weight:800}
-h2{font-size:clamp(1.55rem,3.2vw,2.1rem);line-height:1.15;font-weight:700}
-h3{font-size:1.1rem;line-height:1.3}
-p{margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--papier);color:var(--encre);font-family:var(--sans);
+  font-size:17.5px;line-height:1.6;font-feature-settings:"cv05","ss01";
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{margin:0;font-family:var(--serif);font-weight:600;letter-spacing:-.015em;text-wrap:balance}
+h1{font-size:clamp(2.7rem,6.4vw,4.6rem);line-height:1.02;letter-spacing:-.028em}
+h2{font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.1}
+h3{font-size:1.2rem;line-height:1.3;letter-spacing:-.01em}
+p{margin:0;text-wrap:pretty}
 a{color:inherit;transition:color var(--t)}
 strong{font-weight:600}
 button,input,select,textarea{font:inherit;color:inherit}
-*:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *{animation:none!important;transition:none!important}
-}
+*:focus-visible{outline:2px solid var(--terre);outline-offset:3px;border-radius:2px}
+::selection{background:var(--terre-claire);color:var(--encre)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
 
-.wrap{max-width:1120px;margin-inline:auto;padding-inline:clamp(16px,4vw,32px)}
-.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
-.lede{font-size:clamp(1.08rem,2.2vw,1.28rem);line-height:1.5;color:var(--ink-2);max-width:54ch}
+/* ----- la grille ---------------------------------------------------- */
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:clamp(18px,4.5vw,40px)}
+.grille{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--e4)}
+@media (max-width:900px){.grille{grid-template-columns:1fr}}
+.sept{grid-column:span 7} .cinq{grid-column:span 5}
+.six{grid-column:span 6} .huit{grid-column:span 8} .quatre{grid-column:span 4}
+@media (max-width:900px){.sept,.cinq,.six,.huit,.quatre{grid-column:1/-1}}
 
-/* ----- en-tête ----------------------------------------------------- */
-.entete{position:sticky;top:0;z-index:40;background:var(--ground);border-bottom:1px solid var(--line)}
+.oeil{font-size:.76rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--encre-3);display:inline-flex;align-items:center;gap:11px}
+.oeil::before{content:"";width:22px;height:2px;background:var(--terre);flex:none}
+.chapeau{font-size:clamp(1.1rem,1.9vw,1.3rem);line-height:1.5;color:var(--encre-2);max-width:52ch}
+.menu-note{font-size:.95rem;color:var(--encre-3);line-height:1.55}
+.nombre{font-variant-numeric:tabular-nums}
+
+/* ----- en-tête -------------------------------------------------------- */
+.entete{position:sticky;top:0;z-index:40;background:var(--papier);border-bottom:1px solid var(--ligne)}
 @supports (backdrop-filter:blur(1px)) and (background:color-mix(in srgb,red 50%,transparent)){
-  .entete{background:color-mix(in srgb,var(--ground) 86%,transparent);backdrop-filter:saturate(1.4) blur(10px)}
+  .entete{background:color-mix(in srgb,var(--papier) 84%,transparent);backdrop-filter:saturate(1.3) blur(12px)}
 }
-/* La bande des quatre parcours : la meme que sur les autocollants de
-   hall et dans la plateforme. Trois pixels suffisent a la reconnaitre. */
-.bande{height:3px;display:flex}
-.bande i{flex:1}
-.bande i:nth-child(1){background:var(--urg)} .bande i:nth-child(2){background:var(--dep)}
-.bande i:nth-child(3){background:var(--pro)} .bande i:nth-child(4){background:var(--ene)}
-.nav{display:flex;align-items:center;gap:var(--e3);padding-block:14px}
-.marque{display:flex;flex-direction:column;margin-right:auto;text-decoration:none;min-width:0}
-.marque b{font-family:var(--display);font-weight:800;font-size:1.2rem;letter-spacing:-.03em;white-space:nowrap}
-.marque span{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-top:3px}
-.marque:hover b{color:var(--accent-ink)}
-.liens{display:flex;gap:var(--e4);align-items:center}
-.liens a{font-size:.97rem;color:var(--ink-2);text-decoration:none;position:relative;padding-block:4px}
-.liens a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--accent);
+.nav{display:flex;align-items:center;gap:var(--e3);padding-block:15px}
+.marque{display:flex;align-items:center;gap:12px;margin-right:auto;text-decoration:none;min-width:0}
+.marque svg{width:30px;height:30px;flex:none;color:var(--encre);transition:color var(--t)}
+.marque b{font-family:var(--serif);font-weight:600;font-size:1.22rem;letter-spacing:-.015em;white-space:nowrap}
+.marque i{display:block;font-style:normal;font-size:.62rem;letter-spacing:.17em;text-transform:uppercase;
+  color:var(--encre-3);margin-top:2px;white-space:nowrap}
+@media (max-width:1180px){.marque i{display:none}}
+.marque:hover svg{color:var(--terre)}
+.liens{display:flex;gap:var(--e3);align-items:center}
+.liens a{font-size:.97rem;color:var(--encre-2);text-decoration:none;position:relative;padding-block:5px;
+  white-space:nowrap}
+.liens a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--terre);
   transition:right var(--t)}
-.liens a:hover{color:var(--ink)}
-.liens a:hover::after{right:0}
-/* Le menu du telephone, qui n'existait pas : les liens disparaissaient
-   sous 760 px et il ne restait aucun moyen de naviguer. Sans script. */
+.liens a:hover{color:var(--encre)} .liens a:hover::after{right:0}
 .menu{display:none}
-.menu summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;
-  padding:9px 13px;border:1px solid var(--line-strong);border-radius:var(--r);font-size:.92rem}
+.menu summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:9px;
+  padding:10px 14px;border:1px solid var(--ligne-forte);border-radius:var(--r);font-size:.93rem}
 .menu summary::-webkit-details-marker{display:none}
 .menu summary i{width:16px;height:1.5px;background:currentColor;position:relative;display:block;flex:none}
 .menu summary i::before,.menu summary i::after{content:"";position:absolute;left:0;width:16px;height:1.5px;background:currentColor}
 .menu summary i::before{top:-5px} .menu summary i::after{top:5px}
 .menu[open] .panneau{display:flex}
 .panneau{display:none;flex-direction:column;position:absolute;left:0;right:0;top:100%;
-  background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow-2);padding:var(--e2)}
-.panneau a{padding:13px var(--e2);text-decoration:none;color:var(--ink);border-radius:8px;font-size:1.02rem}
-.panneau a:hover{background:var(--surface-2)}
-/* `.panneau a` est plus specifique que `.btn` : sans cette ligne, le
-   bouton du menu heritait de la couleur du texte et devenait illisible. */
-.panneau a.btn{color:var(--sur-accent)}
-.panneau a.btn:hover{background:var(--accent-2)}
-@media (max-width:820px){
-  .liens{display:none}
-  .menu{display:block}
-  .entete .wrap{position:relative}
-  #cta-haut{display:none}            /* il revient en tete du menu */
-  .panneau .btn{margin:var(--e1) 0 var(--e2)}
-}
-@media (max-width:560px){
-  .marque span{display:none}         /* la baseline tenait sur trois lignes */
-  .nav{padding-block:11px}
+  background:var(--blanc);border-bottom:1px solid var(--ligne);box-shadow:var(--ombre-2);padding:var(--e2)}
+.panneau a{padding:14px var(--e2);text-decoration:none;color:var(--encre);font-size:1.02rem}
+.panneau a:hover{background:var(--papier-2)}
+.panneau a.btn{color:var(--sur-encre);margin:var(--e1) 0 var(--e2)}
+.panneau a.btn:hover{background:var(--terre)}
+@media (max-width:900px){
+  .liens{display:none} .menu{display:block} .entete .wrap{position:relative}
+  #cta-haut{display:none} .marque i{display:none}
 }
 
-/* ----- boutons ----------------------------------------------------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--e1);
-  background:var(--accent);color:var(--sur-accent);border:1px solid transparent;border-radius:var(--r);
-  padding:14px 24px;min-height:48px;font-family:var(--display);font-weight:600;font-size:1rem;
-  cursor:pointer;text-decoration:none;text-align:center;
+/* ----- boutons --------------------------------------------------------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--encre);color:var(--sur-encre);border:1px solid transparent;border-radius:var(--r);
+  padding:15px 26px;min-height:50px;font-weight:500;font-size:1rem;cursor:pointer;
+  text-decoration:none;text-align:center;white-space:nowrap;
   transition:background var(--t),transform var(--t),box-shadow var(--t)}
-.btn:hover{background:var(--accent-2);box-shadow:var(--shadow-2)}
+.btn:hover{background:var(--terre);box-shadow:var(--ombre-2)}
 .btn:active{transform:translateY(1px);box-shadow:none}
-.btn.sm{padding:10px 17px;min-height:42px;font-size:.93rem}
-.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
-.btn.ghost:hover{background:var(--surface);border-color:var(--ink-3)}
+.btn.sm{padding:11px 18px;min-height:42px;font-size:.93rem}
+.btn.vide{background:transparent;color:var(--encre);border-color:var(--ligne-forte)}
+.btn.vide:hover{background:var(--blanc);border-color:var(--encre);color:var(--encre);box-shadow:none}
+.btn .fleche{transition:transform var(--t)}
+.btn:hover .fleche{transform:translateX(3px)}
 
-/* ----- sections ---------------------------------------------------- */
-section{padding-block:var(--e6);scroll-margin-top:76px}
-section.pose{background:var(--surface);border-block:1px solid var(--line)}
-.stitre{max-width:62ch;margin-bottom:var(--e5);display:flex;flex-direction:column;gap:var(--e2)}
-/* Un trait de terre cuite avant chaque surtitre : trois fois rien, et
-   la page cesse d'etre une suite de blocs gris. */
-.stitre .eyebrow,.hero .eyebrow{display:inline-flex;align-items:center;gap:10px}
-.stitre .eyebrow::before,.hero .eyebrow::before{content:"";width:20px;height:2px;background:var(--chaud);flex:none}
+/* ----- sections --------------------------------------------------------- */
+section{padding-block:var(--e6);scroll-margin-top:78px}
+section.blanc{background:var(--blanc);border-block:1px solid var(--ligne)}
+.titre{max-width:60ch;display:flex;flex-direction:column;gap:var(--e2);margin-bottom:var(--e5)}
 
-/* ----- hero -------------------------------------------------------- */
-.hero{padding-block:var(--e6) var(--e5)}
-.hero .eyebrow{display:block;margin-bottom:var(--e3)}
-.hero .lede{margin-top:var(--e3)}
-.hero .cta{display:flex;flex-wrap:wrap;gap:var(--e2);margin-top:var(--e4)}
-.preuves{display:flex;flex-wrap:wrap;gap:var(--e2) var(--e4);margin-top:var(--e4);
-  font-size:.95rem;color:var(--ink-2);padding-top:var(--e4);border-top:1px solid var(--line)}
-.preuves span{display:inline-flex;align-items:center;gap:var(--e1)}
-.preuves svg{width:17px;height:17px;flex:none;color:var(--accent-ink)}
+/* ----- hero -------------------------------------------------------------- */
+.hero{padding-block:clamp(48px,7vw,90px) var(--e6)}
+.hero .grille{align-items:center}
+.hero h1{margin-top:var(--e3)}
+.hero .chapeau{margin-top:var(--e3)}
+.hero .actes{display:flex;flex-wrap:wrap;gap:var(--e2);margin-top:var(--e4)}
+.preuves{display:flex;flex-wrap:wrap;gap:var(--e2) var(--e4);margin-top:var(--e5);padding-top:var(--e3);
+  border-top:1px solid var(--ligne);font-size:.95rem;color:var(--encre-2)}
+.preuves span{display:inline-flex;align-items:center;gap:9px}
+.preuves svg{width:16px;height:16px;flex:none;color:var(--terre)}
 
-/* ----- les quatre besoins ------------------------------------------ */
-.besoins{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:var(--e2)}
-.besoin{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-  padding:var(--e4);display:flex;flex-direction:column;gap:var(--e1);text-decoration:none;
-  transition:border-color var(--t),box-shadow var(--t),transform var(--t)}
-.besoin:hover{border-color:var(--line-strong);box-shadow:var(--shadow-2);transform:translateY(-2px)}
-section.pose .besoin{background:var(--surface-2)}
-.besoin .q{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+/* ----- la carte du secteur ------------------------------------------------
+   Tracée depuis les coordonnées du littoral, les mêmes que la plateforme
+   emploie pour placer les copropriétés. Ce n'est pas une illustration
+   achetée : c'est la zone d'intervention, au bon endroit. */
+.carte{width:100%;height:auto;display:block}
+.carte .trait{fill:none;stroke:var(--encre);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.carte .ville{fill:var(--encre-3)}
+.carte .nom{font-family:var(--sans);font-size:11px;letter-spacing:.06em;fill:var(--encre-3);text-transform:uppercase}
+.carte .siege{fill:var(--terre)}
+.carte .siege-nom{fill:var(--terre);font-weight:600}
+.carte .halo{fill:var(--terre);opacity:.13}
+.carte figcaption{font-size:.84rem;color:var(--encre-3)}
+figure.carte-bloc{margin:0;display:flex;flex-direction:column;gap:var(--e2)}
+
+/* ----- les quatre besoins -------------------------------------------------- */
+.besoins{display:grid;grid-template-columns:repeat(auto-fit,minmax(246px,1fr));gap:0;
+  border-top:1px solid var(--ligne)}
+.besoin{padding:var(--e4) var(--e4) var(--e4) 0;border-bottom:1px solid var(--ligne);text-decoration:none;
+  display:flex;flex-direction:column;gap:var(--e1);position:relative;transition:background var(--t)}
+@media (min-width:760px){
+  .besoin{padding-inline:var(--e4);border-right:1px solid var(--ligne)}
+  .besoin:first-child{padding-left:0}
+  .besoin:last-child{border-right:0;padding-right:0}
+}
+.besoin:hover{background:var(--papier-2)}
+section.blanc .besoin:hover{background:var(--papier)}
+.besoin::before{content:"";position:absolute;left:0;top:-1px;width:0;height:2px;background:currentColor;
+  transition:width var(--t)}
+.besoin:hover::before{width:100%}
+.besoin.u{color:var(--urg)} .besoin.d{color:var(--dep)}
+.besoin.p{color:var(--pro)} .besoin.e{color:var(--ene)}
+.besoin .quand{font-size:.74rem;font-weight:500;letter-spacing:.13em;text-transform:uppercase}
+.besoin h3{color:var(--encre)}
+.besoin p{font-size:.97rem;color:var(--encre-2);margin-top:4px}
+.besoin .aller{margin-top:auto;padding-top:var(--e3);font-size:.95rem;font-weight:500;
   display:inline-flex;align-items:center;gap:7px}
-.besoin .q::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
-.besoin.u .q{color:var(--urg)} .besoin.d .q{color:var(--dep)}
-.besoin.p .q{color:var(--pro)} .besoin.e .q{color:var(--ene)}
-.besoin p{font-size:.97rem;color:var(--ink-2);margin-top:2px}
-.besoin .go{margin-top:auto;padding-top:var(--e3);font-family:var(--display);font-weight:600;
-  font-size:.95rem;color:var(--accent-ink);display:inline-flex;align-items:center;gap:6px}
-.besoin .go em{font-style:normal;transition:transform var(--t)}
-.besoin:hover .go em{transform:translateX(4px)}
+.besoin .aller em{font-style:normal;transition:transform var(--t)}
+.besoin:hover .aller em{transform:translateX(4px)}
 
-/* ----- la méthode, en quatre temps --------------------------------- */
-.etapes{list-style:none;margin:0;padding:0;display:grid;gap:var(--e4);
-  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));counter-reset:et}
-.etapes li{counter-increment:et;padding-top:var(--e3);border-top:2px solid var(--chaud-soft);position:relative}
-.etapes li::before{content:counter(et);font-family:var(--mono);font-size:.78rem;color:var(--chaud);
-  display:block;margin-bottom:var(--e1)}
-.etapes h3{font-size:1.05rem}
-.etapes p{font-size:.97rem;color:var(--ink-2);margin-top:6px}
+/* ----- la méthode ---------------------------------------------------------- */
+.etapes{list-style:none;margin:0;padding:0;display:grid;gap:0;
+  grid-template-columns:repeat(auto-fit,minmax(222px,1fr));counter-reset:et}
+.etapes li{counter-increment:et;padding:var(--e3) var(--e4) var(--e4) 0;border-top:2px solid var(--encre)}
+@media (min-width:760px){.etapes li{padding-inline:var(--e4)}
+  .etapes li:first-child{padding-left:0} .etapes li:last-child{padding-right:0}}
+.etapes li::before{content:counter(et,decimal-leading-zero);font-family:var(--serif);font-size:.95rem;
+  color:var(--terre);display:block;margin-bottom:var(--e2);font-variant-numeric:tabular-nums}
+.etapes p{font-size:.97rem;color:var(--encre-2);margin-top:7px}
 
-/* ----- faits et métiers -------------------------------------------- */
-.faits{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--e4);
-  padding-block:var(--e4);border-block:1px solid var(--line);margin-bottom:var(--e5)}
-.faits dt{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.03em;
-  color:var(--chaud)}
-.faits dd{margin:4px 0 0;font-size:.95rem;color:var(--ink-2)}
-.metiers{display:flex;flex-wrap:wrap;gap:var(--e1)}
-.metiers li{list-style:none;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;
-  padding:7px 15px;font-size:.93rem;color:var(--ink-2)}
-section.pose .metiers li{background:var(--ground)}
+/* ----- la bande d'engagement ------------------------------------------------ */
+.bande{background:var(--encre);color:var(--sur-encre);position:relative;overflow:hidden}
+.bande .filigrane{position:absolute;right:-40px;top:50%;transform:translateY(-50%);
+  width:min(420px,42vw);height:auto;color:var(--sur-encre);opacity:.055;pointer-events:none}
+.bande .wrap{position:relative}   /* la section porte deja son souffle */
+.bande h2{max-width:18ch}
+.bande .chapeau{color:#C9D0D8}
+.bande .oeil{color:#9AA4AF}
+.bande .oeil::before{background:var(--terre-2)}
+.faits{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--e4);
+  margin-top:var(--e5);padding-top:var(--e4);border-top:1px solid rgba(245,242,236,.16)}
+.faits dt{font-family:var(--serif);font-weight:600;font-size:clamp(1.8rem,3.4vw,2.5rem);
+  letter-spacing:-.02em;color:var(--terre-2);font-variant-numeric:tabular-nums}
+.faits dd{margin:6px 0 0;font-size:.95rem;color:#C9D0D8}
 
-/* ----- pour qui ---------------------------------------------------- */
-.publics{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:var(--e2)}
-.publics div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--e4)}
-section.pose .publics div{background:var(--surface-2)}
-.publics p{font-size:.97rem;color:var(--ink-2);margin-top:6px}
-
-/* ----- qui nous sommes --------------------------------------------- */
-.deuxcol{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,.75fr);gap:var(--e5);align-items:start}
-@media (max-width:860px){.deuxcol{grid-template-columns:1fr;gap:var(--e4)}}
-.texte p+p{margin-top:var(--e3)}
-.texte p{max-width:66ch}
-.encadre{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent);
-  border-radius:var(--r);padding:var(--e3) var(--e4);margin-top:var(--e4)}
-.encadre p{font-size:.97rem;color:var(--ink-2);margin-top:6px;max-width:none}
-.fiche{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--e4);
-  box-shadow:var(--shadow-1)}
-section.pose .fiche{background:var(--surface-2)}
+/* ----- métiers, identité ---------------------------------------------------- */
+.metiers{columns:2;column-gap:var(--e4);list-style:none;margin:var(--e3) 0 0;padding:0;font-size:.97rem}
+@media (max-width:520px){.metiers{columns:1}}
+.metiers li{break-inside:avoid;padding:9px 0;border-bottom:1px solid var(--ligne);color:var(--encre-2)}
+.texte p+p{margin-top:var(--e3)} .texte p{max-width:64ch;color:var(--encre-2)}
+.texte p strong{color:var(--encre)}
+.fiche{border-left:2px solid var(--encre);padding-left:var(--e3)}
 .fiche dl{display:grid;gap:var(--e3);margin:0}
-.fiche dt{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
-.fiche dd{margin:3px 0 0;font-size:.97rem}
+.fiche dt{font-size:.72rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--encre-3)}
+.fiche dd{margin:4px 0 0;font-size:.98rem}
+.note-bloc{border-left:2px solid var(--ligne-forte);padding-left:var(--e3);margin-top:var(--e4)}
+.note-bloc p{font-size:.97rem;color:var(--encre-2);margin-top:6px;max-width:none}
 
-/* ----- le mot du fondateur -----------------------------------------
-   Une page de service parle au nom d'une societe, c'est la regle qu'on
-   s'est donnee. Ce bloc est l'exception assumee : quelqu'un signe. Deux
-   phrases a la premiere personne valent dix adjectifs chaleureux. */
-.mot{background:var(--chaud-soft);border-radius:var(--r);padding:var(--e4);
+/* ----- le mot signé ---------------------------------------------------------- */
+.mot{background:var(--terre-claire);border-radius:var(--r);padding:var(--e4);margin-top:var(--e4);
   display:grid;grid-template-columns:auto 1fr;gap:var(--e3) var(--e4);align-items:start}
 @media (max-width:560px){.mot{grid-template-columns:1fr}}
-.mot .vignette{width:56px;height:56px;border-radius:50%;background:var(--chaud);color:#fff;
-  font-family:var(--display);font-weight:800;font-size:1.25rem;letter-spacing:-.02em;
-  display:flex;align-items:center;justify-content:center;flex:none}
-.mot p{font-size:1.05rem;line-height:1.55;color:var(--ink);max-width:58ch}
-.mot .signe{margin-top:var(--e2);font-size:.95rem;color:var(--ink-2)}
-.mot .signe b{font-family:var(--display);font-weight:600;color:var(--ink);display:block}
+.mot .vignette{width:52px;height:52px;flex:none;color:var(--terre)}
+.mot p{font-family:var(--serif);font-size:1.15rem;line-height:1.45;color:var(--encre);max-width:52ch}
+.mot .signe{font-family:var(--sans);font-size:.94rem;color:var(--encre-2);margin-top:var(--e2)}
+.mot .signe b{font-weight:600;color:var(--encre);display:block}
 
-/* ----- avis ---------------------------------------------------------
-   La section n'existe que s'il y a quelque chose a montrer : elle est
-   cachee tant que la liste est vide, plus bas dans le script. Un site
-   qui affiche « aucun avis pour le moment » fait pire que rien. */
-.avis{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:var(--e3)}
-.avis figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-  padding:var(--e4);display:flex;flex-direction:column;gap:var(--e2);box-shadow:var(--shadow-1)}
-section.pose .avis figure{background:var(--surface-2)}
-.avis .notes{color:var(--chaud);font-size:1rem;letter-spacing:.14em}
-.avis blockquote{margin:0;font-size:1.03rem;line-height:1.55;color:var(--ink)}
-.avis blockquote::before{content:"\201C";font-family:var(--display);font-weight:800;font-size:2.4rem;
-  color:var(--chaud);line-height:0;vertical-align:-.35em;margin-right:4px}
-.avis figcaption{margin-top:auto;padding-top:var(--e2);border-top:1px solid var(--line);
-  font-size:.93rem;color:var(--ink-3)}
-.avis figcaption b{font-weight:600;color:var(--ink-2)}
+/* ----- avis -------------------------------------------------------------------
+   La section n'existe que s'il y a quelque chose à montrer : cachée tant
+   que la liste est vide, plus bas dans le script. Un site qui affiche
+   « aucun avis pour le moment » fait pire que rien. */
+.avis{display:grid;grid-template-columns:repeat(auto-fit,minmax(282px,1fr));gap:var(--e4)}
+.avis figure{margin:0;display:flex;flex-direction:column;gap:var(--e2);
+  border-top:2px solid var(--ligne);padding-top:var(--e3)}
+.avis .notes{color:var(--terre);font-size:.95rem;letter-spacing:.16em}
+.avis blockquote{margin:0;font-family:var(--serif);font-size:1.12rem;line-height:1.45;color:var(--encre)}
+.avis figcaption{margin-top:auto;padding-top:var(--e2);font-size:.92rem;color:var(--encre-3)}
+.avis figcaption b{font-weight:600;color:var(--encre-2)}
 
-/* ----- partenaires -------------------------------------------------- */
-.colonnes{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:var(--e5)}
+/* ----- partenaires ------------------------------------------------------------ */
 .liste{list-style:none;margin:var(--e2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--e2)}
-.liste li{padding-left:26px;position:relative;font-size:.97rem;color:var(--ink-2)}
-.liste li svg{position:absolute;left:0;top:.3em;width:16px;height:16px;color:var(--accent-ink)}
+.liste li{padding-left:27px;position:relative;font-size:.97rem;color:var(--encre-2)}
+.liste li svg{position:absolute;left:0;top:.28em;width:16px;height:16px;color:var(--terre)}
 
-/* ----- formulaires --------------------------------------------------- */
+/* ----- formulaires -------------------------------------------------------------- */
 form{display:flex;flex-direction:column;gap:var(--e3);margin-top:var(--e4)}
 form .btn{align-self:flex-start}
 @media (max-width:620px){form .btn{align-self:stretch}}
-.champ{display:flex;flex-direction:column;gap:6px}
-.champ label{font-size:.92rem;font-weight:500;color:var(--ink-2)}
-.champ label i{font-style:normal;color:var(--ink-3);font-weight:400}
-.champ input,.champ select,.champ textarea{background:var(--surface);border:1px solid var(--line-strong);
-  border-radius:var(--r);padding:13px 15px;font-size:1rem;width:100%;min-height:50px;
+.champ{display:flex;flex-direction:column;gap:7px}
+.champ label{font-size:.92rem;font-weight:500;color:var(--encre-2)}
+.champ label i{font-style:normal;color:var(--encre-3);font-weight:400}
+.champ input,.champ select,.champ textarea{background:var(--blanc);border:1px solid var(--ligne-forte);
+  border-radius:var(--r);padding:14px 15px;font-size:1rem;width:100%;min-height:52px;
   transition:border-color var(--t),box-shadow var(--t)}
-.champ input:hover,.champ textarea:hover,.champ select:hover{border-color:var(--ink-3)}
-.champ input:focus,.champ textarea:focus,.champ select:focus{outline:none;border-color:var(--accent);
-  box-shadow:0 0 0 3px var(--accent-soft)}
-.champ textarea{min-height:104px;resize:vertical;line-height:1.5}
+.champ input:hover,.champ textarea:hover,.champ select:hover{border-color:var(--encre-3)}
+.champ input:focus,.champ textarea:focus,.champ select:focus{outline:none;border-color:var(--encre);
+  box-shadow:0 0 0 3px var(--terre-claire)}
+.champ textarea{min-height:108px;resize:vertical;line-height:1.5}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:var(--e3)}
 @media (max-width:620px){.duo{grid-template-columns:1fr}}
-.note{font-size:.92rem;color:var(--ink-3);line-height:1.55}
-.sortie{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent);
-  border-radius:var(--r);padding:var(--e3);font-size:.93rem;line-height:1.6;white-space:pre-wrap;
-  overflow-wrap:anywhere;display:none}
+.sortie{border-left:2px solid var(--terre);padding:var(--e2) var(--e3);font-size:.94rem;line-height:1.6;
+  white-space:pre-wrap;overflow-wrap:anywhere;display:none;background:var(--papier-2);border-radius:0 var(--r) var(--r) 0}
 .sortie.on{display:block}
-.bloc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-  padding:clamp(22px,3.5vw,40px);box-shadow:var(--shadow-1)}
-section.pose .bloc{background:var(--surface-2)}
+.encart{background:var(--blanc);border:1px solid var(--ligne);border-radius:var(--r);
+  padding:clamp(24px,3.5vw,42px)}
 
-/* ----- pied -------------------------------------------------------- */
+/* ----- pied ---------------------------------------------------------------------- */
 .acompleter{color:var(--urg);border-bottom:1px dotted var(--urg)}
-footer{background:var(--surface);border-top:1px solid var(--line);padding-block:var(--e5) var(--e6);
-  font-size:.92rem;color:var(--ink-3);line-height:1.6}
+footer{background:var(--blanc);border-top:1px solid var(--ligne);padding-block:var(--e5) var(--e6);
+  font-size:.92rem;color:var(--encre-3);line-height:1.6}
 footer .fl{display:flex;flex-wrap:wrap;gap:var(--e2) var(--e4);margin-bottom:var(--e4);
-  padding-bottom:var(--e3);border-bottom:1px solid var(--line)}
-footer a{text-decoration:none;color:var(--ink-2)}
-footer a:hover{color:var(--ink)}
+  padding-bottom:var(--e3);border-bottom:1px solid var(--ligne);align-items:center}
+footer .fl svg{width:22px;height:22px;color:var(--encre)}
+footer a{text-decoration:none;color:var(--encre-2)}
+footer a:hover{color:var(--encre)}
 /* L'entree de la plateforme : presente, sans peser autant que les
    rubriques publiques. Elle ne s'adresse pas au meme lecteur. */
-footer .fl .interne{margin-left:auto;color:var(--ink-3)}
+footer .fl .interne{margin-left:auto;color:var(--encre-3)}
 @media(max-width:620px){footer .fl .interne{margin-left:0}}
 footer p+p{margin-top:var(--e2)}
+
+/* ----- l'apparition ---------------------------------------------------------------
+   Six pixels et deux dixièmes de seconde. Une page sérieuse ne fait pas
+   voler ses blocs ; elle les pose. */
+.monte{opacity:0;transform:translateY(7px)}
+.monte.vu{opacity:1;transform:none;transition:opacity 620ms ease,transform 620ms cubic-bezier(.22,.61,.36,1)}
+@media (prefers-reduced-motion:reduce){.monte{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 
 <header class="entete">
-  <div class="bande"><i></i><i></i><i></i><i></i></div>
   <div class="wrap nav">
-    <a class="marque" href="/" aria-label="VD Services, retour à l’accueil"><b>VD SERVICES</b><span>Consultation · Pilotage · Coordination</span></a>
+    <a class="marque" href="/" aria-label="VD Services, retour à l’accueil">
+      <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+        <g fill="currentColor">
+          <path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54 L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>
+          <path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54 L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>
+        </g>
+        <path d="M38.26 17.86 L61.74 17.86 L54.79 39.26 A15.5 15.5 0 0 0 45.21 39.26 Z" fill="var(--marque-cle)"/>
+      </svg>
+      <span><b>VD Services</b><i>Consultation · Pilotage · Coordination</i></span>
+    </a>
     <nav class="liens">
       <a href="#besoins">Vos besoins</a>
-      <a href="#methode">Notre méthode</a>
+      <a href="#methode">La méthode</a>
+      <a href="#maison">Qui nous sommes</a>
       <a href="#partenaires">Entreprises</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -345,8 +359,8 @@ footer p+p{margin-top:var(--e2)}
       <nav class="panneau">
         <a class="btn" id="cta-menu" href="#besoins">Déclarer un besoin</a>
         <a href="#besoins">Vos besoins</a>
-        <a href="#methode">Notre méthode</a>
-        <a href="#pour-qui">Pour qui</a>
+        <a href="#methode">La méthode</a>
+        <a href="#maison">Qui nous sommes</a>
         <a href="#partenaires">Entreprises</a>
         <a href="#contact">Contact</a>
       </nav>
@@ -356,79 +370,99 @@ footer p+p{margin-top:var(--e2)}
 
 <main>
 
-  <section class="hero wrap">
-    <span class="eyebrow">Courtier en travaux · de Fréjus à Nice</span>
-    <h1>Un souci ? On s'en occupe.</h1>
-    <p class="lede">Vous décrivez le problème en moins d'une minute. Nous choisissons l'entreprise
-      dans notre réseau local, nous comparons les devis, et nous suivons les travaux jusqu'à la
-      réception. Vous ne nous payez rien.</p>
-    <div class="cta">
-      <a class="btn" id="cta-form" href="#besoins">Déclarer un besoin</a>
-      <a class="btn ghost" href="#partenaires">Je suis une entreprise</a>
-    </div>
-    <div class="preuves">
-      <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 2.5l6 2.5v5c0 3.4-2.4 6.3-6 7.5-3.6-1.2-6-4.1-6-7.5V5z"/><path d="M7.4 10l1.9 1.9 3.5-3.6"/></svg>Entreprises assurées et vérifiées</span>
-      <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3.5 5.5h13v11h-13z"/><path d="M6.5 9h7M6.5 12.5h4"/><path d="M6.5 3.5v3M13.5 3.5v3"/></svg>Devis gratuit, sans engagement</span>
-      <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 6v4.3l3 1.8"/></svg>Réponse le jour même</span>
+  <section class="hero">
+    <div class="wrap grille">
+      <div class="sept">
+        <span class="oeil">Courtier en travaux · de Fréjus à Nice</span>
+        <h1>Un souci ? On s’en occupe.</h1>
+        <p class="chapeau">Vous décrivez le problème en moins d’une minute. Nous choisissons
+          l’entreprise dans notre réseau local, nous comparons les devis, et nous suivons les
+          travaux jusqu’à la réception. Vous ne nous payez rien.</p>
+        <div class="actes">
+          <a class="btn" id="cta-form" href="#besoins">Déclarer un besoin <span class="fleche" aria-hidden="true">→</span></a>
+          <a class="btn vide" href="#partenaires">Je suis une entreprise</a>
+        </div>
+        <div class="preuves">
+          <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M10 2.5l6 2.5v5c0 3.4-2.4 6.3-6 7.5-3.6-1.2-6-4.1-6-7.5V5z"/><path d="M7.4 10l1.9 1.9 3.5-3.6"/></svg>Entreprises assurées et vérifiées</span>
+          <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3.5 5.5h13v11h-13z"/><path d="M6.5 9h7M6.5 12.5h4"/><path d="M6.5 3.5v3M13.5 3.5v3"/></svg>Devis gratuit, sans engagement</span>
+          <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 6v4.3l3 1.8"/></svg>Réponse le jour même</span>
+        </div>
+      </div>
+
+      <figure class="cinq carte-bloc monte">
+        <svg class="carte" viewBox="0 0 620 420" role="img" aria-label="Le secteur couvert, de Fréjus à Nice">
+          <path class="trait" d="M16.3 415 L65.3 407 L99.5 382 L118.3 367 L137.1 376 L160.7 380 L186 393 L208 382 L218.6 368 L236.6 353 L252.9 330 L267.6 305 L277.4 288 L280.6 272 L293.7 258 L322.2 255 L341 252 L357.3 258 L372 266 L383.4 244 L399.7 235 L414.4 234 L425.8 244 L430.7 259 L436.4 248 L434 222 L430.7 206 L432.4 188 L440.5 168 L452.8 148 L471.5 140 L493.6 137 L518 122 L542.5 109 L562.9 105 L579.2 100 L603.7 94"/>
+          <circle class="halo" cx="275.7" cy="254" r="30"/>
+          <circle class="ville" cx="111.8" cy="367" r="3.2"/><text class="nom" x="111.8" y="356" text-anchor="middle">Fréjus</text>
+          <circle class="ville" cx="265.1" cy="141" r="3.2"/><text class="nom" x="265.1" y="130" text-anchor="middle">Grasse</text>
+          <circle class="siege" cx="275.7" cy="254" r="5"/><text class="nom siege-nom" x="275.7" y="275" text-anchor="middle">Mandelieu</text>
+          <circle class="ville" cx="336.9" cy="249" r="3.2"/><text class="nom" x="336.9" y="238" text-anchor="middle">Cannes</text>
+          <circle class="ville" cx="428.3" cy="219" r="3.2"/><text class="nom" x="439" y="214" text-anchor="start">Antibes</text>
+          <circle class="ville" cx="417.7" cy="78" r="3.2"/><text class="nom" x="417.7" y="67" text-anchor="middle">Vence</text>
+          <circle class="ville" cx="544.9" cy="99" r="3.2"/><text class="nom" x="544.9" y="88" text-anchor="middle">Nice</text>
+        </svg>
+        <figcaption>Le secteur, tracé au trait de côte : de Fréjus à Nice, arrière-pays inclus.
+          Le siège est à Mandelieu-la-Napoule.</figcaption>
+      </figure>
     </div>
   </section>
 
-  <section id="besoins" class="pose">
+  <section id="besoins" class="blanc">
     <div class="wrap">
-      <div class="stitre">
-        <span class="eyebrow">Vos besoins</span>
+      <div class="titre monte">
+        <span class="oeil">Vos besoins</span>
         <h2>Par quoi commencer</h2>
-        <p class="lede">Choisissez la situation qui ressemble à la vôtre. Le formulaire s'adapte et
-          ne demande jamais plus que nécessaire.</p>
+        <p class="chapeau">Choisissez la situation qui ressemble à la vôtre. Le formulaire s’adapte
+          et ne demande jamais plus que nécessaire.</p>
       </div>
-      <div class="besoins">
+      <div class="besoins monte">
         <a class="besoin u" data-form="urgence">
-          <span class="q">Tout de suite</span>
+          <span class="quand">Tout de suite</span>
           <h3>Urgence</h3>
-          <p>Fuite qui coule, plus d'électricité, porte bloquée, dégât en cours. Vous êtes mis en relation directe avec l'entreprise d'astreinte la plus proche.</p>
-          <span class="go">Appeler maintenant <em>→</em></span>
+          <p>Fuite qui coule, plus d’électricité, porte bloquée, dégât en cours. Vous êtes mis en relation directe avec l’entreprise d’astreinte la plus proche.</p>
+          <span class="aller">Appeler maintenant <em aria-hidden="true">→</em></span>
         </a>
         <a class="besoin d" data-form="depannage">
-          <span class="q">Sous 72 heures</span>
+          <span class="quand">Sous 72 heures</span>
           <h3>Dépannage</h3>
           <p>Quelque chose fonctionne mal, et cela peut attendre demain. Nous vous rappelons le jour même pour caler le passage.</p>
-          <span class="go">Décrire la panne <em>→</em></span>
+          <span class="aller">Décrire la panne <em aria-hidden="true">→</em></span>
         </a>
         <a class="besoin p" data-form="projet">
-          <span class="q">Devis comparés</span>
+          <span class="quand">Devis comparés</span>
           <h3>Projet de travaux</h3>
           <p>Rénovation, salle de bains, cuisine, ravalement, parties communes. Plusieurs entreprises chiffrent sur le même descriptif.</p>
-          <span class="go">Décrire le projet <em>→</em></span>
+          <span class="aller">Décrire le projet <em aria-hidden="true">→</em></span>
         </a>
         <a class="besoin e" data-form="energie">
-          <span class="q">Financement étudié</span>
+          <span class="quand">Financement étudié</span>
           <h3>Travaux énergétiques</h3>
           <p>Pompe à chaleur, isolation, fenêtres, solaire. Nous étudions votre financement avant de chiffrer, jamais après.</p>
-          <span class="go">Étudier mon financement <em>→</em></span>
+          <span class="aller">Étudier mon financement <em aria-hidden="true">→</em></span>
         </a>
       </div>
-      <p class="note" style="margin-top:var(--e4)">Vous êtes une commune, une intercommunalité, un
-        bailleur social ou un établissement public ? Le formulaire prévoit une entrée dédiée, avec
-        mise en concurrence à trois devis ou plus.</p>
+      <p class="menu-note monte" style="margin-top:var(--e4);max-width:70ch">Vous êtes une commune, une
+        intercommunalité, un bailleur social ou un établissement public ? Le formulaire prévoit une
+        entrée dédiée, avec mise en concurrence à trois devis ou plus.</p>
     </div>
   </section>
 
   <section id="methode">
     <div class="wrap">
-      <div class="stitre">
-        <span class="eyebrow">Notre méthode</span>
-        <h2>Quatre étapes, et vous n'en faites qu'une</h2>
+      <div class="titre monte">
+        <span class="oeil">La méthode</span>
+        <h2>Quatre étapes, et vous n’en faites qu’une</h2>
       </div>
-      <ol class="etapes">
+      <ol class="etapes monte">
         <li>
           <h3>Vous décrivez</h3>
-          <p>Le <a id="lien-form" href="#besoins">formulaire</a> prend moins d'une minute. Une photo
+          <p>Le <a id="lien-form" href="#besoins">formulaire</a> prend moins d’une minute. Une photo
             remplace dix questions, et suffit souvent à chiffrer sans déplacement.</p>
         </li>
         <li>
           <h3>Nous choisissons</h3>
-          <p>L'entreprise qui convient au métier, à la commune et au délai, parmi celles dont le
-            dossier d'assurances est à jour chez nous.</p>
+          <p>L’entreprise qui convient au métier, à la commune et au délai, parmi celles dont le
+            dossier d’assurances est à jour chez nous.</p>
         </li>
         <li>
           <h3>Nous comparons</h3>
@@ -437,80 +471,106 @@ footer p+p{margin-top:var(--e2)}
         </li>
         <li>
           <h3>Nous suivons</h3>
-          <p>Jusqu'à la réception des travaux, avec les photos de fin de chantier. Un seul
+          <p>Jusqu’à la réception des travaux, avec les photos de fin de chantier. Un seul
             interlocuteur du début à la fin.</p>
         </li>
       </ol>
     </div>
   </section>
 
-  <section id="pour-qui" class="pose">
+  <section class="bande">
+    <svg class="filigrane" viewBox="0 0 100 100" aria-hidden="true">
+      <g fill="currentColor">
+        <path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54 L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>
+        <path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54 L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>
+      </g>
+      <path d="M38.26 17.86 L61.74 17.86 L54.79 39.26 A15.5 15.5 0 0 0 45.21 39.26 Z" fill="currentColor"/>
+    </svg>
     <div class="wrap">
-      <dl class="faits">
-        <div><dt>12</dt><dd>corps de métier couverts</dd></div>
-        <div><dt>2</dt><dd>entreprises d'astreinte par métier</dd></div>
-        <div><dt>Fréjus → Nice</dt><dd>arrière-pays inclus</dd></div>
-        <div><dt>0 €</dt><dd>facturé au client</dd></div>
-      </dl>
-      <div class="stitre">
-        <span class="eyebrow">Pour qui</span>
-        <h2>Quatre publics, une même méthode</h2>
+      <div class="grille">
+        <div class="sept monte">
+          <span class="oeil">Ce qui ne change jamais</span>
+          <h2 style="margin-top:var(--e2)">Le devis et la facture sont à votre nom.</h2>
+          <p class="chapeau" style="margin-top:var(--e3)">Nous ne réalisons pas les travaux et nous
+            ne vendons rien. L’entreprise établit son devis directement pour vous, vous restez
+            maître de votre choix, et vous ne nous payez rien. Notre rémunération vient de
+            l’entreprise, sur les affaires réellement réalisées.</p>
+        </div>
       </div>
-      <div class="publics">
-        <div><h3>Particuliers</h3><p>Propriétaires et locataires, en appartement comme en maison. Du robinet qui fuit à la rénovation complète.</p></div>
-        <div><h3>Syndics et gestionnaires</h3><p>Nous prenons les appels techniques de vos copropriétés, nous trouvons les entreprises et nous vous rendons un tableau chaque mois.</p></div>
-        <div><h3>Conseils syndicaux</h3><p>Ravalement, cage d'escalier, toiture, chaufferie. Des devis comparables à présenter en assemblée générale.</p></div>
-        <div><h3>Collectivités et bailleurs</h3><p>Mise en concurrence organisée, devis au même format, pièces administratives vérifiées et jointes.</p></div>
+      <dl class="faits monte">
+        <div><dt class="nombre">12</dt><dd>corps de métier couverts</dd></div>
+        <div><dt class="nombre">2</dt><dd>entreprises d’astreinte par métier</dd></div>
+        <div><dt class="nombre">48 h</dt><dd>pour revenir vers vous, au plus tard</dd></div>
+        <div><dt class="nombre">0 €</dt><dd>facturé au client</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="pour-qui" class="blanc">
+    <div class="wrap grille">
+      <div class="quatre monte">
+        <span class="oeil">Pour qui</span>
+        <h2 style="margin-top:var(--e2)">Quatre publics, une même méthode</h2>
+      </div>
+      <div class="huit monte">
+        <div class="grille" style="gap:var(--e4) var(--e4)">
+          <div class="six"><h3>Particuliers</h3><p class="menu-note" style="margin-top:6px">Propriétaires et locataires, en appartement comme en maison. Du robinet qui fuit à la rénovation complète.</p></div>
+          <div class="six"><h3>Syndics et gestionnaires</h3><p class="menu-note" style="margin-top:6px">Nous prenons les appels techniques de vos copropriétés, nous trouvons les entreprises et nous vous rendons un tableau chaque mois.</p></div>
+          <div class="six"><h3>Conseils syndicaux</h3><p class="menu-note" style="margin-top:6px">Ravalement, cage d’escalier, toiture, chaufferie. Des devis comparables à présenter en assemblée générale.</p></div>
+          <div class="six"><h3>Collectivités et bailleurs</h3><p class="menu-note" style="margin-top:6px">Mise en concurrence organisée, devis au même format, pièces administratives vérifiées et jointes.</p></div>
+        </div>
       </div>
     </div>
   </section>
 
   <section id="maison">
     <div class="wrap">
-      <div class="stitre">
-        <span class="eyebrow">Qui nous sommes</span>
+      <div class="titre monte">
+        <span class="oeil">Qui nous sommes</span>
         <h2>VD Services</h2>
       </div>
-      <div class="deuxcol">
-        <div class="texte">
+      <div class="grille">
+        <div class="sept texte monte">
           <p>VD Services a été fondée à Mandelieu-la-Napoule par Valentin Dupuy, pour régler un
-            problème que tout le monde connaît : trouver la bonne entreprise, obtenir un devis, et
-            s'assurer que le travail est fait correctement.</p>
-          <p>Notre métier, c'est le réseau et la méthode. Chaque entreprise partenaire a un dossier
-            à jour chez nous : assurance décennale, responsabilité civile, attestation de vigilance
+            problème que tout le monde connaît : <strong>trouver la bonne entreprise, obtenir un
+            devis, et s’assurer que le travail est fait correctement.</strong></p>
+          <p>Notre métier, c’est le réseau et la méthode. Chaque entreprise partenaire a un dossier
+            à jour chez nous : assurance décennale, responsabilité civile, attestation de vigilance
             URSSAF. Quand une demande arrive, nous choisissons celle qui convient au métier, à la
             commune et au délai.</p>
           <p>Nous faisons chiffrer sur un descriptif unique pour que les devis soient comparables.
-            Et nous restons joignables jusqu'à la fin du chantier.</p>
-          <ul class="metiers" style="margin-top:var(--e4)">
+            Et nous restons joignables jusqu’à la fin du chantier.</p>
+          <div class="mot">
+            <svg class="vignette" viewBox="0 0 100 100" aria-hidden="true">
+              <g fill="currentColor">
+                <path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54 L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>
+                <path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54 L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>
+              </g>
+              <path d="M38.26 17.86 L61.74 17.86 L54.79 39.26 A15.5 15.5 0 0 0 45.21 39.26 Z" fill="currentColor"/>
+            </svg>
+            <div>
+              <p>J’ai monté VD Services parce que j’ai passé des années à voir des gens perdre des
+                semaines sur un devis, et de bons artisans perdre des journées sur des demandes qui
+                n’aboutissent pas. Entre les deux, il manquait quelqu’un.</p>
+              <p class="signe"><b>Valentin Dupuy</b>Fondateur, Mandelieu-la-Napoule</p>
+            </div>
+          </div>
+        </div>
+        <div class="cinq monte">
+          <div class="fiche">
+            <dl>
+              <div><dt>Siège</dt><dd>Mandelieu-la-Napoule</dd></div>
+              <div><dt>Secteur</dt><dd>De Fréjus à Nice, arrière-pays inclus</dd></div>
+              <div><dt>Horaires</dt><dd>8 h – 19 h, six jours sur sept</dd></div>
+              <div><dt>Astreinte</dt><dd>Deux entreprises par métier, soir et week-end</dd></div>
+            </dl>
+          </div>
+          <p class="oeil" style="margin-top:var(--e5)">Les métiers couverts</p>
+          <ul class="metiers">
             <li>Plomberie</li><li>Électricité</li><li>Chauffage</li><li>Climatisation, VMC</li>
             <li>Serrurerie</li><li>Couverture, étanchéité</li><li>Peinture</li><li>Plâtrerie</li>
             <li>Carrelage, sols</li><li>Menuiserie</li><li>Espaces verts</li><li>Ménage, nettoyage</li>
           </ul>
-          <div class="mot">
-            <span class="vignette" aria-hidden="true">VD</span>
-            <div>
-              <p>J'ai monté VD Services parce que j'ai passé des années à voir des gens perdre
-                des semaines sur un devis, et de bons artisans perdre des journées sur des
-                demandes qui n'aboutissent pas. Entre les deux, il manquait quelqu'un.</p>
-              <p class="signe"><b>Valentin Dupuy</b>Fondateur, Mandelieu-la-Napoule</p>
-            </div>
-          </div>
-          <div class="encadre">
-            <h3>Ce que nous ne faisons pas</h3>
-            <p>Nous ne réalisons pas les travaux et nous ne vendons rien au client. Le devis et la
-              facture sont établis par l'entreprise, directement à votre nom. Vous restez maître de
-              votre choix, et vous ne nous payez rien.</p>
-          </div>
-        </div>
-        <div class="fiche">
-          <dl>
-            <div><dt>Siège</dt><dd>Mandelieu-la-Napoule</dd></div>
-            <div><dt>Secteur</dt><dd>De Fréjus à Nice, arrière-pays inclus</dd></div>
-            <div><dt>Horaires</dt><dd>8 h – 19 h, six jours sur sept</dd></div>
-            <div><dt>Astreinte</dt><dd>Deux entreprises par métier, soir et week-end</dd></div>
-            <div><dt>Devis</dt><dd>Gratuit, sans engagement</dd></div>
-          </dl>
         </div>
       </div>
     </div>
@@ -521,59 +581,59 @@ footer p+p{margin-top:var(--e2)}
        ecrits : inventer un temoignage est une pratique commerciale
        trompeuse (article L121-2 du code de la consommation), et c'est
        precisement ce qui se controle sur un site de travaux. -->
-  <section id="avis" hidden>
+  <section id="avis" class="blanc" hidden>
     <div class="wrap">
-      <div class="stitre">
-        <span class="eyebrow">Ce qu'ils en disent</span>
-        <h2 id="avis-titre">Les retours de nos clients</h2>
+      <div class="titre">
+        <span class="oeil">Ce qu’ils en disent</span>
+        <h2>Les retours de nos clients</h2>
       </div>
       <div class="avis" id="avis-liste"></div>
-      <p class="note" style="margin-top:var(--e4)" id="avis-pied"></p>
+      <p class="menu-note" style="margin-top:var(--e4)" id="avis-pied"></p>
     </div>
   </section>
 
-  <section id="partenaires" class="pose">
+  <section id="partenaires">
     <div class="wrap">
-      <div class="stitre">
-        <span class="eyebrow">Entreprises</span>
+      <div class="titre monte">
+        <span class="oeil">Entreprises</span>
         <h2>Devenir partenaire</h2>
-        <p class="lede">Vous êtes artisan ou entreprise du bâtiment sur le secteur, et vous cherchez
-          des chantiers qualifiés — pas des enchères au moins-disant.</p>
+        <p class="chapeau">Vous êtes artisan ou entreprise du bâtiment sur le secteur, et vous
+          cherchez des chantiers qualifiés — pas des enchères au moins-disant.</p>
       </div>
-      <div class="colonnes">
-        <div>
+      <div class="grille monte">
+        <div class="six">
           <h3>Ce que vous recevez</h3>
           <ul class="liste">
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Des demandes qualifiées de votre métier, sur votre commune, avec l'adresse, la nature du besoin et les photos.</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Un interlocuteur unique qui a déjà parlé au client et vérifié que la demande est sérieuse.</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Un descriptif clair pour chiffrer, au lieu d'un appel vague et d'un déplacement perdu.</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Aucun droit d'entrée, aucun abonnement, aucune exclusivité imposée.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Des demandes qualifiées de votre métier, sur votre commune, avec l’adresse, la nature du besoin et les photos.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Un interlocuteur unique qui a déjà parlé au client et vérifié que la demande est sérieuse.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Un descriptif clair pour chiffrer, au lieu d’un appel vague et d’un déplacement perdu.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Aucun droit d’entrée, aucun abonnement, aucune exclusivité imposée.</li>
           </ul>
         </div>
-        <div>
+        <div class="six">
           <h3>Ce que nous vous demandons</h3>
           <ul class="liste">
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Assurances à jour : décennale, responsabilité civile, attestation de vigilance URSSAF.</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Une réponse sous quarante-huit heures, même pour dire non.</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Les rendez-vous tenus, et le client prévenu en cas de retard.</li>
-            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Un chantier laissé propre, et une photo de fin de travaux.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Assurances à jour : décennale, responsabilité civile, attestation de vigilance URSSAF.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Une réponse sous quarante-huit heures, même pour dire non.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Les rendez-vous tenus, et le client prévenu en cas de retard.</li>
+            <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Un chantier laissé propre, et une photo de fin de travaux.</li>
           </ul>
         </div>
       </div>
 
-      <div class="encadre" style="margin-top:var(--e5)">
+      <div class="note-bloc monte" style="margin-top:var(--e5)">
         <h3>Comment nous nous rémunérons</h3>
-        <p>Une commission d'apport d'affaires, payée par vous, uniquement sur les affaires
+        <p>Une commission d’apport d’affaires, payée par vous, uniquement sur les affaires
           réellement réalisées et encaissées. Rien à payer pour entrer dans le réseau, rien
-          d'avance, et rien du tout si l'affaire ne se fait pas.</p>
+          d’avance, et rien du tout si l’affaire ne se fait pas.</p>
         <p>Le taux se fixe ensemble au moment de la convention, selon votre métier, vos marges et le
           volume que nous vous apportons. Nous en parlons au premier rendez-vous, avant que vous ne
           signiez quoi que ce soit.</p>
       </div>
 
-      <div class="bloc" style="margin-top:var(--e5)">
+      <div class="encart monte" style="margin-top:var(--e5)">
         <h3>Rejoindre le réseau</h3>
-        <p class="note" style="margin-top:6px">Deux minutes. Nous rappelons sous quarante-huit heures.</p>
+        <p class="menu-note" style="margin-top:7px">Deux minutes. Nous rappelons sous quarante-huit heures.</p>
         <form id="f-part">
           <div class="duo">
             <div class="champ"><label for="p-soc">Raison sociale</label><input id="p-soc" name="societe" autocomplete="organization" required></div>
@@ -592,7 +652,7 @@ footer p+p{margin-top:var(--e2)}
             <div class="champ"><label for="p-astr">Astreinte soir et week-end</label>
               <select id="p-astr" name="astreinte"><option>Non</option><option>Oui, en semaine</option><option>Oui, 7j/7</option></select></div>
           </div>
-          <div class="champ"><label for="p-msg">Ce qu'il faut savoir sur vous <i>(facultatif)</i></label><textarea id="p-msg" name="message" placeholder="Spécialités, références, délai d'intervention habituel."></textarea></div>
+          <div class="champ"><label for="p-msg">Ce qu’il faut savoir sur vous <i>(facultatif)</i></label><textarea id="p-msg" name="message" placeholder="Spécialités, références, délai d’intervention habituel."></textarea></div>
           <button class="btn" type="submit">Envoyer ma candidature</button>
           <div class="sortie" id="s-part"></div>
         </form>
@@ -600,31 +660,30 @@ footer p+p{margin-top:var(--e2)}
     </div>
   </section>
 
-  <section id="contact">
-    <div class="wrap">
-      <div class="deuxcol">
-        <div class="texte">
-          <div class="stitre" style="margin-bottom:var(--e3)">
-            <span class="eyebrow">Contact</span>
-            <h2>Parler à quelqu'un</h2>
-          </div>
-          <p class="lede">Laissez vos coordonnées, nous vous rappelons. De Fréjus à Nice,
-            8 h – 19 h, six jours sur sept.</p>
-          <div class="encadre">
-            <h3>Pour une urgence</h3>
-            <p>Passez plutôt par le <a id="lien-form-urg" href="#besoins">formulaire</a> : il vous
-              met en relation directe avec l'entreprise d'astreinte, c'est plus rapide qu'un
-              rappel.</p>
-          </div>
+  <section id="contact" class="blanc">
+    <div class="wrap grille">
+      <div class="cinq monte">
+        <span class="oeil">Contact</span>
+        <h2 style="margin-top:var(--e2)">Parler à quelqu’un</h2>
+        <p class="chapeau" style="margin-top:var(--e3)">Laissez vos coordonnées, nous vous
+          rappelons. De Fréjus à Nice, 8 h – 19 h, six jours sur sept.</p>
+        <div class="note-bloc">
+          <h3>Pour une urgence</h3>
+          <p>Passez plutôt par le <a id="lien-form-urg" href="#besoins">formulaire</a> : il vous met
+            en relation directe avec l’entreprise d’astreinte, c’est plus rapide qu’un rappel.</p>
         </div>
+      </div>
+      <div class="sept monte">
         <form id="f-contact" style="margin-top:0">
-          <div class="champ"><label for="c-nom">Votre nom</label><input id="c-nom" name="nom" autocomplete="name" required></div>
-          <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="tel" type="tel" autocomplete="tel" required></div>
+          <div class="duo">
+            <div class="champ"><label for="c-nom">Votre nom</label><input id="c-nom" name="nom" autocomplete="name" required></div>
+            <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="tel" type="tel" autocomplete="tel" required></div>
+          </div>
           <div class="champ"><label for="c-mail">E-mail <i>(facultatif)</i></label><input id="c-mail" name="email" type="email" autocomplete="email"></div>
           <div class="champ"><label for="c-msg">Votre message</label><textarea id="c-msg" name="message" required></textarea></div>
           <button class="btn" type="submit">Envoyer</button>
-          <p class="note">Vos coordonnées ne servent qu'à traiter votre demande et ne sont
-            transmises qu'à l'entreprise retenue. Conservation trois ans.</p>
+          <p class="menu-note">Vos coordonnées ne servent qu’à traiter votre demande et ne sont
+            transmises qu’à l’entreprise retenue. Conservation trois ans.</p>
           <div class="sortie" id="s-contact"></div>
         </form>
       </div>
@@ -636,16 +695,23 @@ footer p+p{margin-top:var(--e2)}
 <footer>
   <div class="wrap">
     <div class="fl">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <g fill="currentColor">
+          <path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54 L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>
+          <path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54 L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>
+        </g>
+        <path d="M38.26 17.86 L61.74 17.86 L54.79 39.26 A15.5 15.5 0 0 0 45.21 39.26 Z" fill="var(--marque-cle)"/>
+      </svg>
       <a href="#besoins">Vos besoins</a>
-      <a href="#methode">Notre méthode</a>
+      <a href="#methode">La méthode</a>
       <a href="#partenaires">Devenir partenaire</a>
       <a href="#contact">Contact</a>
       <!-- La plateforme : discrète, mais trouvable sans qu'on ait à
            dicter une adresse au telephone. -->
       <a href="/app" class="interne">Espace professionnel</a>
     </div>
-    <p><strong>VD SERVICES</strong> — SAS au capital de 1 000 € — RCS Nice — SIREN <span class="acompleter">à compléter</span> — siège <span class="acompleter">adresse à compléter</span>, Mandelieu-la-Napoule. Directeur de la publication : le président de VD SERVICES. Hébergeur : <span class="acompleter">à compléter</span>.</p>
-    <p>VD Services intervient comme apporteur d'affaires et coordinateur. Les travaux sont réalisés, facturés et garantis par les entreprises partenaires, qui restent seules responsables de leur exécution. Les devis et factures sont établis par elles, directement au nom du client.</p>
+    <p><strong>VD SERVICES</strong> — SAS au capital de 1 000 € — RCS Nice — SIREN <span class="acompleter">à compléter</span> — siège <span class="acompleter">adresse à compléter</span>, Mandelieu-la-Napoule. Directeur de la publication : le président de VD SERVICES. Hébergeur : <span class="acompleter">à compléter</span>.</p>
+    <p>VD Services intervient comme apporteur d’affaires et coordinateur. Les travaux sont réalisés, facturés et garantis par les entreprises partenaires, qui restent seules responsables de leur exécution. Les devis et factures sont établis par elles, directement au nom du client.</p>
   </div>
 </footer>
 
@@ -678,6 +744,27 @@ if(menu){
     if(ev.target.closest(".panneau a"))menu.open=false;
   });
 }
+
+/* ---------- l'apparition ----------
+   Sept pixels, une fois, et jamais en sens inverse : un bloc deja vu ne
+   redisparait pas quand on remonte. Sans observateur — un vieux
+   navigateur, un lecteur d'ecran — tout est visible d'emblee. */
+(function(){
+  var blocs=[].slice.call(document.querySelectorAll(".monte"));
+  if(!("IntersectionObserver" in window)||
+     window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    blocs.forEach(function(b){b.classList.add("vu")});
+    return;
+  }
+  var obs=new IntersectionObserver(function(entrees){
+    entrees.forEach(function(e){
+      if(!e.isIntersecting)return;
+      e.target.classList.add("vu");
+      obs.unobserve(e.target);
+    });
+  },{rootMargin:"0px 0px -8% 0px",threshold:.06});
+  blocs.forEach(function(b){obs.observe(b)});
+})();
 
 /* =====================================================================
    LES AVIS
@@ -712,7 +799,7 @@ var AVIS=[
 function etoiles(n){
   n=Math.max(0,Math.min(5,Math.round(Number(n)||0)));
   if(!n)return "";
-  return '<p class="notes" aria-label="'+n+' sur 5">'+"\u2605".repeat(n)+"\u2606".repeat(5-n)+'</p>';
+  return '<p class="notes" aria-label="'+n+' sur 5">'+"★".repeat(n)+"☆".repeat(5-n)+'</p>';
 }
 function echappe(s){
   return String(s==null?"":s).replace(/[&<>"]/g,function(c){

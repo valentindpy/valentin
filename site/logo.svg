@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img"
+     aria-label="VD Services">
+  <title>VD Services</title>
+  <desc>Un arc et sa clé de voûte : la pierre sans laquelle l'arc tombe.</desc>
+  <!-- =====================================================================
+       La marque
+
+       Un arc, interrompu en haut par sa clé de voûte. C'est la pierre
+       qu'on pose en dernier, qui ne porte rien elle-même, et sans
+       laquelle tout le reste s'effondre. C'est la place exacte de VD
+       Services entre un client et des artisans — et c'est aussi, sur
+       la Côte, la forme de toutes les portes de vieux village.
+
+       Rien n'est dessiné à l'œil. Tout sort de deux cercles concentriques
+       en (50,54), de rayons 32 et 18, et de deux angles : 18 degrés de
+       part et d'autre de la verticale pour la clé, 5 degrés de respiration
+       de chaque côté. La clé déborde l'arc — rayon 38, dessus coupé droit
+       comme une pierre taillée — pour rester lisible à seize pixels.
+
+       `currentColor` sur l'arc : la marque suit la couleur du texte qui
+       l'entoure, en encre sur papier comme en papier sur encre.
+       ===================================================================== -->
+  <g fill="currentColor">
+    <!-- le pied gauche, et son arc jusqu'à la respiration -->
+    <path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54
+             L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>
+    <!-- le pied droit, strictement symétrique -->
+    <path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54
+             L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>
+  </g>
+  <!-- la clé : la seule pièce d'une autre couleur, la seule qu'on remarque -->
+  <path d="M38.26 17.86 L61.74 17.86 L54.79 39.26
+           A15.5 15.5 0 0 0 45.21 39.26 Z"
+        fill="var(--marque-cle, #B4552E)"/>
+</svg>

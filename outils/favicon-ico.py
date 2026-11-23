@@ -1,70 +1,64 @@
 # -*- coding: utf-8 -*-
-"""Fabrique site/favicon.ico (32x32) a partir du meme dessin que favicon.svg.
+"""Fabrique site/favicon.ico a partir des deux PNG de 16 et 32 pixels.
 
-Les navigateurs recents prennent le SVG ; les anciens, eux, vont chercher
-/favicon.ico sans qu'on leur demande. Ce fichier existe pour eux.
+    node outils/icones-pwa.mjs     # produit les PNG
+    python3 outils/favicon-ico.py  # les emballe dans un .ico
 
-A 32 pixels, aucune fonte ne tient : les deux lettres sont dessinees a la
-main sur une grille de 5 par 7, doublee. Sans dependance, sans outil
-d'image a installer.
+Les navigateurs recents prennent le SVG ; les anciens, les agregateurs
+et les barres de favoris vont chercher /favicon.ico sans qu'on leur
+demande. Ce fichier existe pour eux.
+
+Un .ico n'est qu'un en-tete de six octets, une entree de seize octets
+par image, et les images a la suite. Depuis Vista, ces images peuvent
+etre des PNG tels quels : il n'y a donc rien a convertir, rien a
+installer, et le dessin reste celui du navigateur — c'est-a-dire le
+meme que partout ailleurs.
 """
-import io, struct
+import io, os, struct
 
-BLEU = (0x2E, 0x4E, 0x77)
-BANDE = [(0xBC, 0x2F, 0x26), (0x8E, 0x62, 0x06), (0x20, 0x65, 0x4A), (0x1D, 0x6A, 0x82)]
-BLANC = (0xFF, 0xFF, 0xFF)
-N = 32
+RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SOURCES = ["site/favicon-16.png", "site/favicon-32.png"]
+CIBLE = "site/favicon.ico"
 
-GLYPHES = {
-    "V": ["X...X", "X...X", "X...X", "X...X", ".X.X.", ".X.X.", "..X.."],
-    "D": ["XXXX.", "X...X", "X...X", "X...X", "X...X", "X...X", "XXXX."],
-}
 
-# (r,g,b,a) par pixel, None = transparent
-px = [[None] * N for _ in range(N)]
+def taille_png(octets):
+    """Largeur et hauteur, lues dans le bloc IHDR : les huit octets de
+    signature, puis la longueur et le nom du bloc, puis les dimensions."""
+    if octets[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("ce n'est pas un PNG")
+    larg, haut = struct.unpack(">II", octets[16:24])
+    return larg, haut
 
-HAUT_BANDE = 27                      # la bande occupe les 5 dernieres lignes
-for y in range(N):
-    for x in range(N):
-        px[y][x] = BANDE[min(3, x // 8)] + (255,) if y >= HAUT_BANDE else BLEU + (255,)
 
-# coins adoucis : on retire trois pixels en escalier a chaque angle
-for cy, cx in ((0, 0), (0, N - 1), (N - 1, 0), (N - 1, N - 1)):
-    dy = 1 if cy == 0 else -1
-    dx = 1 if cx == 0 else -1
-    for i, n in enumerate((2, 1)):
-        for j in range(n):
-            px[cy + dy * i][cx + dx * j] = None
+images = []
+for chemin in SOURCES:
+    plein = os.path.join(RACINE, chemin)
+    if not os.path.exists(plein):
+        raise SystemExit("manquant : %s — lancez d'abord outils/icones-pwa.mjs" % chemin)
+    octets = io.open(plein, "rb").read()
+    larg, haut = taille_png(octets)
+    images.append((larg, haut, octets))
 
-# les lettres, doublees, centrees au-dessus de la bande
-mot, ech, ecart = "VD", 2, 2
-larg = len(mot) * 5 * ech + (len(mot) - 1) * ecart
-x0 = (N - larg) // 2
-y0 = (HAUT_BANDE - 7 * ech) // 2
-for k, lettre in enumerate(mot):
-    base = x0 + k * (5 * ech + ecart)
-    for ly, ligne in enumerate(GLYPHES[lettre]):
-        for lx, c in enumerate(ligne):
-            if c != "X":
-                continue
-            for a in range(ech):
-                for b in range(ech):
-                    px[y0 + ly * ech + a][base + lx * ech + b] = BLANC + (255,)
+# en-tete : reserve, type 1 (icone), nombre d'images
+sortie = struct.pack("<HHH", 0, 1, len(images))
+# les donnees commencent apres l'en-tete et toutes les entrees
+decalage = 6 + 16 * len(images)
+for larg, haut, octets in images:
+    sortie += struct.pack(
+        "<BBBBHHII",
+        larg if larg < 256 else 0,   # 0 veut dire 256
+        haut if haut < 256 else 0,
+        0,                            # pas de palette
+        0,                            # reserve
+        1,                            # plans
+        32,                           # bits par pixel
+        len(octets),
+        decalage,
+    )
+    decalage += len(octets)
+for _, _, octets in images:
+    sortie += octets
 
-# --- encodage ICO : en-tete, BITMAPINFOHEADER, pixels BGRA de bas en haut ---
-pixels = io.BytesIO()
-for y in range(N - 1, -1, -1):
-    for x in range(N):
-        p = px[y][x]
-        pixels.write(struct.pack("<4B", 0, 0, 0, 0) if p is None
-                     else struct.pack("<4B", p[2], p[1], p[0], p[3]))
-masque = b"\x00" * (4 * N)           # alpha 32 bits : le masque ne sert plus
-
-dib = struct.pack("<IiiHHIIiiII", 40, N, N * 2, 1, 32, 0, 0, 0, 0, 0, 0)
-image = dib + pixels.getvalue() + masque
-ico = (struct.pack("<HHH", 0, 1, 1)
-       + struct.pack("<BBBBHHII", N, N, 0, 0, 1, 32, len(image), 22)
-       + image)
-
-io.open("site/favicon.ico", "wb").write(ico)
-print("site/favicon.ico %d octets" % len(ico))
+io.open(os.path.join(RACINE, CIBLE), "wb").write(sortie)
+print("%s  %d octets  (%s)" % (
+    CIBLE, len(sortie), ", ".join("%dx%d" % (l, h) for l, h, _ in images)))

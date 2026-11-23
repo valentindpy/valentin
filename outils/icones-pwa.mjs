@@ -1,23 +1,28 @@
 /* =====================================================================
-   VD SERVICES — les icônes de l'application installée
+   VD SERVICES — toutes les icônes, depuis le même dessin
 
        node outils/icones-pwa.mjs
 
-   Quand on ajoute le formulaire à l'écran d'accueil, le téléphone
-   réclame de vraies images : un SVG ne suffit pas à iOS, et Android
-   veut une version « maskable », c'est-à-dire qui survit à un
-   découpage en rond, en goutte ou en losange selon le fabricant.
+   Une seule forme : l'arc et sa clé de voûte, celle de site/logo.svg.
+   Ce script la décline dans les six tailles que réclament un onglet,
+   un écran d'accueil iOS et un lanceur Android, puis
+   outils/favicon-ico.py emballe les deux plus petites dans un .ico.
 
-   Le dessin est celui de site/favicon.svg — le monogramme sur le bleu
-   de travail, et la bande des quatre familles de besoins. Il est
-   rendu par le navigateur, avec la vraie fonte, puis photographié à la
-   taille voulue. C'est le seul endroit du dépôt qui demande Chromium ;
-   les images produites sont versionnées, donc ce script ne sert qu'un
-   jour où le logo change.
+   Trois versions, et chacune répond à une contrainte :
 
-   La version maskable est dessinée à part : la bande collée au bord
-   bas disparaîtrait sous un masque rond. Elle rentre donc dans la zone
-   sûre, le cercle qui occupe 80 % de l'icône.
+     pleine   l'arc en papier sur l'encre, bord à bord. iOS arrondit
+              les angles lui-même, et l'onglet du navigateur veut une
+              image qui remplit son carré.
+     masquée  Android découpe l'icône en rond, en goutte ou en losange
+              selon le fabricant : tout rentre donc dans le cercle qui
+              occupe 80 % de la surface.
+     tuile    16 et 32 pixels pour le .ico. À cette taille la clé de
+              voûte ne fait qu'un pixel et demi : on l'élargit, sinon
+              elle disparaît.
+
+   Les images produites sont versionnées : ce script ne sert qu'un jour
+   où la marque change. C'est le seul endroit du dépôt qui demande un
+   navigateur, parce que lui seul sait rendre un SVG fidèlement.
    ===================================================================== */
 
 import pw from "playwright";
@@ -26,80 +31,63 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const RACINE = dirname(dirname(fileURLToPath(import.meta.url)));
-const SORTIE = join(RACINE, "site/icones");
 
-const BLEU = "#2E4E77";
-const BANDE = ["#BC2F26", "#8E6206", "#20654A", "#1D6A82"];
+const ENCRE = "#17222E";
+const PAPIER = "#F5F2EC";
+const TERRE = "#C9683C";   /* un cran plus clair que sur le papier : sur
+                              l'encre, la terre cuite s'assombrit à l'œil */
 
-/* Le dessin plein bord : le bleu touche les quatre côtés, la bande
-   occupe la dernière bande horizontale. C'est l'icône de l'onglet et
-   celle d'iOS, qui arrondit les angles lui-même. */
-function pleinBord(taille) {
-  return page(taille, `
-    <div class="fond">
-      <span class="vd">VD</span>
-      <div class="bande">${BANDE.map((c) => `<i style="background:${c}"></i>`).join("")}</div>
-    </div>`, `
-    .fond{width:100%;height:100%;background:${BLEU};position:relative;
-      display:flex;align-items:center;justify-content:center}
-    .vd{font-family:Archivo,sans-serif;font-weight:800;color:#fff;
-      font-size:${Math.round(taille * 0.46)}px;letter-spacing:-${taille * 0.022}px;
-      margin-top:-${Math.round(taille * 0.06)}px}
-    .bande{position:absolute;left:0;right:0;bottom:0;height:${Math.round(taille * 0.17)}px;display:flex}
-    .bande i{flex:1}`);
+/* L'arc, aux coordonnées de site/logo.svg. `echelle` le rétrécit dans
+   son carré ; `cle` élargit la clé pour les très petites tailles. */
+function marque(echelle, cle = 1) {
+  const m = (100 - 100 * echelle) / 2;
+  /* la clé s'élargit autour de son axe x=50 */
+  const g = 38.26 + (1 - cle) * (50 - 38.26);
+  const d = 61.74 - (1 - cle) * (61.74 - 50);
+  const gi = 45.21 + (1 - cle) * (50 - 45.21);
+  const di = 54.79 - (1 - cle) * (54.79 - 50);
+  return `<svg viewBox="0 0 100 100" width="100%" height="100%">
+    <g transform="translate(${m} ${m}) scale(${echelle})">
+      <g fill="${PAPIER}">
+        <path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54 L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>
+        <path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54 L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>
+      </g>
+      <path d="M${g} 17.86 L${d} 17.86 L${di} 39.26 A15.5 15.5 0 0 0 ${gi} 39.26 Z" fill="${TERRE}"/>
+    </g>
+  </svg>`;
 }
 
-/* La version maskable : tout rentre dans le cercle de 80 %, et le bleu
-   continue jusqu'aux bords pour que le masque ait de la matière à
-   couper, quelle que soit sa forme. */
-function masquable(taille) {
-  return page(taille, `
-    <div class="fond">
-      <span class="vd">VD</span>
-      <div class="bande">${BANDE.map((c) => `<i style="background:${c}"></i>`).join("")}</div>
-    </div>`, `
-    .fond{width:100%;height:100%;background:${BLEU};
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:${Math.round(taille * 0.045)}px}
-    .vd{font-family:Archivo,sans-serif;font-weight:800;color:#fff;
-      font-size:${Math.round(taille * 0.3)}px;letter-spacing:-${taille * 0.014}px;line-height:1}
-    .bande{width:${Math.round(taille * 0.34)}px;height:${Math.round(taille * 0.045)}px;
-      display:flex;border-radius:${Math.round(taille * 0.02)}px;overflow:hidden}
-    .bande i{flex:1}`);
-}
-
-function page(taille, corps, style) {
-  return `<!doctype html><html><head><meta charset="utf-8">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&display=block">
-<style>
-  html,body{margin:0;padding:0;width:${taille}px;height:${taille}px;overflow:hidden}
-  ${style}
-</style></head><body>${corps}</body></html>`;
+function page(taille, dedans) {
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+    html,body{margin:0;padding:0;width:${taille}px;height:${taille}px;overflow:hidden;background:${ENCRE}}
+  </style></head><body>${dedans}</body></html>`;
 }
 
 const IMAGES = [
-  { nom: "icone-192.png", taille: 192, dessin: pleinBord },
-  { nom: "icone-512.png", taille: 512, dessin: pleinBord },
-  { nom: "icone-maskable-512.png", taille: 512, dessin: masquable },
-  { nom: "apple-touch-icon.png", taille: 180, dessin: pleinBord },
+  /* l'onglet et le .ico — la clé élargie pour survivre à 16 pixels */
+  { nom: "site/favicon-16.png", taille: 16, html: (t) => page(t, marque(0.96, 1.5)) },
+  { nom: "site/favicon-32.png", taille: 32, html: (t) => page(t, marque(0.96, 1.35)) },
+  /* l'écran d'accueil */
+  { nom: "site/icones/apple-touch-icon.png", taille: 180, html: (t) => page(t, marque(0.84)) },
+  { nom: "site/icones/icone-192.png", taille: 192, html: (t) => page(t, marque(0.84)) },
+  { nom: "site/icones/icone-512.png", taille: 512, html: (t) => page(t, marque(0.84)) },
+  /* la version qu'Android découpe : tout dans la zone sûre */
+  { nom: "site/icones/icone-maskable-512.png", taille: 512, html: (t) => page(t, marque(0.6)) },
 ];
 
-mkdirSync(SORTIE, { recursive: true });
+mkdirSync(join(RACINE, "site/icones"), { recursive: true });
 const navigateur = await pw.chromium.launch();
 for (const img of IMAGES) {
   const onglet = await navigateur.newPage({
     viewport: { width: img.taille, height: img.taille },
     deviceScaleFactor: 1,
   });
-  await onglet.setContent(img.dessin(img.taille), { waitUntil: "networkidle" });
-  /* la fonte est demandée en display:block : on attend qu'elle soit là,
-     sinon le monogramme sort dans la fonte de secours */
-  await onglet.evaluate(() => document.fonts.ready);
-  await onglet.waitForTimeout(150);
-  const png = await onglet.screenshot({ omitBackground: false });
-  writeFileSync(join(SORTIE, img.nom), png);
-  console.log(img.nom.padEnd(26) + img.taille + "×" + img.taille + "  " + png.length + " octets");
+  await onglet.setContent(img.html(img.taille));
+  await onglet.waitForTimeout(80);
+  const png = await onglet.screenshot();
+  writeFileSync(join(RACINE, img.nom), png);
+  console.log(img.nom.padEnd(38) + String(img.taille).padStart(3) + " px  " + png.length + " octets");
   await onglet.close();
 }
 await navigateur.close();
+console.log("\nPuis : python3 outils/favicon-ico.py");
