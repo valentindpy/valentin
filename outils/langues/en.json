@@ -18,7 +18,6 @@
     "Déclarer un besoin": "Tell us what you need",
     "Menu": "Menu",
     "Ouvrir le menu": "Open the menu",
-    "Courtier en travaux · de Fréjus à Nice": "Building works broker · Fréjus to Nice",
     "Un souci ? On s’en occupe.": "Something wrong? We’ll handle it.",
     "Vous décrivez le problème en moins d’une minute. Nous choisissons l’entreprise dans notre réseau local, nous comparons les devis, et nous suivons les travaux jusqu’à la réception. Vous ne nous payez rien.": "You describe the problem in under a minute. We pick the right firm from our local network, we compare the quotes, and we follow the work through to completion. You pay us nothing.",
     "Je suis une entreprise": "I’m a trade business",
@@ -164,7 +163,6 @@
     "VD Services": "VD Services",
     "VD Services, Mandelieu-la-Napoule. Vous décrivez le problème, nous choisissons l’entreprise, nous négocions les devis et nous suivons les travaux. Secteur Fréjus – Nice.": "VD Services, Mandelieu-la-Napoule. You describe the problem, we choose the firm, we negotiate the quotes and we follow the work. Fréjus – Nice area.",
     "VD Services — un souci ? On s’en occupe.": "VD Services — something wrong? We’ll handle it.",
-    "Courtier en travaux sur la Côte d’Azur, de Fréjus à Nice.": "Building works broker on the French Riviera, from Fréjus to Nice.",
     "Choisir la langue": "Choose your language",
     " sur 5\">": " out of 5\">",
     "— consultation, pilotage, coordination et assistance. Mandelieu-la-Napoule, secteur Fréjus – Nice. Vos coordonnées ne servent qu'au traitement de cette demande et ne sont transmises qu'à l'entreprise retenue. Conservation trois ans.": "— consulting, oversight, coordination and assistance. Mandelieu-la-Napoule, Fréjus – Nice area. Your details are used only to handle this request and are passed on only to the firm selected. Kept for three years.",
@@ -548,7 +546,9 @@
     "\">Préférer un appel</a>": "\">Rather have a call</a>",
     "<span class=\"ref\">réf.": "<span class=\"ref\">ref.",
     "Récapitulatif copié": "Summary copied",
-    "<button class=\"non\" data-non>Fermer</button>": "<button class=\"non\" data-non>Close</button>"
+    "<button class=\"non\" data-non>Fermer</button>": "<button class=\"non\" data-non>Close</button>",
+    "De Fréjus à Nice": "From Fréjus to Nice",
+    "Vous décrivez le problème, nous choisissons l’entreprise et nous suivons les travaux. De Fréjus à Nice.": "You describe the problem, we pick the firm and we follow the work through. From Fréjus to Nice."
   },
   "ignorer": [
     "\" aria-pressed=\"",

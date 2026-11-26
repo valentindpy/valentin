@@ -9,7 +9,7 @@
 <meta name="description" content="VD Services, Mandelieu-la-Napoule. You describe the problem, we choose the firm, we negotiate the quotes and we follow the work. Fréjus – Nice area.">
 <meta name="robots" content="index,follow">
 <meta property="og:title" content="VD Services — something wrong? We’ll handle it.">
-<meta property="og:description" content="Building works broker on the French Riviera, from Fréjus to Nice.">
+<meta property="og:description" content="You describe the problem, we pick the firm and we follow the work through. From Fréjus to Nice.">
 <meta property="og:type" content="website">
 <link rel="alternate" hreflang="fr" href="https://vd-services.fr/">
 <link rel="alternate" hreflang="en" href="https://vd-services.fr/en/">
@@ -149,14 +149,24 @@ button,input,select,textarea{font:inherit;color:inherit}
   .entete{background:color-mix(in srgb,var(--papier) 84%,transparent);backdrop-filter:saturate(1.3) blur(12px)}
 }
 .nav{display:flex;align-items:center;gap:var(--e3);padding-block:15px}
-.marque{display:flex;align-items:center;gap:12px;margin-right:auto;text-decoration:none;min-width:0}
+/* flex:none, et non min-width:0 : un lien retreci sous la largeur de
+   son texte ne coupe pas ce texte, il le laisse deborder par-dessus
+   son voisin. « VD Services » passait ainsi sous « Vos besoins » sur
+   un grand ecran en francais, et sous le drapeau sur un telephone.
+   Ce qui ne tient pas, on le retire franchement plus bas. */
+.marque{display:flex;align-items:center;gap:12px;margin-right:auto;text-decoration:none;flex:none}
 .marque svg{width:30px;height:30px;flex:none;color:var(--encre);transition:color var(--t)}
 .marque b{font-family:var(--serif);font-weight:600;font-size:1.22rem;letter-spacing:-.015em;white-space:nowrap}
 .marque i{display:block;font-style:normal;font-size:.62rem;letter-spacing:.17em;text-transform:uppercase;
   color:var(--encre-3);margin-top:2px;white-space:nowrap}
 @media (min-width:1101px){.marque i{display:none}}
 .marque:hover svg{color:var(--terre)}
-.liens{display:flex;gap:19px;align-items:center}
+/* 15 et non 19 : la rangee francaise depassait de trois pixels. La
+   largeur utile ne depend pas de l’ecran mais du max-width de .wrap,
+   donc le depassement etait le meme a 1 440 qu’a 1 920 — une media
+   query n’y pouvait rien. Quatre pixels rendus par intervalle donnent
+   la marge qui manquait. */
+.liens{display:flex;gap:15px;align-items:center}
 .liens a{font-size:.97rem;color:var(--encre-2);text-decoration:none;position:relative;padding-block:5px;
   white-space:nowrap}
 .liens a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--terre);
@@ -183,7 +193,24 @@ button,input,select,textarea{font:inherit;color:inherit}
   .liens{display:none} .menu{display:block} .entete .wrap{position:relative}
   #cta-haut{display:none}
 }
-@media (max-width:560px){.marque i{display:none}}
+/* Sous 560 px, les quatre elements de l’en-tete ne tiennent plus cote
+   a cote. On retire dans l’ordre de ce que ca coute : le mot « Menu »
+   d’abord, car trois barres se lisent sans legende (le lecteur d’ecran
+   garde l’intitule par aria-label) ; puis, sous 400 px, le nom de la
+   marque, dont le dessin reste cliquable et reconnaissable.
+   Le selecteur de langue, lui, ne bouge pas : sur cette cote, c’est
+   justement le visiteur etranger sur son telephone qui en a besoin. */
+@media (max-width:560px){
+  .marque i{display:none}
+  .entete .wrap{gap:14px}
+  .menu summary .nom{display:none}
+  .menu summary{gap:0;padding:11px 13px}
+}
+/* 370 et non 400 : a 390 px — la largeur d’iPhone la plus repandue —
+   le nom tient avec vingt-sept pixels de reste une fois le mot
+   « Menu » retire. Il ne disparait qu’en dessous, ou il ne tient
+   plus du tout. */
+@media (max-width:370px){.marque b{display:none}}
 
 /* ----- le choix de la langue -----
    Des drapeaux dessines, pas des emojis : sous Windows, les emojis de
@@ -458,7 +485,7 @@ footer p+p{margin-top:var(--e2)}
     </button>
     <a class="btn sm" id="cta-haut" href="#besoins">Tell us what you need</a>
     <details class="menu">
-      <summary aria-label="Open the menu"><i></i>Menu</summary>
+      <summary aria-label="Open the menu"><i></i><span class="nom">Menu</span></summary>
       <nav class="panneau">
         <a class="btn" id="cta-menu" href="#besoins">Tell us what you need</a>
         <a href="#besoins">What you need</a>
@@ -476,7 +503,7 @@ footer p+p{margin-top:var(--e2)}
   <section class="hero">
     <div class="wrap grille">
       <div class="sept">
-        <span class="oeil">Building works broker · Fréjus to Nice</span>
+        <span class="oeil">From Fréjus to Nice</span>
         <h1>Something wrong? We’ll handle it.</h1>
         <p class="chapeau">You describe the problem in under a minute. We pick the right firm from our local network, we compare the quotes, and we follow the work through to completion. You pay us nothing.</p>
         <div class="actes">
