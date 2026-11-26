@@ -23,13 +23,15 @@
    l'envoi par messagerie, et le demandeur le voit.
    ===================================================================== */
 
-const CACHE = "vds-coquille-2";   /* changé avec l'identité */
+const CACHE = "vds-coquille-3";   /* changé avec les langues */
 
 /* La coquille : ce qu'il faut avoir sous la main pour afficher le
    formulaire sans réseau. Les fontes viennent s'y ajouter à l'usage. */
 const COQUILLE = [
   "/formulaire",
+  "/en/form",
   "/manifest.webmanifest",
+  "/en/manifest.webmanifest",
   "/favicon.svg",
   "/icones/icone-192.png",
   /* les fontes sont servies par le domaine depuis qu'elles ont changé :
@@ -80,10 +82,18 @@ self.addEventListener("fetch", (ev) => {
         /* ignoreSearch : les raccourcis de l'ecran d'accueil ouvrent
            /formulaire?besoin=urgence. Sans cela, hors reseau, chacun
            manquerait le cache pour une question de point d'interrogation. */
-        .catch(() =>
-          caches.match(req, { ignoreSearch: true })
-            .then((c) => c || caches.match("/formulaire", { ignoreSearch: true }))
-            .then((c) => c || caches.match("/formulaire/", { ignoreSearch: true }))),
+        /* Le repli reste dans la langue demandee : un anglophone hors
+           reseau doit retomber sur /en/form, pas sur le formulaire
+           francais — il ne saurait pas le remplir. */
+        .catch(() => {
+          const replis = url.pathname.startsWith("/en/")
+            ? ["/en/form", "/en/form/", "/formulaire"]
+            : ["/formulaire", "/formulaire/"];
+          return replis.reduce(
+            (chaine, adr) => chaine.then(
+              (c) => c || caches.match(adr, { ignoreSearch: true })),
+            caches.match(req, { ignoreSearch: true }));
+        }),
     );
     return;
   }

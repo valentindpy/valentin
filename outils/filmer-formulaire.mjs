@@ -1,9 +1,14 @@
 /* =====================================================================
    VD SERVICES — la démonstration de la page d'accueil
 
-       python3 -m http.server 8777 --directory site     (dans un terminal)
-       node outils/filmer-formulaire.mjs                 (dans un autre)
+       python3 -m http.server 8777 --directory site   (dans un terminal)
+       node outils/filmer-formulaire.mjs               (dans un autre)
+       node outils/filmer-formulaire.mjs en            (la version anglaise)
        → site/video/formulaire.mp4 et formulaire.jpg
+         site/video/formulaire-en.mp4 et formulaire-en.jpg
+
+   Une langue par vidéo : montrer un formulaire français à un visiteur
+   anglophone, c'est lui promettre un service qu'il ne comprendra pas.
 
    Ce n'est pas une animation inventée : c'est le formulaire lui-même,
    joué écran par écran et photographié douze fois par seconde. Quatorze
@@ -26,9 +31,21 @@ import { fileURLToPath } from "node:url";
 
 const RACINE = dirname(dirname(fileURLToPath(import.meta.url)));
 const SORTIE = join(RACINE, "site/video");
-const IMAGES = join(RACINE, ".images-video");
-const ADRESSE = process.env.ADRESSE || "http://127.0.0.1:8777/formulaire/";
 const FPS = 12;
+
+const CODE = process.argv[2] || "fr";
+const LANGUES = {
+  fr: { chemin: "/formulaire/", locale: "fr-FR", suffixe: "",
+        fin: "Demande enregistrée",
+        adresse: "12 rue des Lauriers, Cannes", nom: "Claire Martin" },
+  en: { chemin: "/en/form/", locale: "en-GB", suffixe: "-en",
+        fin: "Request received",
+        adresse: "12 rue des Lauriers, Cannes", nom: "Claire Martin" },
+};
+const L = LANGUES[CODE];
+if (!L) throw new Error("langue inconnue : " + CODE);
+const IMAGES = join(RACINE, ".images-video" + L.suffixe);
+const ADRESSE = process.env.ADRESSE || "http://127.0.0.1:8777" + L.chemin;
 
 rmSync(IMAGES, { recursive: true, force: true });
 mkdirSync(IMAGES, { recursive: true });
@@ -36,7 +53,7 @@ mkdirSync(SORTIE, { recursive: true });
 
 const navigateur = await pw.chromium.launch();
 const contexte = await navigateur.newContext({
-  viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: "fr-FR",
+  viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: L.locale,
 });
 const page = await contexte.newPage();
 
@@ -75,10 +92,10 @@ await tenir(1500);
 await toucher('[data-intent="depannage"]', 800);
 await toucher('[data-trade="plomberie"]', 800);
 await toucher('[data-lieu="privatif"]', 420);
-await toucher('.chip:has-text("Locataire")', 480);
-await ecrire("#w-adr", "12 rue des Lauriers, Cannes");
+await toucher('[data-statut="locataire"]', 480);
+await ecrire("#w-adr", L.adresse);
 await toucher("#screen .cta:not([disabled])", 700);
-await ecrire("#c-nom", "Claire Martin");
+await ecrire("#c-nom", L.nom);
 await ecrire("#c-tel", "06 12 34 56 78");
 await toucher("#c-ok", 420);
 await toucher("#screen .cta:not([disabled])", 900);
@@ -89,7 +106,7 @@ const fin = await page.evaluate(() =>
 await contexte.close();
 await navigateur.close();
 
-if (fin !== "Demande enregistrée") {
+if (fin !== L.fin) {
   throw new Error("le parcours ne s'est pas terminé sur la confirmation : " + fin);
 }
 console.log(`${i} images · ${interceptes} appel(s) intercepté(s) · fin sur « ${fin} »`);
@@ -103,9 +120,9 @@ execFileSync(ff, ["-hide_banner", "-loglevel", "error", "-y",
   "-vf", "scale=540:-2:flags=lanczos",
   "-c:v", "libx264", "-preset", "slow", "-crf", "27",
   "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an",
-  join(SORTIE, "formulaire.mp4")], { stdio: "inherit" });
+  join(SORTIE, `formulaire${L.suffixe}.mp4`)], { stdio: "inherit" });
 execFileSync(ff, ["-hide_banner", "-loglevel", "error", "-y",
   "-i", join(IMAGES, "f-0008.png"), "-vf", "scale=540:-2:flags=lanczos",
-  "-q:v", "6", join(SORTIE, "formulaire.jpg")], { stdio: "inherit" });
+  "-q:v", "6", join(SORTIE, `formulaire${L.suffixe}.jpg`)], { stdio: "inherit" });
 rmSync(IMAGES, { recursive: true, force: true });
-console.log("site/video/formulaire.mp4 et formulaire.jpg");
+console.log(`site/video/formulaire${L.suffixe}.mp4 et formulaire${L.suffixe}.jpg`);

@@ -1,0 +1,7 @@
+# Python laisse ses .pyc a cote des sources : ils ne regardent personne.
+__pycache__/
+*.pyc
+
+# Les images intermediaires de la video, effacees par le script lui-meme
+# mais presentes le temps du montage.
+.images-video*/

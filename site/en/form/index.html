@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Report a problem — VD Services</title>
+<meta name="description" content="Describe what you need in under a minute. VD Services finds the firm, compares the quotes and follows the work. Fréjus – Nice area.">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#17222E">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<meta property="og:title" content="Report a problem — VD Services">
+<meta property="og:description" content="Describe what you need in under a minute.">
+<meta property="og:type" content="website">
+<!-- Installable sur l'ecran d'accueil : le manifeste dit comment
+     l'application s'appelle, de quoi elle a l'air, et sur quoi elle
+     s'ouvre — l'ecran du choix, jamais une page d'accueil. -->
+<link rel="manifest" href="/en/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="VD Services">
+<link rel="preload" href="/polices/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/polices/source-serif-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/polices/polices.css">
+<style>
+:root{
+  --ground:#F5F2EC; --surface:#FFFFFF; --surface-2:#EDE8DF; --sunk:#E3DCCF;
+  --ink:#17222E; --ink-2:#44505F; --ink-3:#6F7A88;
+  --line:#DED7CA; --line-strong:#BDB2A1;
+  --accent:#17222E; --accent-soft:#F3E3D8; --accent-ink:#B4552E;
+  --chaud:#B4552E; --chaud-soft:#F3E3D8;
+  --urg:#A8362A; --urg-soft:#F6E0DC;
+  --dep:#8A6210; --dep-soft:#F5EACA;
+  --pro:#2C6A4F; --pro-soft:#DBEBE2;
+  --ene:#1D6477; --ene-soft:#D7E8ED;
+  --shadow:0 1px 2px rgba(23,34,46,.05), 0 8px 24px -14px rgba(23,34,46,.3);
+  /* Les deux fontes du site, servies par le domaine. Le monospace reste
+     celui du systeme : il ne sert qu'au recapitulatif, et trente kilos
+     de plus pour un bloc de texte aligne ne se justifient pas. */
+  --display:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --body:"Inter",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#12171D; --surface:#1B222B; --surface-2:#191F27; --sunk:#0B0F14;
+    --ink:#ECE7DE; --ink-2:#B6BDC6; --ink-3:#848E99;
+    --line:#252D37; --line-strong:#3B4552;
+    --accent:#ECE7DE; --accent-soft:#2E1F18; --accent-ink:#D9825A;
+    --chaud:#D9825A; --chaud-soft:#2E1F18;
+    --urg:#EE8F84; --urg-soft:#3A1F1C;
+    --dep:#DCB25C; --dep-soft:#332918;
+    --pro:#78C8A0; --pro-soft:#152D23;
+  --ene:#74BCD4; --ene-soft:#122A33;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#12171D; --surface:#1B222B; --surface-2:#191F27; --sunk:#0B0F14;
+  --ink:#ECE7DE; --ink-2:#B6BDC6; --ink-3:#848E99;
+  --line:#252D37; --line-strong:#3B4552;
+  --accent:#ECE7DE; --accent-soft:#2E1F18; --accent-ink:#D9825A;
+  --chaud:#D9825A; --chaud-soft:#2E1F18;
+  --urg:#EE8F84; --urg-soft:#3A1F1C;
+  --dep:#DCB25C; --dep-soft:#332918;
+  --pro:#78C8A0; --pro-soft:#152D23;
+  --ene:#74BCD4; --ene-soft:#122A33;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0}
+p{margin:0}
+a{color:var(--accent-ink)}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{max-width:520px;margin-inline:auto;padding:0 16px 40px}
+.bande{height:4px;display:flex;margin:0 -16px 0}
+.bande i{flex:1}
+.bande i:nth-child(1){background:var(--urg)}
+.bande i:nth-child(2){background:var(--dep)}
+.bande i:nth-child(3){background:var(--pro)}
+.bande i:nth-child(4){background:var(--ene)}
+.screen{padding:20px 0 0;min-height:60vh}
+
+/* ----- la coquille de l'application -----
+   Installee sur l'ecran d'accueil, la page n'a plus de barre
+   d'adresse : elle occupe l'ecran, et doit se comporter comme une
+   application — pas de rebond elastique en haut de liste, pas de
+   surlignage bleu au toucher, pas de selection de texte sur un
+   bouton qu'on maintient une demi-seconde de trop. */
+html{height:100%}
+body{min-height:100dvh;overscroll-behavior-y:none}
+button,.opt,.tile,.chip,.cta{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.opt,.cta,.tile,.chip{-webkit-user-select:none;user-select:none}
+@media (display-mode:standalone){
+  /* la barre d'adresse est partie : on reprend sa place, et le lien de
+     retour vers le site n'a plus de sens dans une application */
+  .app{padding-bottom:max(env(safe-area-inset-bottom,0px),24px)}
+  .pied .hors-app{display:none}
+}
+
+/* ----- la banniere d'installation -----
+   Elle n'apparait que si le telephone sait installer, et une seule
+   fois : refusee, elle ne revient pas. */
+.installer{position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
+  gap:12px;align-items:center;background:var(--surface);border-top:1px solid var(--line);
+  box-shadow:0 -8px 24px -18px rgba(0,0,0,.5);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.installer.on{display:flex}
+.installer p{flex:1;font-size:.86rem;line-height:1.35;color:var(--ink-2)}
+.installer p b{display:block;font-family:var(--display);font-weight:600;color:var(--ink);font-size:.94rem}
+.installer button{border:0;border-radius:9px;padding:11px 15px;font-family:var(--display);
+  font-weight:600;font-size:.9rem;background:var(--accent);color:var(--surface);cursor:pointer}
+.installer button.non{background:none;color:var(--ink-3);padding:11px 4px;font-weight:400}
+.pied{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);font-size:.74rem;color:var(--ink-3);line-height:1.5}
+.pied a{color:var(--ink-3)}
+.recap{font-family:var(--mono);font-size:.74rem;line-height:1.6;background:var(--surface);border:1px solid var(--line);
+  border-radius:10px;padding:13px;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left;margin-top:14px;
+  max-height:240px;overflow-y:auto}
+.dots{display:flex;gap:5px;margin-bottom:16px}
+.dots i{height:3px;flex:1;background:var(--line-strong);border-radius:2px}
+.dots i.on{background:var(--accent)}
+.q{font-family:var(--display);font-size:1.12rem;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.qs{font-size:.83rem;color:var(--ink-3);margin:5px 0 14px}
+.qn{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:20px 0 8px}
+.col{display:flex;flex-direction:column;gap:8px}
+.opt,.tile,.chip{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);cursor:pointer;text-align:left}
+.opt{border-radius:10px;padding:14px 14px 14px 15px;border-left-width:4px;border-left-style:solid}
+.opt b{display:block;font-family:var(--display);font-weight:600;font-size:1rem}
+.opt span{display:block;font-size:.8rem;color:var(--ink-3);margin-top:2px;line-height:1.35}
+.opt.u{border-left-color:var(--urg)} .opt.u b{color:var(--urg)}
+.opt.d{border-left-color:var(--dep)} .opt.d b{color:var(--dep)}
+.opt.p{border-left-color:var(--pro)} .opt.p b{color:var(--pro)}
+.opt.e{border-left-color:var(--ene)} .opt.e b{color:var(--ene)}
+.opt.a{border-left-color:var(--ink-3)} .opt.a b{color:var(--ink)}
+.marque{display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line);
+  padding-bottom:13px;margin-bottom:16px;text-decoration:none;color:inherit}
+/* Le titre ramene a l'accueil : c'est la seule sortie depuis le premier ecran. */
+.marque svg{width:27px;height:27px;flex:none;color:var(--ink);transition:color .18s}
+.marque:hover svg{color:var(--chaud)}
+.marque strong{font-family:var(--display);font-weight:600;font-size:1.1rem;letter-spacing:-.012em;color:var(--ink);display:block}
+.marque span span{display:block}
+.marque span span+span,.marque>span>span:last-child{font-size:.6rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink-3);margin-top:1px}
+.etoile{background:none;border:0;padding:0;margin-top:14px;text-align:left;font:inherit;font-size:.79rem;
+  color:var(--ene);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.defi{margin-top:10px;border:1px solid var(--ene);background:var(--ene-soft);border-radius:9px;padding:13px 14px}
+.defi p{font-size:.79rem;line-height:1.5;color:var(--ene)}
+.defi p+p{margin-top:8px}
+.defi .loi{font-family:var(--mono);font-size:.68rem;letter-spacing:.03em}
+.opt.n{border-left-color:var(--line-strong);padding:12px 14px}
+.opt.n b{font-size:.95rem}
+.opt[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{border-radius:10px;padding:11px 11px;font-size:.84rem;line-height:1.3}
+.tile.wide{grid-column:1/-1}
+.tile[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border-radius:999px;padding:8px 13px;font-size:.82rem}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.fld{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem}
+textarea.fld{min-height:82px;resize:vertical;line-height:1.45}
+.fld::placeholder{color:var(--ink-3)}
+.cta{width:100%;padding:14px;background:var(--accent);color:var(--surface);border:0;border-radius:10px;font-family:var(--display);font-weight:600;font-size:1rem;cursor:pointer;margin-top:18px;display:block;text-align:center;text-decoration:none}
+.cta.urg{background:var(--urg)}
+.cta[disabled]{opacity:.45;cursor:not-allowed}
+.back{background:none;border:0;color:var(--ink-3);font:inherit;font-size:.8rem;cursor:pointer;padding:0 0 12px;display:block}
+.note{font-size:.76rem;color:var(--ink-3);line-height:1.45;margin-top:12px}
+.cbx{display:flex;gap:9px;align-items:flex-start;font-size:.8rem;color:var(--ink-2);line-height:1.4;margin-top:14px;cursor:pointer}
+.cbx input{margin-top:2px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.banner{border-radius:12px;padding:16px;background:var(--urg-soft);border:1px solid var(--urg)}
+.banner b{font-family:var(--display);font-size:1.05rem;color:var(--urg);display:block}
+.banner p{font-size:.84rem;color:var(--urg);margin-top:5px;line-height:1.4}
+.ok{text-align:center;padding-top:26px}
+.ok .mark{width:52px;height:52px;border-radius:50%;background:var(--pro-soft);border:1px solid var(--pro);color:var(--pro);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem}
+.ref{font-family:var(--mono);font-size:.82rem;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px;margin-top:14px;display:block}
+*:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ces trois-là passent après l'écran repris du prototype, pour le surcharger */
+.ok .mark-att{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.ok .mark-err{background:var(--dep-soft);border-color:var(--dep);color:var(--dep)}
+.cta.sec{background:none;color:var(--ink);border:1px solid var(--line-strong);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="bande"><i></i><i></i><i></i><i></i></div>
+  <div class="screen" id="screen"></div>
+  <p class="pied">
+    <strong>VD SERVICES</strong>  — consulting, oversight, coordination and assistance. Mandelieu-la-Napoule, Fréjus – Nice area. Your details are used only to handle this request and are passed on only to the firm selected. Kept for three years.  <a class="hors-app" href="/en/">Back to the website</a>
+  </p>
+</div>
+
+<script>
+/* -------------------------------------------------------------------------
+   À RENSEIGNER AVANT LA MISE EN LIGNE
+   endpoint      : adresse qui reçoit la demande (fonction Vercel, Formspree,
+                   Make, n8n…). Tant qu'elle est vide, la demande part par la
+                   messagerie du visiteur, et la page le dit franchement.
+   mail          : adresse de repli, utilisée dans ce cas.
+   tel           : votre ligne, pour les rappels et les boutons « appeler ».
+   telAstreinte  : numéro affiché en urgence. telSecond : le second contact.
+                   Tant que le réseau d'astreinte n'est pas constitué, les
+                   deux pointent sur votre ligne : en urgence, mieux vaut
+                   sonner chez vous que dans le vide.
+   ------------------------------------------------------------------------- */
+/* libellés des corps de métier tels qu'ils apparaissent dans la plateforme :
+   l'écran dit « Eau, fuite, WC » au demandeur, le récapitulatif dit « Plomberie ». */
+var METIERS={plomberie:"Plumbing",electricite:"Electrical",chauffage:"Heating",
+  clim:"Air conditioning, ventilation",serrurerie:"Locksmithing",couverture:"Roofing, waterproofing",
+  peinture:"Painting",platrerie:"Plastering",carrelage:"Tiling, flooring",menuiserie:"Carpentry",
+  verts:"Gardens and grounds",menage:"Cleaning",autre:"Other"};
+var CONFIG={
+  /* La base. La clé ci-dessous est la clé PUBLIQUE : elle est faite pour
+     partir dans le navigateur de chaque visiteur, et ce sont les règles
+     du SQL qui protègent. Elle n'autorise qu'une chose, déposer une
+     demande ; elle ne permet d'en relire aucune. */
+  base:"https://xunxejadiyaodhwbjqrn.supabase.co",
+  cle:"sb_publishable_wkNhgamhbc4wzJ-L_aR73g_hlTHCdIl",
+  mail:"vdpy05@gmail.com",
+  tel:"+33646843082",
+  telAstreinte:"+33646843082",
+  telSecond:"+33646843082"
+};
+
+var TRADES=[
+ {id:"plomberie",l:"Water, leak, toilet",u:1},
+ {id:"electricite",l:"Electrics, power cut",u:1},
+ {id:"chauffage",l:"Heating, boiler",u:1},
+ {id:"clim",l:"Air con, ventilation",u:0},
+ {id:"serrurerie",l:"Lock, door, shutter",u:1},
+ {id:"couverture",l:"Roof, water ingress",u:1},
+ {id:"peinture",l:"Paint, walls",u:0},
+ {id:"platrerie",l:"Partition, ceiling",u:0},
+ {id:"carrelage",l:"Tiles, flooring",u:0},
+ {id:"menuiserie",l:"Windows, joinery",u:0},
+ {id:"verts",l:"Gardens and grounds",u:0},
+ {id:"menage",l:"Cleaning",u:0},
+ {id:"autre",l:"Other, I'm not sure",u:1}
+];
+var PRESTA={
+ plomberie:["Full bathroom refit","Shower replacing the bath","Toilet replacement","Taps and fittings","Water heater","Stack or waste pipes"],
+ electricite:["Consumer unit brought up to code","Full pipework replacement","Sockets and light points","Door entry or video entry","Communal area lighting","EV charging point"],
+ chauffage:["Boiler replacement","Radiator replacement","Heat pump","Underfloor heating","Power flush, servicing","Communal boiler room"],
+ clim:["Air conditioning installation","Split unit replacement","Ventilation system","Servicing, refrigerant top-up"],
+ serrurerie:["Lock replacement","Security door","Entrance door, access control","Railings, bars","Roller shutter"],
+ couverture:["Roof renewal","Leak detection","Gutters, flashings","Terrace waterproofing","Roof window","Moss removal"],
+ peinture:["Full interior repaint","Communal area painting","Façade renovation","Plaster skim, wallpaper","Woodwork and frames"],
+ platrerie:["Partitions, new room","Suspended ceiling","Internal insulation","Crack repair","Wall lining"],
+ carrelage:["Floor tiling","Wall tiling","Wood or laminate flooring","Vinyl flooring","Floor levelling","Outdoor terrace"],
+ menuiserie:["Fitted kitchen","Worktop","Appliance installation","Window replacement","Roller shutters","Front door","Wardrobes and storage"],
+ verts:["Grounds maintenance","Pruning, felling","New planting beds","Fencing, gate","Automatic watering"],
+ menage:["Regular communal cleaning","Office or premises cleaning","Post-construction cleaning",
+   "Making good after damage","Glazing and glass surfaces","Car park and bin store",
+   "Pressure washing of surfaces and façades","Disinfection and clearance"],
+ autre:["I'd rather describe it below"]
+};
+var GESTES=[
+ {id:"pac_ae",l:"Air-to-water heat pump",t:["chauffage"]},
+ {id:"pac_aa",l:"Reversible air-to-air unit",t:["clim"]},
+ {id:"cet",l:"Heat pump water heater",t:["plomberie"]},
+ {id:"granules",l:"Pellet stove or boiler",t:["chauffage"]},
+ {id:"combles",l:"Loft insulation",t:["platrerie"]},
+ {id:"murs_int",l:"Internal wall insulation",t:["platrerie"]},
+ {id:"ite",l:"External wall insulation",t:["peinture","platrerie"]},
+ {id:"plancher",l:"Ground floor insulation",t:["platrerie"]},
+ {id:"fenetres",l:"Windows and joinery",t:["menuiserie"]},
+ {id:"vmc",l:"Heat recovery ventilation",t:["clim"]},
+ {id:"solaire",l:"Solar panels",t:["electricite"]},
+ {id:"audit",l:"Energy audit",t:["autre"]},
+ {id:"ampleur",l:"Whole-home renovation, I don't know where to start",w:1,t:["platrerie","chauffage","menuiserie"]}
+];
+var ENTITES={commune:"Town or city council",epci:"Inter-municipal authority",departement:"Department",region:"Region",
+  ccas:"Social services centre",bailleur:"Social housing landlord",scolaire:"School",
+  sante:"Healthcare or care home",syndicat:"Joint authority",autre:"Other public body"};
+var FONCTIONS=["Technical services manager","Procurement officer","Project officer","Estates manager",
+  "Buildings manager","Town hall secretary","Elected member","Other"];
+var NATURES={depannage:"Urgent repair",entretien:"Routine maintenance",travaux:"Works",contrat:"Recurring contract"};
+var MONTANTS={m5:"under €5,000 excl. VAT",m40:"€5,000 to €40,000 excl. VAT",m100:"€40,000 to €100,000 excl. VAT",
+  mplus:"over €100,000 excl. VAT",inconnu:"To be determined"};
+var PIECES=["Itemised quote","Technical statement","Ten-year structural insurance certificate","URSSAF compliance certificate",
+  "Sworn statement on undeclared labour","Company registration extract","Bank details","DC1 and DC2 forms","References for similar work"];
+var LOGEMENTS={maison:"House",appart:"Flat",copro:"The building's communal areas"};
+var ANCIENS={plus15:"Over 15 years",entre:"Between 2 and 15 years",moins2:"Under 2 years"};
+var OCCUPS={occupant:"Owner-occupier",bailleur:"Landlord",locataire:"Tenant",syndicat:"Owners' association"};
+var USAGES={principale:"Main residence",secondaire:"Second home",locatif:"Let property"};
+var CHAUFFAGES={fioul:"Heating oil",gaz:"Gas",elec:"Electric",bois:"Wood or pellets",pac:"Heat pump",inconnu:"I don't know"};
+var DPES={ab:"A or B",cd:"C or D",e:"E",fg:"F or G, poorly rated",inconnu:"I don't know"};
+var REVENUS={r1:"under €22,000",r2:"22 000 à 30 000 €",r3:"30 000 à 45 000 €",r4:"45 000 à 65 000 €",r5:"over €65,000",np:"I'd rather not say"};
+var BLOC_DEFI='<div class="defi">'
+ +'<p><strong>Who pays?</strong> Energy suppliers. The energy savings certificate scheme obliges them to fund work that lowers their own customers\' consumption.</p>'
+ +'<p>Fuel, heating oil, gas, electricity: TotalEnergies, EDF, Engie and the fuel retailers are what the scheme calls the obliged parties. If they do not fund enough work, they pay a penalty to the State.</p>'
+ +'<p>This funding stacks with public renovation grants. The amount depends on the work, the property and the household\'s income: it is worked out case by case, before the quote is signed.</p>'
+ +'<p class="loi">French Act no. 2005-781 of 13 July 2005, articles L. 221-1 et seq. of the Energy Code.</p>'
+ +'</div>';
+var STATUTS=[
+ {id:"occupant",l:"Owner-occupier"},
+ {id:"locataire",l:"Tenant"},
+ {id:"bailleur",l:"Landlord"},
+ {id:"syndic",l:"Managing agent"},
+ {id:"conseil",l:"Owners' committee"},
+ {id:"pro",l:"Shop or business"}
+];
+var LIEUX={privatif:"Private area",commun:"Communal areas",inconnu:"To be confirmed on site"};
+var PROJETS=[
+ {id:"appart",l:"Full flat renovation",w:1,g:["Full renovation","Making good before letting","Reconfiguring the rooms"],t:["platrerie","electricite","plomberie","peinture","carrelage","menuiserie"]},
+ {id:"chauff",l:"Air con, heating, boiler",t:["chauffage","clim"]},
+ {id:"cuisine",l:"Kitchen",t:["plomberie","electricite","menuiserie","carrelage"]},
+ {id:"rafraich",l:"Paint, floors, freshening up",t:["peinture","platrerie","carrelage"]},
+ {id:"communs",l:"Hall, stairwell",g:["Entrance hall refurbishment","Whole stairwell","Accessibility works"],t:["peinture","platrerie","electricite"]},
+ {id:"facade",l:"Façade, renovation",g:["Full façade renovation","Spot repairs","External wall insulation"],t:["peinture","couverture"]},
+ {id:"toiture",l:"Roof, waterproofing",g:["Full renewal","Spot repair"],t:["couverture"]},
+ {id:"normes",l:"Electrical compliance upgrade",t:["electricite"]},
+ {id:"sdb",l:"Bathroom",t:["plomberie","carrelage","electricite","platrerie"]},
+ {id:"menuis",l:"Windows, shutters, doors",t:["menuiserie","serrurerie"]},
+ {id:"exter",l:"Outdoors, grounds",t:["verts"]},
+ {id:"entretien",l:"Regular cleaning and upkeep",g:["Regular maintenance contract","One-off job","Full making good"],t:["menage"]},
+ {id:"autre",l:"Another project, to describe",t:[]}
+];
+function esc(v){return String(v||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var DELAIS={asap:"As soon as possible",m3:"1 to 3 months",m6:"3 to 6 months",info:"Just looking into it"};
+var CRENEAUX={asap:"As soon as possible",matin:"Mornings",aprem:"Afternoons",soir:"Evenings"};
+
+
+var S,step,REF,ENVOI,RECAP,RESCODE,FICHIERS=[],lastStep=null;
+/* le prototype mesurait le temps de remplissage : sans objet ici */
+function startClock(){}
+function stopClock(){}
+function bump(){}
+function paint(){}
+
+function param(n){
+  try{return new URLSearchParams(location.search).get(n)||""}catch(e){return ""}
+}
+function init(){
+  S={intent:null,defi:false,projet:null,trades:[],presta:[],gestes:[],entite:null,organisme:"",service:"",fonction:"",nature:null,site:"",nbDevis:null,montant:null,dateLimite:"",pieces:[],refInterne:"",logement:null,anciennete:null,occupation:null,usage:null,personnes:null,revenus:null,chauffage:null,dpe:null,devisSigne:null,lieu:null,statut:null,residence:"",adresse:"",precision:"",ag:null,delai:null,budget:null,description:"",nom:"",tel:"",email:"",photo:false,creneau:null,consent:false};
+  step="intent";REF="";ENVOI="";RECAP="";FICHIERS=[];
+  RESCODE=param("res");
+  if(RESCODE)S.residence=RESCODE.replace(/-/g," ").replace(/\b\w/g,function(c){return c.toUpperCase()});
+  var b=param("besoin")||param("i");
+  if(["urgence","depannage","projet","energie","public"].indexOf(b)>=0){
+    S.intent=b;step=b==="public"?"entite":"trade";
+  }
+  render();
+}
+
+function dots(){
+  var seq = S.intent==="urgence" ? ["intent","trade","call"]
+          : S.intent==="projet" ? ["intent","trade","where","scope","contact","done"]
+          : S.intent==="energie" ? ["intent","trade","logement","foyer","contact","done"]
+          : S.intent==="public" ? ["intent","entite","besoin","consultation","contact","done"]
+          : ["intent","trade","where","contact","done"];
+  var i=seq.indexOf(step);
+  return '<div class="dots">'+seq.map(function(_,n){return '<i class="'+(n<=i?"on":"")+'"></i>'}).join("")+'</div>';
+}
+function back(to){return '<button class="back" data-go="'+to+'">← back</button>'}
+function aides(S){
+  var r=[],proprio=(S.occupation==="occupant"||S.occupation==="bailleur"),vieux=(S.anciennete==="plus15"||S.anciennete==="entre");
+  if(S.devisSigne==="Yes")r.push("Quote already signed: most grants must be applied for beforehand. Check this first, it is the blocking point.");
+  if(S.occupation==="locataire")r.push("Tenant: the grants are applied for by the owner. They must be brought in before any pricing.");
+  if(S.occupation==="syndicat")r.push("Communal areas: the application is in the owners' association's name, with a vote at the general meeting, and a scheme specific to managed buildings.");
+  if(S.anciennete==="moins2")r.push("Property under two years old: the main renovation grants do not apply.");
+  if(S.usage==="secondaire")r.push("Second home: the main State grant is reserved for main residences. Energy savings certificates remain available.");
+  if(proprio&&vieux&&S.usage!=="secondaire")r.push("Profile eligible for the main State renovation grant, subject to the rates in force and an RGE-certified firm.");
+  if(vieux)r.push("Energy savings certificates, funded by the energy suppliers: stackable and open to all income levels.");
+  if((S.chauffage==="fioul"||S.chauffage==="gaz")&&(S.gestes.indexOf("pac_ae")>=0||S.gestes.indexOf("granules")>=0))
+    r.push("Moving off a fossil fuel to a heat pump or wood pellets: the best-supported case, with enhanced grants.");
+  if(S.revenus==="r1"||S.revenus==="r2")r.push("Lower income: enhanced grant rates, and an advance on costs under some schemes.");
+  if(S.gestes.length>=2||S.gestes.indexOf("ampleur")>=0||S.dpe==="fg")
+    r.push("Several measures, or a poorly rated property: large-scale renovation route, with a mandatory audit and support adviser. Full coordination work.");
+  if(vieux)r.push("Reduced VAT on energy improvement work, and an interest-free loan for a main residence.");
+  r.push("Local grants from the region, the department and the town: to be checked case by case, they often stack.");
+  r.push("Amounts and conditions to be confirmed at the visit. The rates change every year: no figure should be quoted before checking.");
+  return r;
+}
+function okContact(){
+  var base=S.tel.length>=8&&S.nom.length>1&&S.consent;
+  if(S.intent==="public")return base&&S.email.indexOf("@")>0;
+  return base;
+}
+function grp(titre,list,tid){
+  return '<p class="qn">'+titre+'</p><div class="chips">'+list.map(function(l){
+    var k=tid+"|"+l;
+    return '<button class="chip" data-presta="'+esc(k)+'" aria-pressed="'+(S.presta.indexOf(k)>=0)+'">'+l+'</button>';
+  }).join("")+'</div>';
+}
+function tiles(list){
+  return '<div class="grid">'+list.map(function(t){
+    var on=S.trades.indexOf(t.id)>=0;
+    return '<button class="tile" data-trade="'+t.id+'" aria-pressed="'+on+'">'+t.l+'</button>';
+  }).join("")+'</div>';
+}
+
+/* L'arc et sa cle de voute : le meme dessin que site/logo.svg, pose ici
+   pour que le formulaire porte la marque et pas seulement son nom. */
+var MARQUE='<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
+  +'<g fill="currentColor">'
+  +'<path d="M18 86 L18 54 A32 32 0 0 1 37.50 24.54 L42.97 37.43 A18 18 0 0 0 32 54 L32 86 Z"/>'
+  +'<path d="M82 86 L82 54 A32 32 0 0 0 62.50 24.54 L57.03 37.43 A18 18 0 0 1 68 54 L68 86 Z"/>'
+  +'</g>'
+  +'<path d="M38.26 17.86 L61.74 17.86 L54.79 39.26 A15.5 15.5 0 0 0 45.21 39.26 Z" fill="var(--chaud)"/>'
+  +'</svg>';
+
+var lastStep=null;
+function render(){
+  var h="",sc=document.getElementById("screen");
+  var keep=(lastStep===step)?sc.scrollTop:0;
+  if(step==="intent"){
+    h+=dots();
+    h+='<a class="marque" href="/">'+MARQUE
+      +'<span><strong>VD Services</strong><span>Consulting · Oversight · Coordination</span></span></a>';
+    h+='<p class="q">What\'s happening?</p><p class="qs">One answer only. If it\'s serious, you won\'t have anything to fill in.</p>';
+    h+='<div class="col">'
+      +'<button class="opt u" data-intent="urgence"><b>It\'s an emergency</b><span>Water running, no power, a door that won\'t open, damage happening now</span></button>'
+      +'<button class="opt d" data-intent="depannage"><b>I need a repair</b><span>Something isn\'t working properly, it can wait until tomorrow or the day after</span></button>'
+      +'<button class="opt p" data-intent="projet"><b>I have a renovation project</b><span>Renovation, compliance work, improvements, quotes to compare</span></button>'
+      +'<button class="opt e" data-intent="energie"><b>Funded energy works <sup>*</sup></b><span>Heat pump, insulation, windows, solar. We work out your funding before quoting.</span></button>'
+      +'</div>';
+    h+='<button class="etoile" data-defi="1">* Funded by whom? How the scheme works</button>';
+    if(S.defi)h+=BLOC_DEFI;
+    h+='<div class="col" style="margin-top:20px">'
+      +'<button class="opt a" data-intent="public"><b>I\'m a public body</b><span>Council, inter-municipal body, social landlord, institution. Tendering with three quotes or more.</span></button>'
+      +'</div>';
+    h+='<p class="note"><strong>VD SERVICES</strong> — consulting, oversight, coordination and assistance. Local network of tradespeople, free quotes, insured work.</p>';
+  }
+  else if(step==="trade"){
+    h+=dots()+back("intent");
+    if(S.intent==="energie"){
+      h+='<p class="q">Funded energy works</p><p class="qs">Tick whatever appeals, even if you\'re not sure. We then check what is funded, and what it leaves you to pay.</p>';
+      h+='<div class="grid">'+GESTES.map(function(g){
+        return '<button class="tile'+(g.w?" wide":"")+'" data-geste="'+g.id+'" aria-pressed="'+(S.gestes.indexOf(g.id)>=0)+'">'+g.l+'</button>';
+      }).join("")+'</div>';
+      h+='<p class="note" style="margin-top:12px">Public grants depend on the property and the household\'s income. Two screens are enough to see where you stand.</p>';
+      h+='<button class="cta" data-go="logement" '+(S.gestes.length?"":"disabled")+'>Continue</button>';
+    }else if(S.intent==="projet"){
+      h+='<p class="q">What\'s the project?</p><p class="qs">Take the closest one, you can refine it on the next screen.</p>';
+      h+='<div class="grid">'+PROJETS.map(function(pr){
+        return '<button class="tile'+(pr.w?" wide":"")+'" data-projet="'+pr.id+'" aria-pressed="'+(S.projet===pr.id)+'">'+pr.l+'</button>';
+      }).join("")+'</div>';
+    }else{
+      var urg=S.intent==="urgence";
+      h+='<p class="q">'+(urg?"What exactly is happening?":"What's wrong?")+'</p>';
+      h+='<p class="qs">One answer, even a rough one.</p>';
+      h+=tiles(urg?TRADES.filter(function(t){return t.u}):TRADES);
+    }
+  }
+  else if(step==="call"){
+    h+=dots()+back("trade");
+    h+='<div class="banner"><b>Don\'t write anything, call.</b><p>You are put straight through to the nearest repair firm. Turn off the water or the power if you can do it safely, then call.</p></div>';
+    h+='<a class="cta urg" href="tel:'+CONFIG.telAstreinte+'">Call the on-call firm</a>';
+    h+='<p class="qn">Nobody answering?</p>';
+    h+='<a class="cta" style="margin-top:0;background:var(--ink)" href="tel:'+CONFIG.telSecond+'">Call the second contact</a>';
+    h+='<p class="note" style="margin-top:8px">Two on-call firms are lined up for every trade. If neither answers, leave your number below.</p>';
+    h+='<p class="qn">Still nobody?</p>';
+    h+='<input class="fld" id="u-tel" type="tel" inputmode="tel" placeholder="Your number" value="'+esc(S.tel)+'" data-set="tel">';
+    h+='<button class="cta" data-go="done" '+(S.tel.length>=8?"":"disabled")+'>Call me back right away</button>';
+    h+='<p class="note">The numbers shown are those of the two on-call firms for the trade you chose, nearest to the address. The request still reaches VD Services as a direct connection.</p>';
+  }
+  else if(step==="where"){
+    h+=dots()+back("trade");
+    h+='<p class="q">Where is the problem?</p><p class="qs">This is what decides who takes the work on.</p>';
+    h+='<div class="col">'
+      +'<button class="opt n" data-lieu="privatif" aria-pressed="'+(S.lieu==="privatif")+'"><b>In my home</b><span>Kitchen, bathroom, rooms, my windows</span></button>'
+      +'<button class="opt n" data-lieu="commun" aria-pressed="'+(S.lieu==="commun")+'"><b>In the communal areas</b><span>Hall, stairs, car park, roof, façade, bin store</span></button>'
+      +'<button class="opt n" data-lieu="inconnu" aria-pressed="'+(S.lieu==="inconnu")+'"><b>I don\'t know</b><span>We\'ll work it out on site</span></button>'
+      +'</div>';
+    h+='<p class="qn">You are</p><div class="chips">'+STATUTS.map(function(s){
+      return '<button class="chip" data-statut="'+s.id+'" aria-pressed="'+(S.statut===s.id)+'">'+s.l+'</button>';
+    }).join("")+'</div>';
+    if(S.lieu==="commun"&&S.intent==="projet"){
+      h+='<p class="qn">Is a vote at the general meeting planned?</p><div class="chips">'
+        +['oui','non','not sure'].map(function(v){return '<button class="chip" data-ag="'+v+'" aria-pressed="'+(S.ag===v)+'">'+v+'</button>'}).join("")
+        +'</div>';
+    }
+    h+='<p class="qn">Address</p>';
+    h+='<div class="col"><input class="fld" id="w-res" placeholder="Building name (optional)" value="'+esc(S.residence)+'" data-set="residence">'
+      +'<input class="fld" id="w-adr" placeholder="Street and number, postcode" value="'+esc(S.adresse)+'" data-set="adresse">'
+      +'<input class="fld" id="w-pre" placeholder="Building, floor, door" value="'+esc(S.precision)+'" data-set="precision"></div>';
+    h+='<button class="cta" data-go="'+(S.intent==="projet"?"scope":"contact")+'" '+(S.lieu&&S.statut&&S.adresse.length>4?"":"disabled")+'>Continue</button>';
+  }
+  else if(step==="scope"){
+    h+=dots()+back("where");
+    h+='<p class="q">What\'s planned?</p><p class="qs">Tick what matches, roughly is fine. Nothing fits? The free text box below is there for that.</p>';
+    var pr=PROJETS.filter(function(x){return x.id===S.projet})[0];
+    if(pr&&pr.g)h+=grp("All of it",pr.g,"global");
+    S.trades.forEach(function(id){
+      var t=TRADES.filter(function(x){return x.id===id})[0];
+      if(t&&PRESTA[id])h+=grp(t.l,PRESTA[id],id);
+    });
+    var reste=TRADES.filter(function(t){return S.trades.indexOf(t.id)<0&&t.id!=="autre"});
+    if(reste.length){
+      h+='<p class="qn">Another trade involved?</p><div class="chips">'+reste.map(function(t){
+        return '<button class="chip" data-addtrade="'+t.id+'">+ '+t.l+'</button>'}).join("")+'</div>';
+    }
+    h+='<p class="qn">By when?</p><div class="chips">'+Object.keys(DELAIS).map(function(k){
+      return '<button class="chip" data-delai="'+k+'" aria-pressed="'+(S.delai===k)+'">'+DELAIS[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Budget envisagé <span style="text-transform:none;letter-spacing:0">(facultatif)</span></p><div class="chips">'
+      +["under €5k","5 à 15 k€","15 à 50 k€","over €50k","I don't know"].map(function(b){
+        return '<button class="chip" data-budget="'+b+'" aria-pressed="'+(S.budget===b)+'">'+b+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Précisez si besoin <span style="text-transform:none;letter-spacing:0">(facultatif)</span></p>';
+    h+='<textarea class="fld" id="s-desc" rows="3" data-set="description" placeholder="E.g. empty 65 m2 flat to be fully redone before letting, floors and paintwork included.">'+esc(S.description)+'</textarea>';
+    h+='<p class="note">Two lines are enough. Your keyboard\'s microphone works too.</p>';
+    h+='<button class="cta" data-go="contact" '+(S.delai&&(S.presta.length||S.description.length>5)?"":"disabled")+'>Continue</button>';
+  }
+  else if(step==="entite"){
+    h+=dots()+back("intent");
+    h+='<p class="q">Your organisation</p><p class="qs">So we can match the tender to your purchasing rules.</p>';
+    h+='<p class="qn">Type of organisation</p><div class="chips">'+Object.keys(ENTITES).map(function(k){
+      return '<button class="chip" data-entite="'+k+'" aria-pressed="'+(S.entite===k)+'">'+ENTITES[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Details</p><div class="col">'
+      +'<input class="fld" id="pu-org" placeholder="Name of the authority or organisation" value="'+esc(S.organisme)+'" data-set="organisme">'
+      +'<input class="fld" id="pu-serv" placeholder="Department (optional)" value="'+esc(S.service)+'" data-set="service"></div>';
+    h+='<p class="qn">Your role</p><div class="chips">'+FONCTIONS.map(function(f){
+      return '<button class="chip" data-fonction="'+esc(f)+'" aria-pressed="'+(S.fonction===f)+'">'+f+'</button>'}).join("")+'</div>';
+    h+='<button class="cta" data-go="besoin" '+(S.entite&&S.organisme.length>2&&S.fonction?"":"disabled")+'>Continue</button>';
+  }
+  else if(step==="besoin"){
+    h+=dots()+back("entite");
+    h+='<p class="q">The requirement</p><p class="qs">Several trades are possible; we will build one lot per trade.</p>';
+    h+='<p class="qn">Type of work</p><div class="chips">'+Object.keys(NATURES).map(function(k){
+      return '<button class="chip" data-nature="'+k+'" aria-pressed="'+(S.nature===k)+'">'+NATURES[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Trades involved</p>';
+    h+='<div class="grid">'+TRADES.map(function(t){
+      return '<button class="tile" data-trade="'+t.id+'" aria-pressed="'+(S.trades.indexOf(t.id)>=0)+'">'+t.l+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Site concerned</p><div class="col">'
+      +'<input class="fld" id="pu-site" placeholder="Building, school, sports hall, social housing…" value="'+esc(S.site)+'" data-set="site">'
+      +'<input class="fld" id="pu-adr" placeholder="Address, postcode" value="'+esc(S.adresse)+'" data-set="adresse"></div>';
+    h+='<div class="col" style="margin-top:14px"><textarea class="fld" id="pu-desc" rows="3" data-set="description" placeholder="Describe the need in two lines.">'+esc(S.description)+'</textarea></div>';
+    h+='<button class="cta" data-go="consultation" '+(S.nature&&S.trades.length&&S.adresse.length>4?"":"disabled")+'>Continue</button>';
+  }
+  else if(step==="consultation"){
+    h+=dots()+back("besoin");
+    h+='<p class="q">The tender</p><p class="qs">We consult our network and send you comparable quotes, in the same format.</p>';
+    h+='<p class="qn">How many quotes do you need?</p><div class="chips">'+["1","2","3","4 or more"].map(function(v){
+      return '<button class="chip" data-nbdevis="'+esc(v)+'" aria-pressed="'+(S.nbDevis===v)+'">'+v+'</button>'}).join("")+'</div>';
+    h+='<p class="note">Three is common practice to justify competition for a purchase without a formal procedure. You know the threshold that applies where you are better than we do.</p>';
+    h+='<p class="qn">Estimated value</p><div class="chips">'+Object.keys(MONTANTS).map(function(k){
+      return '<button class="chip" data-montant="'+k+'" aria-pressed="'+(S.montant===k)+'">'+MONTANTS[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Deadline for submissions</p>';
+    h+='<input class="fld" id="pu-date" type="date" value="'+esc(S.dateLimite)+'" data-set="dateLimite">';
+    h+='<p class="qn">Documents required with each quote</p><div class="chips">'+PIECES.map(function(pc){
+      return '<button class="chip" data-piece="'+esc(pc)+'" aria-pressed="'+(S.pieces.indexOf(pc)>=0)+'">'+pc+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Your internal reference <span style="text-transform:none;letter-spacing:0">(optional)</span></p>';
+    h+='<input class="fld" id="pu-ref" placeholder="2026-TX-014" value="'+esc(S.refInterne)+'" data-set="refInterne">';
+    h+='<button class="cta" data-go="contact" '+(S.nbDevis&&S.montant?"":"disabled")+'>Continue</button>';
+  }
+  else if(step==="logement"){
+    h+=dots()+back("trade");
+    h+='<p class="q">The property</p><p class="qs">It decides eligibility, before income even comes into it.</p>';
+    h+='<p class="qn">What kind of property?</p><div class="chips">'+Object.keys(LOGEMENTS).map(function(k){
+      return '<button class="chip" data-logement="'+k+'" aria-pressed="'+(S.logement===k)+'">'+LOGEMENTS[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Age of the property</p><div class="chips">'+Object.keys(ANCIENS).map(function(k){
+      return '<button class="chip" data-anciennete="'+k+'" aria-pressed="'+(S.anciennete===k)+'">'+ANCIENS[k]+'</button>'}).join("")+'</div>';
+    if(S.anciennete==="moins2")h+='<p class="note">A property under two years old does not qualify for the main renovation grants. We will look at what is still possible.</p>';
+    h+='<p class="qn">You are</p><div class="chips">'+Object.keys(OCCUPS).map(function(k){
+      return '<button class="chip" data-occupation="'+k+'" aria-pressed="'+(S.occupation===k)+'">'+OCCUPS[k]+'</button>'}).join("")+'</div>';
+    if(S.occupation==="locataire")h+='<p class="note">As a tenant you cannot apply for the grants yourself. We can put the application together with your landlord.</p>';
+    h+='<p class="qn">How the property is used</p><div class="chips">'+Object.keys(USAGES).map(function(k){
+      return '<button class="chip" data-usage="'+k+'" aria-pressed="'+(S.usage===k)+'">'+USAGES[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Where</p>';
+    h+='<div class="col"><input class="fld" id="e-res" placeholder="Building name (optional)" value="'+esc(S.residence)+'" data-set="residence">'
+      +'<input class="fld" id="e-adr" placeholder="Street and number, postcode" value="'+esc(S.adresse)+'" data-set="adresse"></div>';
+    h+='<button class="cta" data-go="foyer" '+(S.logement&&S.anciennete&&S.occupation&&S.usage&&S.adresse.length>4?"":"disabled")+'>Continue</button>';
+  }
+  else if(step==="foyer"){
+    h+=dots()+back("logement");
+    h+='<p class="q">Your situation</p><p class="qs">These answers are used only to estimate grants. Nothing is passed to a third party.</p>';
+    h+='<p class="qn">People in the household</p><div class="chips">'+["1","2","3","4","5 or more"].map(function(v){
+      return '<button class="chip" data-personnes="'+esc(v)+'" aria-pressed="'+(S.personnes===v)+'">'+v+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Household reference tax income</p><div class="chips">'+Object.keys(REVENUS).map(function(k){
+      return '<button class="chip" data-revenus="'+k+'" aria-pressed="'+(S.revenus===k)+'">'+REVENUS[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="note">It appears on your latest tax assessment. A range is enough at this stage.</p>';
+    h+='<p class="qn">Current heating</p><div class="chips">'+Object.keys(CHAUFFAGES).map(function(k){
+      return '<button class="chip" data-chauffage="'+k+'" aria-pressed="'+(S.chauffage===k)+'">'+CHAUFFAGES[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Energy rating, if you know it</p><div class="chips">'+Object.keys(DPES).map(function(k){
+      return '<button class="chip" data-dpe="'+k+'" aria-pressed="'+(S.dpe===k)+'">'+DPES[k]+'</button>'}).join("")+'</div>';
+    h+='<p class="qn">Have you already signed a quote for this work?</p><div class="chips">'+["No","Yes"].map(function(v){
+      return '<button class="chip" data-devis="'+v+'" aria-pressed="'+(S.devisSigne===v)+'">'+v+'</button>'}).join("")+'</div>';
+    if(S.devisSigne==="Yes")h+='<p class="note" style="color:var(--urg)">Careful: grants must be applied for before the quote is signed. Call us before going any further.</p>';
+    h+='<button class="cta" data-go="contact" '+(S.personnes&&S.revenus&&S.chauffage&&S.devisSigne?"":"disabled")+'>Continue</button>';
+  }
+  else if(step==="contact"){
+    h+=dots()+back(S.intent==="projet"?"scope":S.intent==="energie"?"foyer":S.intent==="public"?"consultation":"where");
+    h+='<p class="q">How should we reach you?</p><p class="qs">We answer ourselves, not a call centre.</p>';
+    h+='<div class="col">'
+      +'<input class="fld" id="c-nom" placeholder="First name and surname" value="'+esc(S.nom)+'" data-set="nom">'
+      +'<input class="fld" id="c-tel" type="tel" inputmode="tel" placeholder="Phone" value="'+esc(S.tel)+'" data-set="tel">'
+      +'<input class="fld" id="c-mail" type="email" inputmode="email" placeholder="Email'+(S.intent==="public"?" professionnel":" (recommended)")+'" value="'+esc(S.email)+'" data-set="email">'
+      +'</div>';
+    /* L'adresse reste facultative — un habitant n'en a pas toujours —
+       mais elle n'est plus présentée comme un détail : c'est elle qui
+       décide si la personne reçoit un accusé ou seulement un appel. */
+    if(S.intent!=="public")h+='<p class="note">With an email address, you receive the acknowledgement carrying your request reference. Without one, we simply call you back.</p>';
+    h+='<p class="qn">One photo is worth ten questions <span style="text-transform:none;letter-spacing:0">(optional)</span></p>';
+    h+='<label class="opt n" for="f-photo" style="display:block;cursor:pointer">'
+      +'<b>'+(FICHIERS.length?FICHIERS.length+" photo(s) attached ✓":"Add a photo")+'</b>'
+      +'<span>'+(FICHIERS.length?"Tap to change your choice":"Often enough to quote without a visit")+'</span>'
+      +'<input id="f-photo" type="file" accept="image/*" multiple hidden></label>';
+    h+='<p class="qn">Quand vous rappeler ?</p><div class="chips">'+Object.keys(CRENEAUX).map(function(k){
+      return '<button class="chip" data-creneau="'+k+'" aria-pressed="'+(S.creneau===k)+'">'+CRENEAUX[k]+'</button>'}).join("")+'</div>';
+    h+='<label class="cbx"><input type="checkbox" id="c-ok" data-consent="1" '+(S.consent?"checked":"")+'><span>J\'accepte d\'être recontacté au sujet de ma demande. Mes coordonnées ne servent qu\'à cela.</span></label>';
+    h+='<button class="cta" data-go="done" '+(okContact()?"":"disabled")+'>Envoyer ma demande</button>';
+  }
+  else if(step==="envoi"){
+    h+='<div class="ok"><div class="mark mark-att">…</div><p class="q">Envoi en cours</p>'
+      +'<p class="qs">Quelques secondes.</p></div>';
+  }
+  else if(step==="done"){
+    h+=ecranFinal();
+  }
+  sc.innerHTML=h;
+  sc.scrollTop=keep;
+  lastStep=step;
+  paint();
+}
+
+
+/* ---------- référence, récapitulatif et envoi ---------- */
+function reference(){
+  var d=new Date(),p=function(n){return String(n).padStart(2,"0")};
+  var lettre={urgence:"U",depannage:"D",projet:"P",energie:"E",public:"C"}[S.intent]||"X";
+  return "VD-"+String(d.getFullYear()).slice(2)+p(d.getMonth()+1)+p(d.getDate())+"-"+lettre
+    +Math.random().toString(36).slice(2,5).toUpperCase();
+}
+function lib(o,k){return k&&o[k]?o[k]:""}
+function recapitulatif(){
+  var L=[],a=function(k,v){if(v)L.push(k+" : "+v)};
+  L.push("REQUEST "+REF);
+  L.push("");
+  a("Type",lib({urgence:"Emergency",depannage:"Repair",projet:"Renovation project",
+    energie:"Funded energy works",public:"Public tender"},S.intent));
+  a("Trade",S.trades.map(function(id){return METIERS[id]||id}).join(", "));
+  if(S.projet)a("Project",(PROJETS.filter(function(x){return x.id===S.projet})[0]||{}).l);
+  a("Services",S.presta.map(function(k){return k.split("|")[1]}).join(", "));
+  a("Location",lib(LIEUX,S.lieu));
+  a("Requested by",S.statut?(STATUTS.filter(function(x){return x.id===S.statut})[0]||{}).l:"");
+  a("Building",S.residence);
+  a("Address",[S.adresse,S.precision].filter(Boolean).join(" — "));
+  if(S.intent==="public"){
+    a("Organisation",[lib(ENTITES,S.entite),S.organisme,S.service].filter(Boolean).join(" — "));
+    a("Role",S.fonction);
+    a("Type of request",lib(NATURES,S.nature));
+    a("Site",S.site);
+    a("Quotes requested",S.nbDevis);
+    a("Estimated value",lib(MONTANTS,S.montant));
+    a("Submission deadline",S.dateLimite);
+    a("Documents required",S.pieces.join(", "));
+    a("Internal reference",S.refInterne);
+  }
+  if(S.intent==="energie"){
+    a("Measures considered",S.gestes.map(function(g){
+      var x=GESTES.filter(function(y){return y.id===g})[0];return x?x.l:g}).join(", "));
+    a("Property",[lib(LOGEMENTS,S.logement),lib(ANCIENS,S.anciennete),lib(USAGES,S.usage)].filter(Boolean).join(" — "));
+    a("Occupancy",lib(OCCUPS,S.occupation));
+    a("Household",[S.personnes?S.personnes+" person(s)":"",lib(REVENUS,S.revenus)].filter(Boolean).join(" — "));
+    a("Heating",[lib(CHAUFFAGES,S.chauffage),S.dpe?"Energy rating "+lib(DPES,S.dpe):""].filter(Boolean).join(" — "));
+    a("Quote already signed",S.devisSigne);
+  }
+  a("Deadline",[lib(DELAIS,S.delai),S.budget||"",S.ag?"AGM vote: "+S.ag:""].filter(Boolean).join(" — "));
+  a("Description",S.description);
+  a("Preferred time",lib(CRENEAUX,S.creneau));
+  a("Photos attached",FICHIERS.length?String(FICHIERS.length):"");
+  L.push("");
+  a("Name",S.nom);
+  a("Phone",S.tel);
+  a("Email",S.email);
+  if(RESCODE)a("QR code",RESCODE);
+  L.push("");
+  L.push("Sent from the VD Services form on "+new Date().toLocaleString("fr-FR")+".");
+  return L.join("\n");
+}
+function charge(){
+  var o={};
+  Object.keys(S).forEach(function(k){o[k]=S[k]});
+  o.ref=REF;o.resCode=RESCODE;o.recu=new Date().toISOString();
+  o.recapitulatif=RECAP;o.source=param("depuis")||"qr";
+  return o;
+}
+function lienMail(){
+  return "mailto:"+CONFIG.mail
+    +"?subject="+encodeURIComponent("Request "+REF+" — "+(S.nom||"")+" "+(S.residence||S.adresse||""))
+    +"&body="+encodeURIComponent(RECAP);
+}
+/* ---------- écriture dans la base ----------
+   Pas de bibliothèque : l'API de Supabase se parle en HTTP ordinaire.
+   Une page de moins à charger sur un téléphone en 4G dans une cave. */
+function entetes(extra){
+  var h={"apikey":CONFIG.cle,"Authorization":"Bearer "+CONFIG.cle};
+  if(extra)Object.keys(extra).forEach(function(k){h[k]=extra[k]});
+  return h;
+}
+function uuid(){
+  if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){
+    var r=Math.random()*16|0;return (c==="x"?r:(r&0x3|0x8)).toString(16);
+  });
+}
+function ligneDemande(id){
+  return {
+    id:id, ref:REF, recu:new Date().toISOString(),
+    intent:S.intent, trades:S.trades, presta:S.presta, gestes:S.gestes, projet:S.projet,
+    lieu:S.lieu, statut_demandeur:S.statut,
+    residence:S.residence, res_code:RESCODE||null,
+    adresse:S.adresse, ville:"", precision_lieu:S.precision,
+    nom:S.nom, tel:S.tel, email:S.email, description:S.description,
+    delai:S.delai, budget:S.budget, ag:S.ag, creneau:S.creneau,
+    extra:{entite:S.entite,organisme:S.organisme,service:S.service,fonction:S.fonction,
+      nature:S.nature,site:S.site,nbDevis:S.nbDevis,montant:S.montant,dateLimite:S.dateLimite,
+      pieces:S.pieces,refInterne:S.refInterne,logement:S.logement,anciennete:S.anciennete,
+      occupation:S.occupation,usage:S.usage,personnes:S.personnes,revenus:S.revenus,
+      chauffage:S.chauffage,dpe:S.dpe,devisSigne:S.devisSigne},
+    source:param("depuis")||"qr",
+    etat:"nouvelle", exemple:false,
+    journal:[{t:new Date().toISOString(),texte:"Request submitted from the form."}]
+  };
+}
+function deposerPhotos(id){
+  if(!FICHIERS.length)return Promise.resolve();
+  return Promise.all(FICHIERS.slice(0,6).map(function(f,i){
+    var ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+    var chemin=id+"/"+(i+1)+"."+ext;
+    return fetch(CONFIG.base+"/storage/v1/object/photos/"+chemin,
+        {method:"POST",headers:entetes({"Content-Type":f.type||"image/jpeg"}),body:f})
+      .then(function(r){
+        if(!r.ok)throw new Error("photo "+r.status);
+        return fetch(CONFIG.base+"/rest/v1/photos",{method:"POST",
+          headers:entetes({"Content-Type":"application/json","Prefer":"return=minimal"}),
+          body:JSON.stringify({demande_id:id,moment:"avant",chemin:chemin,
+            nom:f.name,taille:f.size,type_mime:f.type})});
+      });
+  }));
+}
+function envoyer(){
+  REF=reference();RECAP=recapitulatif();
+  if(!CONFIG.base||!CONFIG.cle){ENVOI="mail";step="done";render();return}
+  step="envoi";render();
+  var id=uuid(),fini=false;
+  function fin(etat){if(fini)return;fini=true;clearTimeout(stop);ENVOI=etat;step="done";render()}
+  var stop=setTimeout(function(){fin("erreur")},20000);
+  fetch(CONFIG.base+"/rest/v1/demandes",{method:"POST",
+      headers:entetes({"Content-Type":"application/json","Prefer":"return=minimal"}),
+      body:JSON.stringify(ligneDemande(id))})
+    .then(function(r){
+      if(!r.ok)return r.text().then(function(t){throw new Error(r.status+" "+t)});
+      /* la demande est passée : les photos ne doivent plus la faire échouer */
+      return deposerPhotos(id).catch(function(e){console.warn("photos",e)});
+    })
+    .then(function(){fin("ok")})
+    .catch(function(e){console.warn("depot",e);fin("erreur")});
+}
+/* Quelle que soit l'issue, le visiteur doit pouvoir repartir vers le site :
+   sans cela, la page du QR code est un cul-de-sac. */
+var RETOUR_ACCUEIL="<a class='cta sec' href='/en/' style='margin-top:22px'>Back to the home page</a>";
+function ecranFinal(){
+  var suite={urgence:"We'll call you back within minutes.",
+    depannage:"We'll call you back today, work carried out within 72 hours.",
+    energie:"We'll call you back within 48 hours with a view on the grants available.",
+    public:"We'll call you back within 48 hours and start the tender with firms in the area."}[S.intent]
+    ||"We'll call you back within 48 hours to arrange a visit.";
+  if(ENVOI==="ok"){
+    return '<div class="ok"><div class="mark">\u2713</div><p class="q">Request received</p>'
+      +'<p class="qs">'+suite+'</p><span class="ref">ref. '+esc(REF)+'</span>'
+      +'<button class="cta sec" data-copier="1">Copy the summary</button>'
+      +'<p class="note">Keep this reference, it is all you need for us to find your file.</p>'
+      +RETOUR_ACCUEIL+'</div>';
+  }
+  if(ENVOI==="erreur"){
+    return '<div class="ok"><div class="mark mark-err">!</div><p class="q">The message didn\'t go through</p>'
+      +'<p class="qs">Nothing is lost: send it as a message, or call.</p>'
+      +'<a class="cta" href="'+esc(lienMail())+'">Send by email</a>'
+      +'<a class="cta sec" href="tel:'+esc(CONFIG.tel)+'">Call VD Services</a>'
+      +'<button class="cta sec" data-copier="1">Copy the summary</button>'
+      +'<div class="recap" id="recap">'+esc(RECAP)+'</div>'
+      +RETOUR_ACCUEIL+'</div>';
+  }
+  return '<div class="ok"><div class="mark mark-att">\u2709</div><p class="q">Last step: send it</p>'
+    +'<p class="qs">Your request is ready. Tap the button and your email app opens with the summary already written. '
+    +'All that\'s left is to send it'+(S.photo?", and attach your photos":"")+'.</p>'
+    +'<a class="cta" href="'+esc(lienMail())+'">Send my request</a>'
+    +'<a class="cta sec" href="tel:'+esc(CONFIG.tel)+'">Rather have a call</a>'
+    +'<button class="cta sec" data-copier="1">Copy the summary</button>'
+    +'<span class="ref">ref. '+esc(REF)+'</span>'
+    +'<div class="recap" id="recap">'+esc(RECAP)+'</div>'
+    +'<p class="note">'+suite+'</p>'
+    +RETOUR_ACCUEIL+'</div>';
+}
+function copier(){
+  var t=RECAP;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(fait,manuel);
+  }else manuel();
+  function fait(){toast("Summary copied")}
+  function manuel(){
+    var z=document.getElementById("recap");
+    if(z&&window.getSelection){
+      var r=document.createRange();r.selectNodeContents(z);
+      var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      toast("Selected: copy using your phone's menu");
+    }else toast("Copying isn't available in this browser");
+  }
+}
+function toast(m){
+  var d=document.createElement("p");
+  d.className="note";d.textContent=m;d.style.textAlign="center";
+  var z=document.getElementById("screen");
+  if(z)z.appendChild(d);
+  setTimeout(function(){d.remove()},2600);
+}
+
+/* ---------- interactions ---------- */
+document.getElementById("screen").addEventListener("click",function(e){
+  var b=e.target.closest("button, a");
+  if(!b)return;
+  if(b.dataset.copier){e.preventDefault();copier();return}
+  if(b.tagName==="A")return;
+  if(b.disabled)return;
+  var d=b.dataset;
+  if(d.go==="done"){envoyer();return}
+  if(d.intent){S.intent=d.intent;S.trades=[];S.presta=[];S.gestes=[];S.projet=null;step=d.intent==="public"?"entite":"trade"}
+  else if(d.projet){
+    var pr=PROJETS.filter(function(x){return x.id===d.projet})[0];
+    S.projet=pr.id;S.trades=pr.t.slice();S.presta=[];step="where";
+  }
+  else if(d.trade){
+    if(S.intent==="projet"||S.intent==="public"){
+      var i=S.trades.indexOf(d.trade);
+      if(i>=0)S.trades.splice(i,1);else S.trades.push(d.trade);
+    }else{S.trades=[d.trade];step=S.intent==="urgence"?"call":"where"}
+  }
+  else if(d.presta){
+    var ip=S.presta.indexOf(d.presta);
+    if(ip>=0)S.presta.splice(ip,1);else S.presta.push(d.presta);
+  }
+  else if(d.addtrade){if(S.trades.indexOf(d.addtrade)<0)S.trades.push(d.addtrade)}
+  else if(d.geste){
+    var ig=S.gestes.indexOf(d.geste);
+    if(ig>=0)S.gestes.splice(ig,1);else S.gestes.push(d.geste);
+    S.trades=[];
+    S.gestes.forEach(function(gid){
+      var g=GESTES.filter(function(x){return x.id===gid})[0];
+      if(g)g.t.forEach(function(t){if(S.trades.indexOf(t)<0)S.trades.push(t)});
+    });
+  }
+  else if(d.defi){S.defi=!S.defi}
+  else if(d.entite){S.entite=d.entite;S.statut="pro";S.lieu="commun"}
+  else if(d.fonction){S.fonction=S.fonction===d.fonction?"":d.fonction}
+  else if(d.nature){S.nature=d.nature}
+  else if(d.nbdevis){S.nbDevis=d.nbdevis}
+  else if(d.montant){S.montant=d.montant}
+  else if(d.piece){
+    var ip2=S.pieces.indexOf(d.piece);
+    if(ip2>=0)S.pieces.splice(ip2,1);else S.pieces.push(d.piece);
+  }
+  else if(d.logement){S.logement=d.logement;S.lieu=d.logement==="copro"?"commun":"privatif"}
+  else if(d.anciennete){S.anciennete=d.anciennete}
+  else if(d.occupation){S.occupation=d.occupation;
+    S.statut={occupant:"occupant",bailleur:"bailleur",locataire:"locataire",syndicat:"syndic"}[d.occupation]||null}
+  else if(d.usage){S.usage=d.usage}
+  else if(d.personnes){S.personnes=d.personnes}
+  else if(d.revenus){S.revenus=d.revenus}
+  else if(d.chauffage){S.chauffage=d.chauffage}
+  else if(d.dpe){S.dpe=d.dpe}
+  else if(d.devis){S.devisSigne=d.devis}
+  else if(d.lieu){S.lieu=d.lieu}
+  else if(d.statut){S.statut=S.statut===d.statut?null:d.statut}
+  else if(d.ag){S.ag=d.ag}
+  else if(d.delai){S.delai=d.delai}
+  else if(d.budget){S.budget=S.budget===d.budget?null:d.budget}
+  else if(d.photo){S.photo=!S.photo}
+  else if(d.creneau){S.creneau=d.creneau}
+  else if(d.go){step=d.go}
+  else return;
+  render();
+});
+document.getElementById("screen").addEventListener("change",function(e){
+  if(e.target.id!=="f-photo")return;
+  FICHIERS=[].slice.call(e.target.files||[]).slice(0,6);
+  S.photo=FICHIERS.length>0;
+  render();
+});
+document.getElementById("screen").addEventListener("input",function(e){
+  var t=e.target;
+  if(t.dataset.set){
+    S[t.dataset.set]=t.value;
+    var cta=document.querySelector("#screen .cta[data-go]");
+    if(cta){
+      cta.disabled = step==="call" ? S.tel.length<8
+        : step==="where" ? !(S.lieu&&S.statut&&S.adresse.length>4)
+        : step==="scope" ? !(S.delai&&(S.presta.length||S.description.length>5))
+        : !okContact();
+    }
+  }
+  if(t.dataset.consent){
+    S.consent=t.checked;
+    var c=document.querySelector("#screen .cta[data-go]");
+    if(c)c.disabled=!okContact();
+  }
+});
+init();
+
+/* ---------- l'application ----------
+   Le service worker garde la derniere version sous la main : dans un
+   hall sans reseau, le formulaire s'ouvre quand meme. */
+if("serviceWorker" in navigator){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("/sw.js").catch(function(){});
+  });
+}
+
+/* L'invitation a installer. Android previent par un evenement, iOS ne
+   previent de rien : la seule facon honnete est de dire ou se trouve
+   le bouton, et de ne le dire qu'une fois. */
+(function(){
+  var REFUS="vds-install-refuse";
+  var deja=false;
+  try{deja=localStorage.getItem(REFUS)==="1"}catch(e){}
+  var installee=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  if(deja||installee)return;
+
+  var barre=document.createElement("div");
+  barre.className="installer";
+  document.body.appendChild(barre);
+
+  function fermer(){
+    barre.classList.remove("on");
+    try{localStorage.setItem(REFUS,"1")}catch(e){}
+  }
+  function montrer(html,action){
+    barre.innerHTML=html;
+    var oui=barre.querySelector("[data-oui]"),non=barre.querySelector("[data-non]");
+    if(oui&&action)oui.addEventListener("click",action);
+    if(non)non.addEventListener("click",fermer);
+    barre.classList.add("on");
+  }
+
+  var invite=null;
+  window.addEventListener("beforeinstallprompt",function(ev){
+    ev.preventDefault();invite=ev;
+    montrer("<p><b>Install VD Services</b>To find it on your home screen, without going through the browser.</p>"
+      +'<button class="non" data-non>Later</button><button data-oui>Install</button>',
+      function(){
+        barre.classList.remove("on");
+        invite.prompt();
+        invite.userChoice.then(function(){try{localStorage.setItem(REFUS,"1")}catch(e){}});
+      });
+  });
+  window.addEventListener("appinstalled",function(){
+    try{localStorage.setItem(REFUS,"1")}catch(e){}
+    barre.classList.remove("on");
+  });
+
+  /* iOS : pas d'evenement, pas d'API. Une phrase, et on n'insiste pas. */
+  var iOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  var safari=iOS&&!/crios|fxios|edgios/i.test(navigator.userAgent);
+  if(safari){
+    setTimeout(function(){
+      if(barre.classList.contains("on"))return;
+      montrer("<p><b>Keep it handy</b>Share button, then “Add to Home Screen”.</p>"
+        +'<button class="non" data-non>Close</button>',null);
+    },2500);
+  }
+})();
+</script>
+</body>
+</html>

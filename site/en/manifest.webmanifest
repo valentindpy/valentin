@@ -1,0 +1,92 @@
+{
+  "id": "/en/form",
+  "name": "VD Services — report a problem",
+  "short_name": "VD Services",
+  "description": "Emergency, repair, renovation project or funded energy works: describe what you need in under a minute, from Fréjus to Nice.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/en/form",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "theme_color": "#17222E",
+  "background_color": "#F5F2EC",
+  "categories": [
+    "utilities",
+    "business"
+  ],
+  "icons": [
+    {
+      "src": "/icones/icone-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icones/icone-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icones/icone-maskable-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Emergency",
+      "short_name": "Emergency",
+      "description": "Leak, power cut, jammed door, damage happening now",
+      "url": "/en/form?besoin=urgence&depuis=raccourci",
+      "icons": [
+        {
+          "src": "/icones/icone-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Repair",
+      "short_name": "Repair",
+      "description": "Something isn't working properly, it can wait until tomorrow",
+      "url": "/en/form?besoin=depannage&depuis=raccourci",
+      "icons": [
+        {
+          "src": "/icones/icone-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Renovation project",
+      "short_name": "Works",
+      "description": "Renovation, communal areas, quotes to compare",
+      "url": "/en/form?besoin=projet&depuis=raccourci",
+      "icons": [
+        {
+          "src": "/icones/icone-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Energy works",
+      "short_name": "Energy",
+      "description": "Heat pump, insulation, windows, solar",
+      "url": "/en/form?besoin=energie&depuis=raccourci",
+      "icons": [
+        {
+          "src": "/icones/icone-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

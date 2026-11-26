@@ -347,6 +347,9 @@ python3 outils/construire-site.py
 |---|---|---|
 | `site/index.html` | `/` | la page d'accueil, avec les liens du formulaire en relatif |
 | `site/formulaire/index.html` | `/formulaire` | le formulaire du QR code, seul et plein écran |
+| `site/en/index.html` | `/en/` | la page d'accueil en anglais |
+| `site/en/form/index.html` | `/en/form` | le formulaire en anglais |
+| `site/sitemap.xml` | `/sitemap.xml` | le plan du site, écrit par la construction |
 | `site/vercel.json` | — | URLs propres, en-têtes de sécurité, redirections `/copro` et `/demande` |
 | `site/robots.txt` | `/robots.txt` | indexation ouverte |
 | `site/manifest.webmanifest` | `/manifest.webmanifest` | ce qui fait du formulaire une application installable |
@@ -360,6 +363,88 @@ ni la fiche de démonstration, avec l'envoi réel au bout. Il lit trois
 paramètres dans l'adresse : `res` préremplit la résidence (c'est ce que les QR
 codes par immeuble ajoutent), `besoin` présélectionne le parcours depuis les
 cartes de la page d'accueil, `depuis` note la provenance.
+
+### Les langues
+
+Le site n'a qu'une source, en français : `docs/site-accueil.html` et le
+formulaire. Les autres langues sont **produites à la construction**, en
+remplaçant des fragments entiers par leur traduction. Il n'y a donc pas de
+clés semées dans le HTML, pas de `data-i18n`, pas de bibliothèque : la page
+française reste lisible et modifiable telle quelle, et c'est elle qui fait
+foi.
+
+```
+outils/traduire.py          le moteur
+outils/langues/en.json      le dictionnaire anglais
+```
+
+Chaque dictionnaire tient en quatre champs : `nom` (ce qu'affiche le
+sélecteur), `prefixe` (`/en`), `chemin_form` (`form`), et `textes`, le
+dictionnaire proprement dit. Pour corriger une phrase anglaise, on change sa
+valeur dans `textes` et on reconstruit — rien d'autre.
+
+**La règle qui évite les accidents.** On ne remplace jamais un bout de texte,
+seulement un fragment entier, à l'un des trois endroits où un visiteur peut
+lire quelque chose : un nœud de texte, un attribut visible (`placeholder`,
+`aria-label`, `title`, `alt`), une chaîne de caractères du script. Une entrée
+dont la clé serait « Contact » ne touchera donc jamais `MAIL_CONTACT`, ni
+`#f-contact`, ni « contactez » — seulement un fragment qui vaut exactement
+« Contact ». C'est ce qui rend la chose sûre sur un formulaire de trois mille
+lignes dont tout le texte vit dans du script. C'est aussi pourquoi les
+identifiants restent français dans toutes les langues :
+`data-statut="locataire"` désigne le même bouton partout.
+
+**Ce qui n'est pas traduit est signalé.** La construction affiche les
+fragments français restés sans traduction :
+
+```
+site/en/index.html   57808 car. · 546 fragments traduits
+   !! 3 fragment(s) sans traduction :
+      . Nous rappelons dans la journée
+```
+
+Une phrase ajoutée au site et oubliée dans le dictionnaire se voit tout de
+suite, au lieu d'apparaître en français au milieu d'une page anglaise. Le
+champ `ignorer` du dictionnaire sert à taire ce qu'on laisse volontairement
+tel quel — un nom de ville, un sélecteur CSS, un en-tête HTTP — pour que le
+rapport reste court, donc lu. La construction signale aussi, à l'inverse, les
+entrées du dictionnaire qui n'ont servi nulle part : la trace d'une phrase
+retirée du site.
+
+**La typographie française ne s'applique qu'au français.** L'espace fine
+insécable devant `? ! ;` est une règle française ; l'appliquer avant de
+traduire empêcherait le dictionnaire de reconnaître ses propres clés.
+
+**La démonstration est filmée dans chaque langue.** `/en/` montre
+`formulaire-en.mp4`, enregistré sur `/en/form` :
+
+```
+python3 -m http.server 8777 --directory site
+node outils/filmer-formulaire.mjs        # la version française
+node outils/filmer-formulaire.mjs en     # la version anglaise
+```
+
+**Vérifier qu'une langue marche vraiment.** Un dictionnaire complet ne
+garantit rien : une traduction peut avoir cassé un écran, ou débordé de la
+largeur d'un téléphone. Le parcours joué le dit.
+
+```
+node outils/essayer-formulaire.mjs       # français
+node outils/essayer-formulaire.mjs en    # anglais
+```
+
+Il pousse les quatre portes d'entrée, joue le parcours dépannage jusqu'à la
+confirmation, et échoue si la page déborde, si le script jette une erreur, ou
+s'il reste un mot grammatical français dans un écran anglais. Les appels à
+Supabase sont interceptés : **rien n'est enregistré dans la base.**
+
+**Ajouter une langue** se fait en trois gestes : copier `outils/langues/en.json`
+sous le nouveau code, traduire ses valeurs, ajouter le code à `LANGUES` dans
+`outils/construire-site.py`, et ajouter le drapeau et le lien au sélecteur de
+`docs/site-accueil.html`. Le plan du site, les liens `hreflang`, le manifeste
+et le service worker suivent tout seuls. Une précision : **un drapeau désigne
+un pays, pas une langue**, et « belge » n'est pas une langue — la Belgique
+parle néerlandais, français et allemand.
 
 ### Déployer
 

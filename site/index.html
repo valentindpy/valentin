@@ -11,6 +11,9 @@
 <meta property="og:title" content="VD Services — un souci ? On s’en occupe.">
 <meta property="og:description" content="Courtier en travaux sur la Côte d’Azur, de Fréjus à Nice.">
 <meta property="og:type" content="website">
+<link rel="alternate" hreflang="fr" href="https://vd-services.fr/">
+<link rel="alternate" hreflang="en" href="https://vd-services.fr/en/">
+<link rel="alternate" hreflang="x-default" href="https://vd-services.fr/">
 <title>VD Services</title>
 <link rel="preload" href="/polices/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/polices/source-serif-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -151,9 +154,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .marque b{font-family:var(--serif);font-weight:600;font-size:1.22rem;letter-spacing:-.015em;white-space:nowrap}
 .marque i{display:block;font-style:normal;font-size:.62rem;letter-spacing:.17em;text-transform:uppercase;
   color:var(--encre-3);margin-top:2px;white-space:nowrap}
-@media (max-width:1180px){.marque i{display:none}}
+@media (min-width:1101px){.marque i{display:none}}
 .marque:hover svg{color:var(--terre)}
-.liens{display:flex;gap:var(--e3);align-items:center}
+.liens{display:flex;gap:19px;align-items:center}
 .liens a{font-size:.97rem;color:var(--encre-2);text-decoration:none;position:relative;padding-block:5px;
   white-space:nowrap}
 .liens a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--terre);
@@ -173,10 +176,42 @@ button,input,select,textarea{font:inherit;color:inherit}
 .panneau a:hover{background:var(--papier-2)}
 .panneau a.btn{color:var(--sur-encre);margin:var(--e1) 0 var(--e2)}
 .panneau a.btn:hover{background:var(--terre)}
-@media (max-width:900px){
+/* Les liens passent dans le menu plus tot qu'avant : cinq libelles, un
+   selecteur de langue et un bouton de theme ne tiennent pas cote a cote
+   sous 1 100 pixels, et moins encore dans une langue aux mots longs. */
+@media (max-width:1100px){
   .liens{display:none} .menu{display:block} .entete .wrap{position:relative}
-  #cta-haut{display:none} .marque i{display:none}
+  #cta-haut{display:none}
 }
+@media (max-width:560px){.marque i{display:none}}
+
+/* ----- le choix de la langue -----
+   Des drapeaux dessines, pas des emojis : sous Windows, les emojis de
+   drapeau s'affichent en deux lettres grises. Et le nom de la langue
+   a cote du drapeau, parce qu'un drapeau designe un pays et non une
+   langue — lequel, pour l'anglais, l'allemand ou l'arabe ?
+
+   Sans script : une liste qui s'ouvre, trois lignes de CSS. */
+.langue{position:relative}
+.langue summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--ligne-forte);border-radius:var(--r);padding:8px 12px;
+  font-size:.86rem;color:var(--encre-2);white-space:nowrap;
+  transition:border-color var(--t),color var(--t)}
+.langue summary::-webkit-details-marker{display:none}
+.langue summary:hover{border-color:var(--encre);color:var(--encre)}
+.langue summary::after{content:"";width:0;height:0;border:4px solid transparent;
+  border-top-color:currentColor;margin-top:3px;opacity:.7}
+.drapeau{width:20px;height:14px;border-radius:2px;flex:none;display:block;
+  box-shadow:0 0 0 1px rgba(23,34,46,.12)}
+.langue .choix{position:absolute;right:0;top:calc(100% + 7px);z-index:50;min-width:186px;
+  background:var(--blanc);border:1px solid var(--ligne);border-radius:var(--r);
+  box-shadow:var(--ombre-2);padding:5px;display:flex;flex-direction:column}
+.langue[open] .choix{display:flex}
+.langue .choix a{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:3px;
+  text-decoration:none;color:var(--encre);font-size:.95rem}
+.langue .choix a:hover{background:var(--papier-2)}
+.langue .choix a[aria-current="true"]{color:var(--terre);font-weight:500}
+@media (max-width:1180px){.langue summary .nom{display:none}}
 
 /* ----- le bouton de theme -----
    Trois etats, un seul bouton : papier, blanc, sombre. Il affiche
@@ -408,6 +443,18 @@ footer p+p{margin-top:var(--e2)}
       <a href="#partenaires">Entreprises</a>
       <a href="#contact">Contact</a>
     </nav>
+    <details class="langue">
+      <summary aria-label="Choisir la langue">
+        <svg class="drapeau" viewBox="0 0 60 40" aria-hidden="true"><rect width="20" height="40" fill="#002654"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#CE1126"/></svg>
+        <span class="nom">Français</span>
+      </summary>
+      <div class="choix">
+        <a href="/" hreflang="fr" aria-current="true">
+          <svg class="drapeau" viewBox="0 0 60 40" aria-hidden="true"><rect width="20" height="40" fill="#002654"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#CE1126"/></svg>Français</a>
+        <a href="/en/" hreflang="en" aria-current="false">
+          <svg class="drapeau" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#012169"/><path d="M0 0 60 40M60 0 0 40" stroke="#fff" stroke-width="8"/><path d="M0 0 60 40M60 0 0 40" stroke="#C8102E" stroke-width="4"/><path d="M30 0V40M0 20H60" stroke="#fff" stroke-width="13"/><path d="M30 0V40M0 20H60" stroke="#C8102E" stroke-width="8"/></svg>English</a>
+      </div>
+    </details>
     <button class="theme" id="theme" type="button" aria-live="polite">
       <span class="pastille" aria-hidden="true"></span><span class="nom">Papier</span>
     </button>
@@ -861,6 +908,15 @@ if(urg)urg.href=lienForm("urgence");
   }catch(e){}
   peindre();
 })();
+
+/* Les deux listes deroulantes — le menu et les langues — se ferment
+   quand on clique ailleurs. Sans cela, elles restent ouvertes derriere
+   la page qu'on vient d'atteindre. */
+document.addEventListener("click",function(ev){
+  [].slice.call(document.querySelectorAll("details[open]")).forEach(function(d){
+    if(!d.contains(ev.target))d.open=false;
+  });
+});
 
 /* Le menu du telephone se referme quand on a choisi : sans cela, la
    cible du lien s'ouvre derriere un panneau reste ouvert. */

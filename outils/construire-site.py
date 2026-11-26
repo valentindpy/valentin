@@ -10,7 +10,21 @@ m\u00eames questions, sans le chronom\u00e8tre ni la fiche de d\u00e9monstration
 l'envoi r\u00e9el au bout. Les deux fichiers de site/ sont donc des produits : ne les
 modifiez pas \u00e0 la main, changez docs/ puis relancez ce script.
 """
-import io, os, re
+import datetime, io, json, os, re
+from traduire import Langue
+
+# Les langues produites en plus du francais. Une ligne de plus ici, un
+# fichier dans outils/langues/, et rien d'autre a changer.
+LANGUES = ("en",)
+# Une seule instance par langue : le formulaire et la page d'accueil
+# puisent dans le meme dictionnaire, et ce qui n'a servi nulle part n'est
+# signale qu'une fois, a la fin.
+DICTIONNAIRES = {}
+
+def langue(code):
+    if code not in DICTIONNAIRES:
+        DICTIONNAIRES[code] = Langue(code)
+    return DICTIONNAIRES[code]
 
 # ---------------------------------------------------------------------
 #  Les espaces de la typographie française
@@ -619,6 +633,52 @@ page = (page.replace("__THEME__", theme)
 
 os.makedirs("site/formulaire", exist_ok=True)
 io.open("site/formulaire/index.html", "w", encoding="utf-8").write(page)
+# Le compte rendu se fait ici, a cote de l'ecriture qu'il decrit : plus
+# bas, « page » a deja servi a autre chose, et le rapport annoncait la
+# longueur de la derniere page traduite sous le nom du formulaire
+# francais.
+print("site/formulaire/index.html  ", len(page), "car.")
+
+# ---------------------------------------------------------------------
+#  Le formulaire dans les autres langues
+#  Traduire la page d'accueil sans traduire le formulaire reviendrait a
+#  promettre un service qu'on ne rend pas : un visiteur anglophone
+#  cliquerait sur « Tell us what you need » et tomberait en francais.
+# ---------------------------------------------------------------------
+for code in LANGUES:
+    lg = langue(code)
+    forme, manquants = lg.traduire(page)
+    forme = forme.replace('<html lang="fr">', '<html lang="%s">' % code, 1)
+    forme = forme.replace('<a class="hors-app" href="/">',
+                          '<a class="hors-app" href="%s/">' % lg.prefixe)
+    forme = forme.replace('<link rel="manifest" href="/manifest.webmanifest">',
+                          '<link rel="manifest" href="%s/manifest.webmanifest">' % lg.prefixe)
+    dossier = os.path.join("site", lg.prefixe.strip("/"), lg.chemin_form)
+    if not os.path.isdir(dossier):
+        os.makedirs(dossier)
+    io.open(os.path.join(dossier, "index.html"), "w", encoding="utf-8").write(forme)
+    print("site%s/%s/index.html        " % (lg.prefixe, lg.chemin_form), len(forme), "car. ·",
+          len(lg.employes), "fragments traduits")
+    if manquants:
+        print("   !! %d fragment(s) sans traduction :" % len(manquants))
+        for m in manquants[:14]:
+            print("      .", m[:86])
+
+    # Le manifeste de la langue : meme application, autre porte d'entree.
+    # Sans lui, un anglophone installerait une icone qui ouvre le
+    # formulaire francais.
+    mf = json.load(io.open("site/manifest.webmanifest", encoding="utf-8"))
+    mf["id"] = "%s/%s" % (lg.prefixe, lg.chemin_form)
+    mf["start_url"] = mf["id"]
+    mf["lang"] = code
+    for champ in ("name", "short_name", "description"):
+        mf[champ] = lg.mot(mf[champ])
+    for r in mf.get("shortcuts", []):
+        r["url"] = r["url"].replace("/formulaire", "%s/%s" % (lg.prefixe, lg.chemin_form))
+        for champ in ("name", "short_name", "description"):
+            r[champ] = lg.mot(r[champ])
+    io.open(os.path.join("site", lg.prefixe.strip("/"), "manifest.webmanifest"),
+            "w", encoding="utf-8").write(json.dumps(mf, ensure_ascii=False, indent=2) + "\n")
 
 # --- page d'accueil : même contenu, lien du formulaire en relatif ----------
 acc = io.open("docs/site-accueil.html", encoding="utf-8").read()
@@ -642,8 +702,119 @@ head = (u'<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
         u'<meta property="og:title" content="VD Services \u2014 un souci ? On s\u2019en occupe.">\n'
         u'<meta property="og:description" content="Courtier en travaux sur la C\u00f4te d\u2019Azur, de Fr\u00e9jus \u00e0 Nice.">\n'
         u'<meta property="og:type" content="website">\n'
+        u'<link rel="alternate" hreflang="fr" href="https://vd-services.fr/">\n'
+        u'<link rel="alternate" hreflang="en" href="https://vd-services.fr/en/">\n'
+        u'<link rel="alternate" hreflang="x-default" href="https://vd-services.fr/">\n'
         + tete + u'\n</head>\n<body>')
-acc = typographier(head + corps) + u"\n</body>\n</html>\n"
+
+# Le document avant toute retouche de langue : c'est lui qu'on traduit.
+# La typographie francaise ne s'applique qu'a la version francaise — une
+# espace fine devant un point d'interrogation est une regle francaise, et
+# elle empecherait le dictionnaire de reconnaitre ses propres cles.
+brut = head + corps
+acc = typographier(brut) + u"\n</body>\n</html>\n"
 io.open("site/index.html", "w", encoding="utf-8").write(acc)
 print("site/index.html             ", len(acc), "car.")
-print("site/formulaire/index.html  ", len(page), "car.")
+
+# ---------------------------------------------------------------------
+#  Les autres langues
+#  Une page a part, a son adresse, indexable — pas un bouton qui
+#  remplace le texte a la volee : un moteur de recherche lit la page
+#  telle qu'elle est servie, et un visiteur doit pouvoir envoyer le lien.
+# ---------------------------------------------------------------------
+for code in LANGUES:
+    lg = langue(code)
+    page, manquants = lg.traduire(brut)
+    page = page.replace('<html lang="fr">', '<html lang="%s">' % code, 1)
+    page = page.replace('var FORMULAIRE="/formulaire";',
+                        'var FORMULAIRE="%s/%s";' % (lg.prefixe, lg.chemin_form))
+    page = page.replace('<a class="marque" href="/"', '<a class="marque" href="%s/"' % lg.prefixe)
+    # La demonstration est filmee ecran par ecran dans chaque langue : la
+    # version anglaise ne peut pas montrer un formulaire francais.
+    for ext in ("jpg", "mp4"):
+        avant = "/video/formulaire.%s" % ext
+        apres = "/video/formulaire-%s.%s" % (code, ext)
+        if avant not in page:
+            raise SystemExit("la video %s a change de nom dans docs/site-accueil.html" % avant)
+        page = page.replace(avant, apres)
+    # la langue courante change de cote dans le selecteur
+    page = page.replace('<a href="/" hreflang="fr" aria-current="true">',
+                        '<a href="/" hreflang="fr" aria-current="false">')
+    page = page.replace('<a href="%s/" hreflang="%s" aria-current="false">' % (lg.prefixe, code),
+                        '<a href="%s/" hreflang="%s" aria-current="true">' % (lg.prefixe, code))
+    # le drapeau du bouton ferme devient celui de la langue courante
+    deb = page.index('<summary aria-label=')
+    fin = page.index('</summary>', deb)
+    apres = page[page.index('aria-current="true">', fin):]
+    dessin = apres[apres.index('<svg'):apres.index('</svg>') + len('</svg>')]
+    page = (page[:deb] + page[deb:fin].split('<svg')[0] + dessin
+            + '<span class="nom">' + lg.nom + '</span>' + page[fin:])
+
+    dossier = os.path.join("site", lg.prefixe.strip("/"))
+    if not os.path.isdir(dossier):
+        os.makedirs(dossier)
+    io.open(os.path.join(dossier, "index.html"), "w", encoding="utf-8").write(
+        page + u"\n</body>\n</html>\n")
+    print("site%s/index.html            " % lg.prefixe, len(page), "car. ·",
+          len(lg.employes), "fragments traduits")
+    if manquants:
+        print("   !! %d fragment(s) sans traduction :" % len(manquants))
+        for m in manquants[:14]:
+            print("      .", m[:86])
+
+
+# ---------------------------------------------------------------------
+#  Ce qui n'a servi nulle part : une phrase retiree du site dont la
+#  traduction traine encore dans le dictionnaire.
+# ---------------------------------------------------------------------
+for code, lg in DICTIONNAIRES.items():
+    reste = lg.inemployes()
+    if reste:
+        print("%s : %d entree(s) du dictionnaire jamais utilisee(s)" % (code, len(reste)))
+        for m in reste[:10]:
+            print("   .", m[:86])
+
+
+# ---------------------------------------------------------------------
+#  Le plan du site
+#  Ecrit ici et non a la main : chaque langue ajoutee s'y inscrit toute
+#  seule. Un plan tenu a la main finit par annoncer des pages mortes et
+#  taire les vivantes, ce qui est pire que pas de plan du tout.
+#
+#  Les liens « alternate » disent a un moteur que ces pages sont la meme
+#  chose dans deux langues, et non deux pages qui se font concurrence.
+# ---------------------------------------------------------------------
+SITE = "https://vd-services.fr"
+aujourdhui = datetime.date.today().isoformat()
+
+# chaque entree : (adresse, priorite, {code: adresse}) pour les alternatives
+pages = [("/", "1.0", "accueil"), ("/formulaire", "0.9", "formulaire")]
+for code in LANGUES:
+    lg = langue(code)
+    pages.append(("%s/" % lg.prefixe, "0.8", "accueil"))
+    pages.append(("%s/%s" % (lg.prefixe, lg.chemin_form), "0.7", "formulaire"))
+
+# les traductions d'une meme page, rangees par role
+familles = {"accueil": {"fr": "/"}, "formulaire": {"fr": "/formulaire"}}
+for code in LANGUES:
+    lg = langue(code)
+    familles["accueil"][code] = "%s/" % lg.prefixe
+    familles["formulaire"][code] = "%s/%s" % (lg.prefixe, lg.chemin_form)
+
+lignes = [u'<?xml version="1.0" encoding="UTF-8"?>',
+          u'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
+          u'        xmlns:xhtml="http://www.w3.org/1999/xhtml">']
+for adresse, priorite, role in pages:
+    lignes.append(u"  <url>")
+    lignes.append(u"    <loc>%s%s</loc>" % (SITE, adresse))
+    for code, autre in sorted(familles[role].items()):
+        lignes.append(u'    <xhtml:link rel="alternate" hreflang="%s" href="%s%s"/>'
+                      % (code, SITE, autre))
+    lignes.append(u'    <xhtml:link rel="alternate" hreflang="x-default" href="%s%s"/>'
+                  % (SITE, familles[role]["fr"]))
+    lignes.append(u"    <lastmod>%s</lastmod>" % aujourdhui)
+    lignes.append(u"    <priority>%s</priority>" % priorite)
+    lignes.append(u"  </url>")
+lignes.append(u"</urlset>")
+io.open("site/sitemap.xml", "w", encoding="utf-8").write(u"\n".join(lignes) + u"\n")
+print("site/sitemap.xml             ", len(pages), "adresses")
