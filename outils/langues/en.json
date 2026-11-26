@@ -154,11 +154,6 @@
     "Votre messagerie devrait s'ouvrir avec ce message. Si rien ne se passe, copiez le texte ci-dessous et envoyez-le à ": "Your email program should open with this message. If nothing happens, copy the text below and send it to ",
     "Espace professionnel": "Staff area",
     "VD SERVICES": "VD SERVICES",
-    "— SAS au capital de 1 000 € — RCS Nice — SIREN": "— SAS with share capital of €1,000 — Nice trade register — SIREN",
-    "à compléter": "to be completed",
-    "— siège": "— registered office",
-    "adresse à compléter": "address to be completed",
-    ", Mandelieu-la-Napoule. Directeur de la publication : le président de VD SERVICES. Hébergeur :": ", Mandelieu-la-Napoule. Publication director: the president of VD SERVICES. Hosting provider:",
     "VD Services intervient comme apporteur d’affaires et coordinateur. Les travaux sont réalisés, facturés et garantis par les entreprises partenaires, qui restent seules responsables de leur exécution. Les devis et factures sont établis par elles, directement au nom du client.": "VD Services acts as an introducer and coordinator. The work is carried out, invoiced and guaranteed by the partner firms, which remain solely responsible for performing it. Quotes and invoices are issued by them, directly in the client’s name.",
     "VD Services": "VD Services",
     "VD Services, Mandelieu-la-Napoule. Vous décrivez le problème, nous choisissons l’entreprise, nous négocions les devis et nous suivons les travaux. Secteur Fréjus – Nice.": "VD Services, Mandelieu-la-Napoule. You describe the problem, we choose the firm, we negotiate the quotes and we follow the work. Fréjus – Nice area.",
@@ -548,7 +543,8 @@
     "Récapitulatif copié": "Summary copied",
     "<button class=\"non\" data-non>Fermer</button>": "<button class=\"non\" data-non>Close</button>",
     "De Fréjus à Nice": "From Fréjus to Nice",
-    "Vous décrivez le problème, nous choisissons l’entreprise et nous suivons les travaux. De Fréjus à Nice.": "You describe the problem, we pick the firm and we follow the work through. From Fréjus to Nice."
+    "Vous décrivez le problème, nous choisissons l’entreprise et nous suivons les travaux. De Fréjus à Nice.": "You describe the problem, we pick the firm and we follow the work through. From Fréjus to Nice.",
+    "— SAS au capital de 1 000 € — RCS Nice — SIREN 131 871 535 — siège : Résidence Le Cap Vert, 06210 Mandelieu-la-Napoule. Directeur de la publication : le président de VD SERVICES. Hébergeur du site : Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis. Nom de domaine et messagerie : IONOS SARL, 7 place de la Gare, 57200 Sarreguemines.": "— SAS with share capital of €1,000 — Nice trade register — SIREN 131 871 535 — registered office: Résidence Le Cap Vert, 06210 Mandelieu-la-Napoule, France. Publication director: the president of VD SERVICES. Website host: Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, United States. Domain name and e-mail: IONOS SARL, 7 place de la Gare, 57200 Sarreguemines, France."
   },
   "ignorer": [
     "\" aria-pressed=\"",

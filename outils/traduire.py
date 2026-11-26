@@ -59,6 +59,16 @@ class Langue(object):
         # a quelque chose — et un rapport qu'on ne lit plus ne sert a rien.
         self.ignores = set(d.get("ignorer", []))
         self.employes = set()
+        # Une meme phrase s'ecrit avec une espace fine insecable dans la
+        # page (« 1 000 € ») et, le plus souvent, avec une espace
+        # ordinaire dans le dictionnaire, ou personne ne la distingue a
+        # l'oeil. Comme str.split() tient la fine pour une espace, la cle
+        # normalisee ne tombait pas sur la bonne entree et la phrase
+        # ressortait en francais. On indexe donc chaque entree sous sa
+        # forme normalisee, quelle que soit l'espace employee.
+        self.normalises = {}
+        for cle, valeur in self.mots.items():
+            self.normalises.setdefault(" ".join(cle.split()), (cle, valeur))
 
     # ---------- l'outil ----------
     def _rendre(self, brut):
@@ -73,12 +83,14 @@ class Langue(object):
             self.employes.add(brut)
             return self.mots[brut]
         cle = " ".join(brut.split())
-        if not cle or cle not in self.mots:
+        trouve = self.normalises.get(cle) if cle else None
+        if trouve is None:
             return None
-        self.employes.add(cle)
+        origine, valeur = trouve
+        self.employes.add(origine)
         avant = brut[:len(brut) - len(brut.lstrip())]
         apres = brut[len(brut.rstrip()):]
-        return avant + self.mots[cle] + apres
+        return avant + valeur + apres
 
     def mot(self, texte):
         """Un fragment isole — un champ de manifeste, par exemple — rendu
@@ -121,10 +133,11 @@ class Langue(object):
                 if neuf is None:
                     noter(brut)
                     return k.group(0)
-                # on garde l'espace de bord : il sépare deux éléments
-                avant = " " if brut[:1].isspace() else ""
-                apres = " " if brut[-1:].isspace() else ""
-                return ">" + avant + neuf + apres + "<"
+                # Les espaces de bord sont deja rendues par _rendre : les
+                # rajouter ici les doublait. Le HTML fond deux espaces en
+                # une, donc cela ne se voyait pas — raison de plus pour ne
+                # pas le laisser.
+                return ">" + neuf + "<"
 
             morceaux[i] = re.sub(r">([^<>]+)<", un_noeud, m)
         page = "".join(morceaux)
