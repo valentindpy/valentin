@@ -545,10 +545,11 @@ document.getElementById("screen").addEventListener("input",function(e){
     S[t.dataset.set]=t.value;
     var cta=document.querySelector("#screen .cta[data-go]");
     if(cta){
-      cta.disabled = step==="call" ? S.tel.length<8
-        : step==="where" ? !(S.lieu&&S.statut&&S.adresse.length>4)
-        : step==="scope" ? !(S.delai&&(S.presta.length||S.description.length>5))
-        : !okContact();
+      /* La meme regle que le rendu, et non une copie : cette copie-ci
+         ne connaissait que trois ecrans sur dix, et taper son adresse
+         sur « Travaux energetiques finances » ou sur le parcours des
+         entites publiques desactivait le bouton a chaque touche. */
+      cta.disabled = !peutAvancer();
     }
   }
   if(t.dataset.consent){

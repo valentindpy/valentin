@@ -690,7 +690,11 @@ function toast(m){
 function aides(d){
   var r=[],proprio=(d.occupation==="occupant"||d.occupation==="bailleur"),
       vieux=(d.anciennete==="plus15"||d.anciennete==="entre"),g=d.gestes||[];
-  if(d.devisSigne==="Oui")r.push("Devis déjà signé : la plupart des aides se demandent avant. Point bloquant à traiter en premier.");
+  /* « oui » est le code d'aujourd'hui ; « Oui » et « Yes » sont ce
+     qu'ont pu enregistrer les versions ou le libelle servait de
+     valeur, la traduction comprise. On les accepte plutot que de
+     manquer le point bloquant d'un dossier. */
+  if(["oui","Oui","Yes"].indexOf(d.devisSigne)>=0)r.push("Devis déjà signé : la plupart des aides se demandent avant. Point bloquant à traiter en premier.");
   if(d.occupation==="locataire")r.push("Locataire : le dossier doit passer par le propriétaire.");
   if(d.occupation==="syndicat")r.push("Parties communes : dossier au nom du syndicat, vote en assemblée générale, dispositif propre aux copropriétés.");
   if(d.anciennete==="moins2")r.push("Logement de moins de deux ans : principales aides à la rénovation non applicables.");

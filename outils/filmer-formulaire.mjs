@@ -53,6 +53,9 @@ mkdirSync(SORTIE, { recursive: true });
 
 const navigateur = await pw.chromium.launch();
 const contexte = await navigateur.newContext({
+  /* Sans cela, le service worker ressert la version precedente du
+     formulaire : le script testerait la build d'hier. */
+  serviceWorkers: "block",
   viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: L.locale,
 });
 const page = await contexte.newPage();

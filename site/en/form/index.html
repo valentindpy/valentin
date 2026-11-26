@@ -361,7 +361,7 @@ function dots(){
 function back(to){return '<button class="back" data-go="'+to+'">← back</button>'}
 function aides(S){
   var r=[],proprio=(S.occupation==="occupant"||S.occupation==="bailleur"),vieux=(S.anciennete==="plus15"||S.anciennete==="entre");
-  if(S.devisSigne==="Yes")r.push("Quote already signed: most grants must be applied for beforehand. Check this first, it is the blocking point.");
+  if(S.devisSigne==="oui")r.push("Quote already signed: most grants must be applied for beforehand. Check this first, it is the blocking point.");
   if(S.occupation==="locataire")r.push("Tenant: the grants are applied for by the owner. They must be brought in before any pricing.");
   if(S.occupation==="syndicat")r.push("Communal areas: the application is in the owners' association's name, with a vote at the general meeting, and a scheme specific to managed buildings.");
   if(S.anciennete==="moins2")r.push("Property under two years old: the main renovation grants do not apply.");
@@ -407,6 +407,32 @@ var MARQUE='<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
   +'</svg>';
 
 var lastStep=null;
+/* Peut-on quitter l'ecran courant ?
+   Cette question se posait a deux endroits : dans le rendu, qui desactive
+   le bouton, et dans le gestionnaire de frappe, qui le reactive sans
+   redessiner. Le second ne connaissait que trois ecrans sur dix. Taper son
+   adresse sur « Travaux energetiques finances » ou sur le parcours des
+   entites publiques desactivait donc le bouton a chaque touche, et le
+   parcours ne pouvait plus s'achever — sauf a remplir le champ AVANT de
+   faire le dernier choix, ce que personne ne fait.
+   Une seule regle, consultee des deux cotes : les ecrans a venir ne
+   pourront plus etre oublies d'un cote et pas de l'autre. */
+function peutAvancer(){
+  switch(step){
+    case "trade":        return !!S.gestes.length;
+    case "call":         return S.tel.length>=8;
+    case "where":        return !!(S.lieu&&S.statut&&S.adresse.length>4);
+    case "scope":        return !!(S.delai&&(S.presta.length||S.description.length>5));
+    case "entite":       return !!(S.entite&&S.organisme.length>2&&S.fonction);
+    case "besoin":       return !!(S.nature&&S.trades.length&&S.adresse.length>4);
+    case "consultation": return !!(S.nbDevis&&S.montant);
+    case "logement":     return !!(S.logement&&S.anciennete&&S.occupation&&S.usage&&S.adresse.length>4);
+    case "foyer":        return !!(S.personnes&&S.revenus&&S.chauffage&&S.devisSigne);
+    case "contact":      return okContact();
+    default:             return true;
+  }
+}
+
 function render(){
   var h="",sc=document.getElementById("screen");
   var keep=(lastStep===step)?sc.scrollTop:0;
@@ -436,7 +462,7 @@ function render(){
         return '<button class="tile'+(g.w?" wide":"")+'" data-geste="'+g.id+'" aria-pressed="'+(S.gestes.indexOf(g.id)>=0)+'">'+g.l+'</button>';
       }).join("")+'</div>';
       h+='<p class="note" style="margin-top:12px">Public grants depend on the property and the household\'s income. Two screens are enough to see where you stand.</p>';
-      h+='<button class="cta" data-go="logement" '+(S.gestes.length?"":"disabled")+'>Continue</button>';
+      h+='<button class="cta" data-go="logement" '+(peutAvancer()?"":"disabled")+'>Continue</button>';
     }else if(S.intent==="projet"){
       h+='<p class="q">What\'s the project?</p><p class="qs">Take the closest one, you can refine it on the next screen.</p>';
       h+='<div class="grid">'+PROJETS.map(function(pr){
@@ -458,7 +484,7 @@ function render(){
     h+='<p class="note" style="margin-top:8px">Two on-call firms are lined up for every trade. If neither answers, leave your number below.</p>';
     h+='<p class="qn">Still nobody?</p>';
     h+='<input class="fld" id="u-tel" type="tel" inputmode="tel" placeholder="Your number" value="'+esc(S.tel)+'" data-set="tel">';
-    h+='<button class="cta" data-go="done" '+(S.tel.length>=8?"":"disabled")+'>Call me back right away</button>';
+    h+='<button class="cta" data-go="done" '+(peutAvancer()?"":"disabled")+'>Call me back right away</button>';
     h+='<p class="note">The numbers shown are those of the two on-call firms for the trade you chose, nearest to the address. The request still reaches VD Services as a direct connection.</p>';
   }
   else if(step==="where"){
@@ -481,7 +507,7 @@ function render(){
     h+='<div class="col"><input class="fld" id="w-res" placeholder="Building name (optional)" value="'+esc(S.residence)+'" data-set="residence">'
       +'<input class="fld" id="w-adr" placeholder="Street and number, postcode" value="'+esc(S.adresse)+'" data-set="adresse">'
       +'<input class="fld" id="w-pre" placeholder="Building, floor, door" value="'+esc(S.precision)+'" data-set="precision"></div>';
-    h+='<button class="cta" data-go="'+(S.intent==="projet"?"scope":"contact")+'" '+(S.lieu&&S.statut&&S.adresse.length>4?"":"disabled")+'>Continue</button>';
+    h+='<button class="cta" data-go="'+(S.intent==="projet"?"scope":"contact")+'" '+(peutAvancer()?"":"disabled")+'>Continue</button>';
   }
   else if(step==="scope"){
     h+=dots()+back("where");
@@ -505,7 +531,7 @@ function render(){
     h+='<p class="qn">Précisez si besoin <span style="text-transform:none;letter-spacing:0">(facultatif)</span></p>';
     h+='<textarea class="fld" id="s-desc" rows="3" data-set="description" placeholder="E.g. empty 65 m2 flat to be fully redone before letting, floors and paintwork included.">'+esc(S.description)+'</textarea>';
     h+='<p class="note">Two lines are enough. Your keyboard\'s microphone works too.</p>';
-    h+='<button class="cta" data-go="contact" '+(S.delai&&(S.presta.length||S.description.length>5)?"":"disabled")+'>Continue</button>';
+    h+='<button class="cta" data-go="contact" '+(peutAvancer()?"":"disabled")+'>Continue</button>';
   }
   else if(step==="entite"){
     h+=dots()+back("intent");
@@ -517,7 +543,7 @@ function render(){
       +'<input class="fld" id="pu-serv" placeholder="Department (optional)" value="'+esc(S.service)+'" data-set="service"></div>';
     h+='<p class="qn">Your role</p><div class="chips">'+FONCTIONS.map(function(f){
       return '<button class="chip" data-fonction="'+esc(f)+'" aria-pressed="'+(S.fonction===f)+'">'+f+'</button>'}).join("")+'</div>';
-    h+='<button class="cta" data-go="besoin" '+(S.entite&&S.organisme.length>2&&S.fonction?"":"disabled")+'>Continue</button>';
+    h+='<button class="cta" data-go="besoin" '+(peutAvancer()?"":"disabled")+'>Continue</button>';
   }
   else if(step==="besoin"){
     h+=dots()+back("entite");
@@ -531,7 +557,7 @@ function render(){
       +'<input class="fld" id="pu-site" placeholder="Building, school, sports hall, social housing…" value="'+esc(S.site)+'" data-set="site">'
       +'<input class="fld" id="pu-adr" placeholder="Address, postcode" value="'+esc(S.adresse)+'" data-set="adresse"></div>';
     h+='<div class="col" style="margin-top:14px"><textarea class="fld" id="pu-desc" rows="3" data-set="description" placeholder="Describe the need in two lines.">'+esc(S.description)+'</textarea></div>';
-    h+='<button class="cta" data-go="consultation" '+(S.nature&&S.trades.length&&S.adresse.length>4?"":"disabled")+'>Continue</button>';
+    h+='<button class="cta" data-go="consultation" '+(peutAvancer()?"":"disabled")+'>Continue</button>';
   }
   else if(step==="consultation"){
     h+=dots()+back("besoin");
@@ -547,7 +573,7 @@ function render(){
       return '<button class="chip" data-piece="'+esc(pc)+'" aria-pressed="'+(S.pieces.indexOf(pc)>=0)+'">'+pc+'</button>'}).join("")+'</div>';
     h+='<p class="qn">Your internal reference <span style="text-transform:none;letter-spacing:0">(optional)</span></p>';
     h+='<input class="fld" id="pu-ref" placeholder="2026-TX-014" value="'+esc(S.refInterne)+'" data-set="refInterne">';
-    h+='<button class="cta" data-go="contact" '+(S.nbDevis&&S.montant?"":"disabled")+'>Continue</button>';
+    h+='<button class="cta" data-go="contact" '+(peutAvancer()?"":"disabled")+'>Continue</button>';
   }
   else if(step==="logement"){
     h+=dots()+back("trade");
@@ -565,7 +591,7 @@ function render(){
     h+='<p class="qn">Where</p>';
     h+='<div class="col"><input class="fld" id="e-res" placeholder="Building name (optional)" value="'+esc(S.residence)+'" data-set="residence">'
       +'<input class="fld" id="e-adr" placeholder="Street and number, postcode" value="'+esc(S.adresse)+'" data-set="adresse"></div>';
-    h+='<button class="cta" data-go="foyer" '+(S.logement&&S.anciennete&&S.occupation&&S.usage&&S.adresse.length>4?"":"disabled")+'>Continue</button>';
+    h+='<button class="cta" data-go="foyer" '+(peutAvancer()?"":"disabled")+'>Continue</button>';
   }
   else if(step==="foyer"){
     h+=dots()+back("logement");
@@ -579,10 +605,18 @@ function render(){
       return '<button class="chip" data-chauffage="'+k+'" aria-pressed="'+(S.chauffage===k)+'">'+CHAUFFAGES[k]+'</button>'}).join("")+'</div>';
     h+='<p class="qn">Energy rating, if you know it</p><div class="chips">'+Object.keys(DPES).map(function(k){
       return '<button class="chip" data-dpe="'+k+'" aria-pressed="'+(S.dpe===k)+'">'+DPES[k]+'</button>'}).join("")+'</div>';
-    h+='<p class="qn">Have you already signed a quote for this work?</p><div class="chips">'+["No","Yes"].map(function(v){
-      return '<button class="chip" data-devis="'+v+'" aria-pressed="'+(S.devisSigne===v)+'">'+v+'</button>'}).join("")+'</div>';
-    if(S.devisSigne==="Yes")h+='<p class="note" style="color:var(--urg)">Careful: grants must be applied for before the quote is signed. Call us before going any further.</p>';
-    h+='<button class="cta" data-go="contact" '+(S.personnes&&S.revenus&&S.chauffage&&S.devisSigne?"":"disabled")+'>Continue</button>';
+    /* La valeur stockee est un code, pas le libelle affiche. Quand les
+       deux ne faisaient qu'un, la traduction du libelle changeait aussi
+       la valeur : une demande venue de la page anglaise arrivait avec
+       devisSigne="Yes", et l'avertissement du back-office, qui compare
+       a "oui", ne se declenchait jamais — or c'est le point bloquant
+       d'un dossier d'aides. Tous les autres champs fonctionnent deja
+       ainsi ; celui-ci faisait exception. */
+    h+='<p class="qn">Avez-vous d\u00e9j\u00e0 sign\u00e9 un devis pour ces travaux ?</p><div class="chips">'
+      +[{id:"non",l:"No"},{id:"oui",l:"Yes"}].map(function(v){
+      return '<button class="chip" data-devis="'+v.id+'" aria-pressed="'+(S.devisSigne===v.id)+'">'+v.l+'</button>'}).join("")+'</div>';
+    if(S.devisSigne==="oui")h+='<p class="note" style="color:var(--urg)">Careful: grants must be applied for before the quote is signed. Call us before going any further.</p>';
+    h+='<button class="cta" data-go="contact" '+(peutAvancer()?"":"disabled")+'>Continue</button>';
   }
   else if(step==="contact"){
     h+=dots()+back(S.intent==="projet"?"scope":S.intent==="energie"?"foyer":S.intent==="public"?"consultation":"where");
@@ -604,7 +638,7 @@ function render(){
     h+='<p class="qn">Quand vous rappeler ?</p><div class="chips">'+Object.keys(CRENEAUX).map(function(k){
       return '<button class="chip" data-creneau="'+k+'" aria-pressed="'+(S.creneau===k)+'">'+CRENEAUX[k]+'</button>'}).join("")+'</div>';
     h+='<label class="cbx"><input type="checkbox" id="c-ok" data-consent="1" '+(S.consent?"checked":"")+'><span>J\'accepte d\'être recontacté au sujet de ma demande. Mes coordonnées ne servent qu\'à cela.</span></label>';
-    h+='<button class="cta" data-go="done" '+(okContact()?"":"disabled")+'>Envoyer ma demande</button>';
+    h+='<button class="cta" data-go="done" '+(peutAvancer()?"":"disabled")+'>Envoyer ma demande</button>';
   }
   else if(step==="envoi"){
     h+='<div class="ok"><div class="mark mark-att">…</div><p class="q">Envoi en cours</p>'
@@ -889,10 +923,11 @@ document.getElementById("screen").addEventListener("input",function(e){
     S[t.dataset.set]=t.value;
     var cta=document.querySelector("#screen .cta[data-go]");
     if(cta){
-      cta.disabled = step==="call" ? S.tel.length<8
-        : step==="where" ? !(S.lieu&&S.statut&&S.adresse.length>4)
-        : step==="scope" ? !(S.delai&&(S.presta.length||S.description.length>5))
-        : !okContact();
+      /* La meme regle que le rendu, et non une copie : cette copie-ci
+         ne connaissait que trois ecrans sur dix, et taper son adresse
+         sur « Travaux energetiques finances » ou sur le parcours des
+         entites publiques desactivait le bouton a chaque touche. */
+      cta.disabled = !peutAvancer();
     }
   }
   if(t.dataset.consent){
