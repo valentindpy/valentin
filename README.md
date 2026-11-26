@@ -394,6 +394,22 @@ lignes dont tout le texte vit dans du script. C'est aussi pourquoi les
 identifiants restent français dans toutes les langues :
 `data-statut="locataire"` désigne le même bouton partout.
 
+**Le moteur parcourt le script, il ne le devine pas.** Reconnaître une
+chaîne de caractères dans du JavaScript demande de reconnaître en même temps
+les commentaires et les expressions régulières — sinon chacun déguise les
+autres. Deux versions l'ont appris à leurs dépens : une apostrophe française
+dans un commentaire ouvrait une fausse chaîne, puis `accept="image/*"` dans
+une chaîne a ouvert un faux commentaire qui ne se fermait jamais, et **le
+tiers du formulaire qui suivait n'était ni traduit ni signalé**. Il sortait
+en français au milieu de la page anglaise, sans que rien ne le dise.
+`parcourir()` fait donc un seul passage qui connaît les quatre genres à la
+fois : code, chaîne, commentaire, expression régulière.
+
+**Le dictionnaire tient du français lisible.** Les clés portent de vraies
+apostrophes, pas les barres obliques du code : `J'accepte`, et non
+`J\'accepte`. Le moteur déséchappe avant de chercher et réchappe après avoir
+remplacé.
+
 **Ce qui n'est pas traduit est signalé.** La construction affiche les
 fragments français restés sans traduction :
 
@@ -433,10 +449,20 @@ node outils/essayer-formulaire.mjs       # français
 node outils/essayer-formulaire.mjs en    # anglais
 ```
 
-Il pousse les quatre portes d'entrée, joue le parcours dépannage jusqu'à la
-confirmation, et échoue si la page déborde, si le script jette une erreur, ou
-s'il reste un mot grammatical français dans un écran anglais. Les appels à
-Supabase sont interceptés : **rien n'est enregistré dans la base.**
+Il joue **les cinq parcours** — urgence, dépannage, projet, travaux financés,
+entité publique — chacun jusqu'à sa confirmation, et échoue si l'un d'eux
+bloque, si la page déborde, si le script jette une erreur, ou s'il reste un
+mot grammatical français dans un écran anglais. Les appels à Supabase sont
+interceptés : **rien n'est enregistré dans la base.**
+
+Les cinq, et pas un seul : une version de ce script ne jouait que le
+dépannage, pendant que deux parcours sur cinq étaient impossibles à terminer.
+Et dans **l'ordre naturel** — on choisit d'abord, on tape ensuite — car c'est
+cet ordre-là qui était cassé. Ne réordonnez pas les pas pour faire passer le
+test.
+
+Il bloque aussi le service worker. Sans cela, Chromium ressert la version
+précédente du formulaire et le test porte sur la build d'hier.
 
 **Ajouter une langue** se fait en trois gestes : copier `outils/langues/en.json`
 sous le nouveau code, traduire ses valeurs, ajouter le code à `LANGUES` dans

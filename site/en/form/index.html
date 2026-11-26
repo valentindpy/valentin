@@ -612,7 +612,7 @@ function render(){
        a "oui", ne se declenchait jamais — or c'est le point bloquant
        d'un dossier d'aides. Tous les autres champs fonctionnent deja
        ainsi ; celui-ci faisait exception. */
-    h+='<p class="qn">Avez-vous d\u00e9j\u00e0 sign\u00e9 un devis pour ces travaux ?</p><div class="chips">'
+    h+='<p class="qn">Have you already signed a quote for this work?</p><div class="chips">'
       +[{id:"non",l:"No"},{id:"oui",l:"Yes"}].map(function(v){
       return '<button class="chip" data-devis="'+v.id+'" aria-pressed="'+(S.devisSigne===v.id)+'">'+v.l+'</button>'}).join("")+'</div>';
     if(S.devisSigne==="oui")h+='<p class="note" style="color:var(--urg)">Careful: grants must be applied for before the quote is signed. Call us before going any further.</p>';
@@ -635,14 +635,14 @@ function render(){
       +'<b>'+(FICHIERS.length?FICHIERS.length+" photo(s) attached ✓":"Add a photo")+'</b>'
       +'<span>'+(FICHIERS.length?"Tap to change your choice":"Often enough to quote without a visit")+'</span>'
       +'<input id="f-photo" type="file" accept="image/*" multiple hidden></label>';
-    h+='<p class="qn">Quand vous rappeler ?</p><div class="chips">'+Object.keys(CRENEAUX).map(function(k){
+    h+='<p class="qn">When should we call?</p><div class="chips">'+Object.keys(CRENEAUX).map(function(k){
       return '<button class="chip" data-creneau="'+k+'" aria-pressed="'+(S.creneau===k)+'">'+CRENEAUX[k]+'</button>'}).join("")+'</div>';
-    h+='<label class="cbx"><input type="checkbox" id="c-ok" data-consent="1" '+(S.consent?"checked":"")+'><span>J\'accepte d\'être recontacté au sujet de ma demande. Mes coordonnées ne servent qu\'à cela.</span></label>';
-    h+='<button class="cta" data-go="done" '+(peutAvancer()?"":"disabled")+'>Envoyer ma demande</button>';
+    h+='<label class="cbx"><input type="checkbox" id="c-ok" data-consent="1" '+(S.consent?"checked":"")+'><span>I agree to be contacted about my request. My details are used for that alone.</span></label>';
+    h+='<button class="cta" data-go="done" '+(peutAvancer()?"":"disabled")+'>Send my request</button>';
   }
   else if(step==="envoi"){
-    h+='<div class="ok"><div class="mark mark-att">…</div><p class="q">Envoi en cours</p>'
-      +'<p class="qs">Quelques secondes.</p></div>';
+    h+='<div class="ok"><div class="mark mark-att">…</div><p class="q">Sending</p>'
+      +'<p class="qs">Just a few seconds.</p></div>';
   }
   else if(step==="done"){
     h+=ecranFinal();
@@ -797,7 +797,7 @@ function ecranFinal(){
     public:"We'll call you back within 48 hours and start the tender with firms in the area."}[S.intent]
     ||"We'll call you back within 48 hours to arrange a visit.";
   if(ENVOI==="ok"){
-    return '<div class="ok"><div class="mark">\u2713</div><p class="q">Request received</p>'
+    return '<div class="ok"><div class="mark">\\u2713</div><p class="q">Request received</p>'
       +'<p class="qs">'+suite+'</p><span class="ref">ref. '+esc(REF)+'</span>'
       +'<button class="cta sec" data-copier="1">Copy the summary</button>'
       +'<p class="note">Keep this reference, it is all you need for us to find your file.</p>'
@@ -812,7 +812,7 @@ function ecranFinal(){
       +'<div class="recap" id="recap">'+esc(RECAP)+'</div>'
       +RETOUR_ACCUEIL+'</div>';
   }
-  return '<div class="ok"><div class="mark mark-att">\u2709</div><p class="q">Last step: send it</p>'
+  return '<div class="ok"><div class="mark mark-att">\\u2709</div><p class="q">Last step: send it</p>'
     +'<p class="qs">Your request is ready. Tap the button and your email app opens with the summary already written. '
     +'All that\'s left is to send it'+(S.photo?", and attach your photos":"")+'.</p>'
     +'<a class="cta" href="'+esc(lienMail())+'">Send my request</a>'

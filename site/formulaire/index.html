@@ -615,7 +615,7 @@ function render(){
        a "oui", ne se declenchait jamais — or c'est le point bloquant
        d'un dossier d'aides. Tous les autres champs fonctionnent deja
        ainsi ; celui-ci faisait exception. */
-    h+='<p class="qn">Avez-vous d\u00e9j\u00e0 sign\u00e9 un devis pour ces travaux ?</p><div class="chips">'
+    h+='<p class="qn">Avez-vous déjà signé un devis pour ces travaux ?</p><div class="chips">'
       +[{id:"non",l:"Non"},{id:"oui",l:"Oui"}].map(function(v){
       return '<button class="chip" data-devis="'+v.id+'" aria-pressed="'+(S.devisSigne===v.id)+'">'+v.l+'</button>'}).join("")+'</div>';
     if(S.devisSigne==="oui")h+='<p class="note" style="color:var(--urg)">Attention : les aides se demandent avant la signature du devis. Appelez-nous avant d\'aller plus loin.</p>';

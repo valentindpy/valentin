@@ -44,6 +44,110 @@ FRANCAIS = re.compile(
     r"d[eu]|la|le|aux?|par|sans|plus|tout|être|fait)\b", re.I)
 
 
+# Les caracteres apres lesquels un « / » ouvre une expression reguliere
+# et non une division.
+AVANT_REGEX = set("(,=:[!&|?{};+-*%~^<>")
+
+
+def parcourir(code):
+    """Parcourt un script une fois et le decoupe en tranches
+    (debut, fin, genre), ou genre vaut "code", "chaine", "commentaire"
+    ou "regex".
+
+    POURQUOI UN VRAI PARCOURS, ET NON DES EXPRESSIONS REGULIERES
+    Une premiere version cherchait les commentaires avec find("/*"). Le
+    formulaire contient accept="image/*" : ce « /* » dans une chaine
+    ouvrait un commentaire qui ne se fermait jamais, et le tiers du
+    script qui suivait n'etait ni traduit ni signale — il sortait en
+    francais au milieu de la page anglaise, sans que rien ne le dise.
+    Une version encore anterieure faisait l'erreur symetrique : une
+    apostrophe francaise dans un commentaire ouvrait une fausse chaine.
+    On ne peut pas reconnaitre l'un sans reconnaitre les autres ; d'ou
+    ce parcours unique, qui connait les quatre genres a la fois.
+    """
+    i, n = 0, len(code)
+    tranches, depart, dernier = [], 0, ""
+    while i < n:
+        c = code[i]
+        if c in "\"'`":
+            tranches.append((depart, i, "code"))
+            q, j = c, i + 1
+            while j < n:
+                if code[j] == "\\":
+                    j += 2
+                    continue
+                if code[j] == q:
+                    j += 1
+                    break
+                if q != "`" and code[j] == "\n":
+                    break
+                j += 1
+            j = min(j, n)
+            tranches.append((i, j, "chaine"))
+            i = depart = j
+            dernier = q
+            continue
+        if c == "/" and i + 1 < n and code[i + 1] == "/":
+            tranches.append((depart, i, "code"))
+            j = code.find("\n", i)
+            j = n if j < 0 else j
+            tranches.append((i, j, "commentaire"))
+            i = depart = j
+            continue
+        if c == "/" and i + 1 < n and code[i + 1] == "*":
+            tranches.append((depart, i, "code"))
+            j = code.find("*/", i)
+            j = n if j < 0 else j + 2
+            tranches.append((i, j, "commentaire"))
+            i = depart = j
+            continue
+        if c == "/" and (dernier == "" or dernier in AVANT_REGEX):
+            # une expression reguliere : ses guillemets et ses « /* » ne
+            # sont pas du texte. /[&<>"]/g en contient un.
+            j, classe = i + 1, False
+            while j < n:
+                d = code[j]
+                if d == "\\":
+                    j += 2
+                    continue
+                if d == "\n":
+                    break
+                if d == "[":
+                    classe = True
+                elif d == "]":
+                    classe = False
+                elif d == "/" and not classe:
+                    j += 1
+                    break
+                j += 1
+            while j < n and code[j].isalpha():
+                j += 1
+            tranches.append((depart, i, "code"))
+            tranches.append((i, min(j, n), "regex"))
+            i = depart = min(j, n)
+            dernier = "/"
+            continue
+        if not c.isspace():
+            dernier = c
+        i += 1
+    tranches.append((depart, n, "code"))
+    return [(a, b, g) for a, b, g in tranches if b > a]
+
+
+def desechapper(texte):
+    """Rend sa forme lisible a une chaine de script : dans le code,
+    « J\\'accepte » s'ecrit avec une barre, pas le dictionnaire."""
+    out, i, n = [], 0, len(texte)
+    while i < n:
+        if texte[i] == "\\" and i + 1 < n and texte[i + 1] in "\"'":
+            out.append(texte[i + 1])
+            i += 2
+        else:
+            out.append(texte[i])
+            i += 1
+    return "".join(out)
+
+
 class Langue(object):
     def __init__(self, code):
         self.code = code
@@ -164,48 +268,34 @@ class Langue(object):
         page = "".join(morceaux)
 
         # --- 3. les chaînes de caractères du script ---
+        # Le parcours sait distinguer une chaîne d'un commentaire, d'une
+        # expression régulière et du reste du code. Ce qui n'est pas une
+        # chaîne n'est ni traduit ni signalé.
         def un_script(k):
             corps = k.group(2)
-
-            def une_chaine(c):
-                guillemet, texte = c.group(1), c.group(2)
-                if "\\" in texte and not re.search(r"[A-Za-zÀ-ÿ]", texte):
-                    return c.group(0)
-                neuf = self._rendre(texte)
-                if neuf is None:
-                    noter(texte)
-                    return c.group(0)
-                # la traduction retourne dans le même type de guillemets,
-                # échappée si elle en contient un
-                return guillemet + neuf.replace(guillemet, "\\" + guillemet) + guillemet
-
-            # On ne traduit ni ne signale ce qui est dans un commentaire :
-            # une apostrophe francaise y ouvrirait une fausse chaine, et le
-            # rapport se remplirait de morceaux de phrases coupees.
-            morceaux, i, n = [], 0, len(corps)
-            while i < n:
-                deb = corps.find("/*", i)
-                ligne = corps.find("//", i)
-                if ligne != -1 and (deb == -1 or ligne < deb):
-                    fin = corps.find("\n", ligne)
-                    fin = n if fin == -1 else fin
-                    morceaux.append((corps[i:ligne], True))
-                    morceaux.append((corps[ligne:fin], False))
-                    i = fin
-                elif deb != -1:
-                    fin = corps.find("*/", deb)
-                    fin = n if fin == -1 else fin + 2
-                    morceaux.append((corps[i:deb], True))
-                    morceaux.append((corps[deb:fin], False))
-                    i = fin
-                else:
-                    morceaux.append((corps[i:], True))
-                    i = n
             sortie = []
-            for bout, code in morceaux:
-                sortie.append(
-                    re.sub(r"""(['"])((?:\\.|(?!\1)[^\\\n])*)\1""", une_chaine, bout)
-                    if code else bout)
+            for a, b, genre in parcourir(corps):
+                bout = corps[a:b]
+                if genre != "chaine" or len(bout) < 2 or bout[-1] != bout[0]:
+                    sortie.append(bout)
+                    continue
+                guillemet, texte = bout[0], bout[1:-1]
+                # un gabarit à trous : y toucher casserait l'interpolation
+                if guillemet == "`" and "${" in texte:
+                    sortie.append(bout)
+                    continue
+                if "\\" in texte and not re.search(r"[A-Za-zÀ-ÿ]", texte):
+                    sortie.append(bout)
+                    continue
+                cle = desechapper(texte)
+                neuf = self._rendre(cle)
+                if neuf is None:
+                    noter(cle)
+                    sortie.append(bout)
+                    continue
+                sortie.append(guillemet
+                              + neuf.replace("\\", "\\\\").replace(guillemet, "\\" + guillemet)
+                              + guillemet)
             return k.group(1) + "".join(sortie) + k.group(3)
 
         page = re.sub(r"(<script\b[^>]*>)(.*?)(</script>)", un_script, page, flags=re.S)
