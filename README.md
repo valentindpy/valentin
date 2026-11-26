@@ -65,6 +65,7 @@ c'est la silhouette qui porte la reconnaissance.
 | `--encre` | `#17222E` | le texte, les boutons, la marque. Un noir bleuté, celui d'un plan |
 | `--papier` | `#F5F2EC` | le fond. Du papier, pas un écran éteint |
 | `--terre` | `#B4552E` | la clé de voûte, un filet, un chiffre. **Une chose à la fois** |
+| `--papier` en variante | `#FFFFFF` | le fond blanc, au choix du visiteur par le bouton de l'en-tête |
 | `--urg` `--dep` `--pro` `--ene` | — | les quatre parcours, réduits à un repère de deux pixels |
 
 La terre cuite ne touche jamais un bouton principal : elle réchauffe, elle
@@ -115,6 +116,25 @@ La carte n'est pas une illustration achetée : elle est tracée depuis les
 coordonnées du littoral, les mêmes que la plateforme emploie pour placer les
 copropriétés sur la carte du syndic. Fréjus, Mandelieu, Cannes, Antibes, Nice
 sont au bon endroit.
+
+Dans le bandeau d'ouverture, à droite, **le formulaire se joue tout seul** dans un
+cadre de téléphone. Ce n'est pas une animation inventée : c'est l'application
+elle-même, filmée écran par écran, du premier choix à la confirmation. Quatorze
+secondes, 230 ko.
+
+```
+python3 -m http.server 8777 --directory site     # dans un terminal
+node outils/filmer-formulaire.mjs                 # dans un autre
+```
+
+Pendant le tournage, les appels vers la base sont interceptés et reçoivent un
+201 : **aucune demande n'est créée**, et l'écran de confirmation affiché reste
+celui que le vrai code produit. À refaire le jour où le formulaire change
+d'allure — sinon la page d'accueil montrerait un produit qui n'existe plus.
+
+La vidéo ne démarre que lorsqu'elle entre dans l'écran, se met en pause quand on
+la dépasse, et ne se télécharge pas du tout pour un visiteur qui a demandé moins
+d'animations : il reçoit les commandes à la place.
 
 Trois détails qu'on ne remarque que quand ils manquent : les espaces fines
 insécables de la typographie française, posées à la construction par
@@ -332,6 +352,8 @@ python3 outils/construire-site.py
 | `site/manifest.webmanifest` | `/manifest.webmanifest` | ce qui fait du formulaire une application installable |
 | `site/sw.js` | `/sw.js` | le cache qui permet d'ouvrir le formulaire sans réseau |
 | `site/icones/` | `/icones/…` | les icônes de l'écran d'accueil, produites par `outils/icones-pwa.mjs` |
+| `site/polices/` | `/polices/…` | les deux fontes, servies par le domaine |
+| `site/video/` | `/video/…` | la démonstration du formulaire, produite par `outils/filmer-formulaire.mjs` |
 
 Le formulaire est le prototype de `docs/parcours-qr.html`, sans le chronomètre
 ni la fiche de démonstration, avec l'envoi réel au bout. Il lit trois

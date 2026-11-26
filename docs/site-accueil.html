@@ -224,6 +224,22 @@ section.blanc{background:var(--blanc);border-block:1px solid var(--ligne)}
 .carte figcaption{font-size:.84rem;color:var(--encre-3)}
 figure.carte-bloc{margin:0;display:flex;flex-direction:column;gap:var(--e2)}
 
+/* ----- la demonstration -----
+   Ce n'est pas une animation inventee : c'est le formulaire lui-meme,
+   filme ecran par ecran. Quatorze secondes, du premier choix a la
+   confirmation. Rien n'a ete envoye a la base pendant le tournage.
+
+   Le cadre est en CSS et non dans la video : il suit les trois themes,
+   et il ne coute pas un octet de plus. */
+.telephone{position:relative;max-width:264px;margin-inline:auto;padding:9px;
+  background:var(--encre);border-radius:30px;box-shadow:var(--ombre-2)}
+.telephone::after{content:"";position:absolute;left:50%;top:15px;transform:translateX(-50%);
+  width:56px;height:4px;border-radius:3px;background:rgba(255,255,255,.22)}
+.telephone video{display:block;width:100%;height:auto;border-radius:22px;background:var(--papier-2)}
+figure.demo{margin:0;display:flex;flex-direction:column;gap:var(--e3)}
+figure.demo figcaption{font-size:.84rem;color:var(--encre-3);text-align:center;max-width:34ch;
+  margin-inline:auto}
+
 /* ----- les quatre besoins -------------------------------------------------- */
 .besoins{display:grid;grid-template-columns:repeat(auto-fit,minmax(246px,1fr));gap:0;
   border-top:1px solid var(--ligne)}
@@ -416,20 +432,16 @@ footer p+p{margin-top:var(--e2)}
         </div>
       </div>
 
-      <figure class="cinq carte-bloc monte">
-        <svg class="carte" viewBox="0 0 620 420" role="img" aria-label="Le secteur couvert, de Fréjus à Nice">
-          <path class="trait" d="M16.3 415 L65.3 407 L99.5 382 L118.3 367 L137.1 376 L160.7 380 L186 393 L208 382 L218.6 368 L236.6 353 L252.9 330 L267.6 305 L277.4 288 L280.6 272 L293.7 258 L322.2 255 L341 252 L357.3 258 L372 266 L383.4 244 L399.7 235 L414.4 234 L425.8 244 L430.7 259 L436.4 248 L434 222 L430.7 206 L432.4 188 L440.5 168 L452.8 148 L471.5 140 L493.6 137 L518 122 L542.5 109 L562.9 105 L579.2 100 L603.7 94"/>
-          <circle class="halo" cx="275.7" cy="254" r="30"/>
-          <circle class="ville" cx="111.8" cy="367" r="3.2"/><text class="nom" x="111.8" y="356" text-anchor="middle">Fréjus</text>
-          <circle class="ville" cx="265.1" cy="141" r="3.2"/><text class="nom" x="265.1" y="130" text-anchor="middle">Grasse</text>
-          <circle class="siege" cx="275.7" cy="254" r="5"/><text class="nom siege-nom" x="275.7" y="275" text-anchor="middle">Mandelieu</text>
-          <circle class="ville" cx="336.9" cy="249" r="3.2"/><text class="nom" x="336.9" y="238" text-anchor="middle">Cannes</text>
-          <circle class="ville" cx="428.3" cy="219" r="3.2"/><text class="nom" x="439" y="214" text-anchor="start">Antibes</text>
-          <circle class="ville" cx="417.7" cy="78" r="3.2"/><text class="nom" x="417.7" y="67" text-anchor="middle">Vence</text>
-          <circle class="ville" cx="544.9" cy="99" r="3.2"/><text class="nom" x="544.9" y="88" text-anchor="middle">Nice</text>
-        </svg>
-        <figcaption>Le secteur, tracé au trait de côte : de Fréjus à Nice, arrière-pays inclus.
-          Le siège est à Mandelieu-la-Napoule.</figcaption>
+      <figure class="cinq demo monte">
+        <div class="telephone">
+          <video id="demo" poster="/video/formulaire.jpg" width="540" height="1168"
+                 muted loop playsinline preload="none"
+                 aria-label="Le formulaire, de la première question à la confirmation">
+            <source src="/video/formulaire.mp4" type="video/mp4">
+          </video>
+        </div>
+        <figcaption>Une fuite signalée en quatorze secondes, sans créer de compte.
+          C'est le formulaire réel, filmé.</figcaption>
       </figure>
     </div>
   </section>
@@ -592,6 +604,21 @@ footer p+p{margin-top:var(--e2)}
               <div><dt>Astreinte</dt><dd>Deux entreprises par métier, soir et week-end</dd></div>
             </dl>
           </div>
+          <figure class="carte-bloc" style="margin-top:var(--e5)">
+          <svg class="carte" viewBox="0 0 620 420" role="img" aria-label="Le secteur couvert, de Fréjus à Nice">
+            <path class="trait" d="M16.3 415 L65.3 407 L99.5 382 L118.3 367 L137.1 376 L160.7 380 L186 393 L208 382 L218.6 368 L236.6 353 L252.9 330 L267.6 305 L277.4 288 L280.6 272 L293.7 258 L322.2 255 L341 252 L357.3 258 L372 266 L383.4 244 L399.7 235 L414.4 234 L425.8 244 L430.7 259 L436.4 248 L434 222 L430.7 206 L432.4 188 L440.5 168 L452.8 148 L471.5 140 L493.6 137 L518 122 L542.5 109 L562.9 105 L579.2 100 L603.7 94"/>
+            <circle class="halo" cx="275.7" cy="254" r="30"/>
+            <circle class="ville" cx="111.8" cy="367" r="3.2"/><text class="nom" x="111.8" y="356" text-anchor="middle">Fréjus</text>
+            <circle class="ville" cx="265.1" cy="141" r="3.2"/><text class="nom" x="265.1" y="130" text-anchor="middle">Grasse</text>
+            <circle class="siege" cx="275.7" cy="254" r="5"/><text class="nom siege-nom" x="275.7" y="275" text-anchor="middle">Mandelieu</text>
+            <circle class="ville" cx="336.9" cy="249" r="3.2"/><text class="nom" x="336.9" y="238" text-anchor="middle">Cannes</text>
+            <circle class="ville" cx="428.3" cy="219" r="3.2"/><text class="nom" x="439" y="214" text-anchor="start">Antibes</text>
+            <circle class="ville" cx="417.7" cy="78" r="3.2"/><text class="nom" x="417.7" y="67" text-anchor="middle">Vence</text>
+            <circle class="ville" cx="544.9" cy="99" r="3.2"/><text class="nom" x="544.9" y="88" text-anchor="middle">Nice</text>
+          </svg>
+          <figcaption>Le secteur, tracé au trait de côte : de Fréjus à Nice, arrière-pays inclus.
+            Le siège est à Mandelieu-la-Napoule.</figcaption>
+          </figure>
           <p class="oeil" style="margin-top:var(--e5)">Les métiers couverts</p>
           <ul class="metiers">
             <li>Plomberie</li><li>Électricité</li><li>Chauffage</li><li>Climatisation, VMC</li>
@@ -763,6 +790,28 @@ if(urg)urg.href=lienForm("urgence");
 [].slice.call(document.querySelectorAll("[data-form]")).forEach(function(a){
   a.href=lienForm(a.dataset.form);
 });
+
+/* ---------- la demonstration ----------
+   Jamais d'autoplay ecrit dans le HTML : un visiteur qui a demande moins
+   d'animations ne doit pas voir un telephone s'agiter tout seul. Il
+   recoit les commandes a la place, et la video ne se telecharge que
+   s'il la lance. */
+(function(){
+  var v=document.getElementById("demo");
+  if(!v)return;
+  var calme=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(calme){v.setAttribute("controls","");return}
+  v.preload="metadata";
+  /* elle ne part qu'une fois visible : inutile de jouer dans le vide */
+  if(!("IntersectionObserver" in window)){v.autoplay=true;v.play().catch(function(){});return}
+  var obs=new IntersectionObserver(function(e){
+    e.forEach(function(x){
+      if(x.isIntersecting){v.play().catch(function(){v.setAttribute("controls","")})}
+      else{v.pause()}
+    });
+  },{threshold:.25});
+  obs.observe(v);
+})();
 
 /* ---------- le theme ----------
    Trois etats qui tournent. Sans choix enregistre, la page suit le
