@@ -15,6 +15,15 @@
 <link rel="preload" href="/polices/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/polices/source-serif-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/polices/polices.css">
+<script>
+/* Pose le theme choisi avant que la page ne s'affiche. Place ici, dans
+   l'en-tete, et nulle part ailleurs : une ligne plus bas et le visiteur
+   verrait le fond changer sous ses yeux au chargement. */
+(function(){try{
+  var c=localStorage.getItem("vds-theme");
+  if(c==="papier"||c==="blanc"||c==="dark")document.documentElement.setAttribute("data-theme",c);
+}catch(e){}})();
+</script>
 <style>
 /* =====================================================================
    VD SERVICES — page d'accueil
@@ -63,7 +72,22 @@
   --sans:"Inter",-apple-system,"Segoe UI",Roboto,sans-serif;
   --marque-cle:var(--terre);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+/* ----- la variante blanche -----
+   Le papier est la couleur de la maison, mais un fond blanc se lit mieux
+   sur un ecran mal regle, en plein soleil, ou quand on imprime la page.
+   Les deux restent la meme page : seuls quatre jetons changent.
+
+   L'alternance des sections doit survivre. Sur papier, les sections
+   `.blanc` sont plus claires que le fond ; en variante blanche, le fond
+   est deja au maximum, donc elles deviennent legerement plus grises.
+   Le rythme vertical reste lisible, simplement inverse. */
+:root[data-theme="blanc"]{
+  --papier:#FFFFFF; --papier-2:#F2F2F1; --blanc:#F7F7F6;
+  --ligne:#E4E2DE; --ligne-forte:#BFBCB6;
+  --terre-claire:#F6E8E0;
+}
+
+@media (prefers-color-scheme: dark){:root:not([data-theme="papier"]):not([data-theme="blanc"]):not([data-theme="light"]){
   --papier:#12171D; --papier-2:#191F27; --blanc:#1B222B;
   --encre:#ECE7DE; --encre-2:#B6BDC6; --encre-3:#848E99;
   --ligne:#252D37; --ligne-forte:#3B4552;
@@ -153,6 +177,21 @@ button,input,select,textarea{font:inherit;color:inherit}
   .liens{display:none} .menu{display:block} .entete .wrap{position:relative}
   #cta-haut{display:none} .marque i{display:none}
 }
+
+/* ----- le bouton de theme -----
+   Trois etats, un seul bouton : papier, blanc, sombre. Il affiche
+   l'etat courant, pas celui vers lequel il mene — un interrupteur qui
+   annonce ou il va se lit a l'envers une fois sur deux. */
+.theme{display:inline-flex;align-items:center;gap:8px;background:none;cursor:pointer;
+  border:1px solid var(--ligne-forte);border-radius:var(--r);padding:9px 13px;
+  font-size:.86rem;color:var(--encre-2);white-space:nowrap;
+  transition:border-color var(--t),color var(--t)}
+.theme:hover{border-color:var(--encre);color:var(--encre)}
+.theme .pastille{width:13px;height:13px;border-radius:50%;flex:none;
+  border:1px solid var(--ligne-forte);background:var(--papier)}
+:root[data-theme="blanc"] .theme .pastille{background:#FFFFFF}
+:root[data-theme="dark"] .theme .pastille{background:#12171D;border-color:#4A5563}
+@media (max-width:1180px){.theme .nom{display:none}.theme{padding:9px 10px}}
 
 /* ----- boutons --------------------------------------------------------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
@@ -353,6 +392,9 @@ footer p+p{margin-top:var(--e2)}
       <a href="#partenaires">Entreprises</a>
       <a href="#contact">Contact</a>
     </nav>
+    <button class="theme" id="theme" type="button" aria-live="polite">
+      <span class="pastille" aria-hidden="true"></span><span class="nom">Papier</span>
+    </button>
     <a class="btn sm" id="cta-haut" href="#besoins">Déclarer un besoin</a>
     <details class="menu">
       <summary aria-label="Ouvrir le menu"><i></i>Menu</summary>
@@ -735,6 +777,41 @@ if(urg)urg.href=lienForm("urgence");
 [].slice.call(document.querySelectorAll("[data-form]")).forEach(function(a){
   a.href=lienForm(a.dataset.form);
 });
+
+/* ---------- le theme ----------
+   Trois etats qui tournent. Sans choix enregistre, la page suit le
+   reglage du systeme : c'est le bon defaut, et la plupart des visiteurs
+   ne toucheront jamais ce bouton. */
+(function(){
+  var bouton=document.getElementById("theme");
+  if(!bouton)return;
+  var NOMS={papier:"Papier",blanc:"Blanc",dark:"Sombre"};
+  var SUITE={papier:"blanc",blanc:"dark",dark:"papier"};
+  function courant(){
+    var a=document.documentElement.getAttribute("data-theme");
+    if(a&&NOMS[a])return a;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"papier";
+  }
+  function peindre(){
+    var c=courant();
+    bouton.querySelector(".nom").textContent=NOMS[c];
+    bouton.setAttribute("title","Thème : "+NOMS[c]+". Cliquez pour passer en "+NOMS[SUITE[c]].toLowerCase()+".");
+    bouton.setAttribute("aria-label",bouton.getAttribute("title"));
+  }
+  bouton.addEventListener("click",function(){
+    var suivant=SUITE[courant()];
+    document.documentElement.setAttribute("data-theme",suivant);
+    try{localStorage.setItem("vds-theme",suivant)}catch(e){}
+    peindre();
+  });
+  /* le reglage du systeme peut changer pendant la visite */
+  try{
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){
+      if(!document.documentElement.getAttribute("data-theme"))peindre();
+    });
+  }catch(e){}
+  peindre();
+})();
 
 /* Le menu du telephone se referme quand on a choisi : sans cela, la
    cible du lien s'ouvre derriere un panneau reste ouvert. */
