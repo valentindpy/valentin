@@ -650,7 +650,7 @@ for code in LANGUES:
     forme, manquants = lg.traduire(page)
     forme = forme.replace('<html lang="fr">', '<html lang="%s">' % code, 1)
     forme = forme.replace('<a class="hors-app" href="/">',
-                          '<a class="hors-app" href="%s/">' % lg.prefixe)
+                          '<a class="hors-app" href="%s">' % lg.prefixe)
     forme = forme.replace('<link rel="manifest" href="/manifest.webmanifest">',
                           '<link rel="manifest" href="%s/manifest.webmanifest">' % lg.prefixe)
     dossier = os.path.join("site", lg.prefixe.strip("/"), lg.chemin_form)
@@ -703,7 +703,7 @@ head = (u'<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
         u'<meta property="og:description" content="Vous d\u00e9crivez le probl\u00e8me, nous choisissons l\u2019entreprise et nous suivons les travaux. De Fr\u00e9jus \u00e0 Nice.">\n'
         u'<meta property="og:type" content="website">\n'
         u'<link rel="alternate" hreflang="fr" href="https://vd-services.fr/">\n'
-        u'<link rel="alternate" hreflang="en" href="https://vd-services.fr/en/">\n'
+        u'<link rel="alternate" hreflang="en" href="https://vd-services.fr/en">\n'
         u'<link rel="alternate" hreflang="x-default" href="https://vd-services.fr/">\n'
         + tete + u'\n</head>\n<body>')
 
@@ -728,7 +728,7 @@ for code in LANGUES:
     page = page.replace('<html lang="fr">', '<html lang="%s">' % code, 1)
     page = page.replace('var FORMULAIRE="/formulaire";',
                         'var FORMULAIRE="%s/%s";' % (lg.prefixe, lg.chemin_form))
-    page = page.replace('<a class="marque" href="/"', '<a class="marque" href="%s/"' % lg.prefixe)
+    page = page.replace('<a class="marque" href="/"', '<a class="marque" href="%s"' % lg.prefixe)
     # La demonstration est filmee ecran par ecran dans chaque langue : la
     # version anglaise ne peut pas montrer un formulaire francais.
     for ext in ("jpg", "mp4"):
@@ -740,8 +740,8 @@ for code in LANGUES:
     # la langue courante change de cote dans le selecteur
     page = page.replace('<a href="/" hreflang="fr" aria-current="true">',
                         '<a href="/" hreflang="fr" aria-current="false">')
-    page = page.replace('<a href="%s/" hreflang="%s" aria-current="false">' % (lg.prefixe, code),
-                        '<a href="%s/" hreflang="%s" aria-current="true">' % (lg.prefixe, code))
+    page = page.replace('<a href="%s" hreflang="%s" aria-current="false">' % (lg.prefixe, code),
+                        '<a href="%s" hreflang="%s" aria-current="true">' % (lg.prefixe, code))
     # le drapeau du bouton ferme devient celui de la langue courante
     deb = page.index('<summary aria-label=')
     fin = page.index('</summary>', deb)
@@ -791,14 +791,14 @@ aujourdhui = datetime.date.today().isoformat()
 pages = [("/", "1.0", "accueil"), ("/formulaire", "0.9", "formulaire")]
 for code in LANGUES:
     lg = langue(code)
-    pages.append(("%s/" % lg.prefixe, "0.8", "accueil"))
+    pages.append((lg.prefixe, "0.8", "accueil"))
     pages.append(("%s/%s" % (lg.prefixe, lg.chemin_form), "0.7", "formulaire"))
 
 # les traductions d'une meme page, rangees par role
 familles = {"accueil": {"fr": "/"}, "formulaire": {"fr": "/formulaire"}}
 for code in LANGUES:
     lg = langue(code)
-    familles["accueil"][code] = "%s/" % lg.prefixe
+    familles["accueil"][code] = lg.prefixe
     familles["formulaire"][code] = "%s/%s" % (lg.prefixe, lg.chemin_form)
 
 lignes = [u'<?xml version="1.0" encoding="UTF-8"?>',

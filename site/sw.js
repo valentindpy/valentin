@@ -86,7 +86,8 @@ self.addEventListener("fetch", (ev) => {
            reseau doit retomber sur /en/form, pas sur le formulaire
            francais — il ne saurait pas le remplir. */
         .catch(() => {
-          const replis = url.pathname.startsWith("/en/")
+          const p = url.pathname;
+          const replis = p === "/en" || p.startsWith("/en/")
             ? ["/en/form", "/en/form/", "/formulaire"]
             : ["/formulaire", "/formulaire/"];
           return replis.reduce(
